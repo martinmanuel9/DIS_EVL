@@ -1,0 +1,10 @@
+# Igonore all log files
+results/**
+
+# Ignore all plots 
+plots/**
+
+# plotter_scargc/**
+
+# Ignore data 
+data/BoT_IoT_Data/**
