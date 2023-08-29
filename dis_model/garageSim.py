@@ -1,8 +1,19 @@
 #!/usr/bin/env python 
 
+"""
+Application:        DIS Simulation of Garage Model 
+File name:          garageSim.py
+Author:             Martin Manuel Lopez
+Creation:           8/28/2023
+
+The University of Arizona
+Department of Electrical and Computer Engineering
+College of Engineering
+"""
+
 # MIT License
 #
-# Copyright (c) 2021
+# Copyright (c) 2023
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,15 +33,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from evl_models import ton_iot_datagen as ton
+import numpy as np
 
-from .compose import ComposeV1
-from .compose import ComposeV2
-from .compose import FastCompose
+# Create garage dataset and timesteps for simulation
+garageDataset = ton.TON_IoT_Datagen()
+garageTrain, garageTest = garageDataset.create_dataset(train_stepsize=garageDataset.garageTrainStepsize, test_stepsize=garageDataset.garageTestStepsize, 
+                                train= garageDataset.garageTrainSet, test = garageDataset.garageTestSet)
 
-from .mclassification import MClassification
-
-from .leveliw import LevelIW
-
-from .scargc import Scargc
-
-from .apt import APT
+# print(np.shape(garageTrain['Data']), np.shape(garageTest['Data']))

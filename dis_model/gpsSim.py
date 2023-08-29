@@ -1,8 +1,19 @@
 #!/usr/bin/env python 
 
+"""
+Application:        DIS Simulation of GPS Model 
+File name:          gpsSim.py
+Author:             Martin Manuel Lopez
+Creation:           8/28/2023
+
+The University of Arizona
+Department of Electrical and Computer Engineering
+College of Engineering
+"""
+
 # MIT License
 #
-# Copyright (c) 2021
+# Copyright (c) 2023
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -22,19 +33,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from evl_models import ton_iot_datagen as ton
+import numpy as np
 
+# Create garage dataset and timesteps for simulation
+gpsDataset = ton.TON_IoT_Datagen()
+gpsTrain, gpsTest = gpsDataset.create_dataset(train_stepsize=gpsDataset.gpsTrainStepsize, test_stepsize=gpsDataset.gpsTestStepsize, 
+                                train= gpsDataset.gpsTrainSet, test = gpsDataset.gpsTestSet)
 
-class LevelIW(): 
-    def __init__(self, 
-                 classifier, 
-                 T, 
-                 method): 
-        """
-        """
-        self.classifier = classifier 
-        self.T = T
-    
-    def run(self, Xt, Yt, Ut): 
-        """
-        """
-        self.classifier
+# print(np.shape(gpsTrain['Data']), np.shape(gpsTest['Data']))
