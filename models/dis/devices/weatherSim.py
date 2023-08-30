@@ -33,7 +33,10 @@ College of Engineering
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from evl_models import ton_iot_datagen as ton
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from evl import ton_iot_datagen as ton
 import numpy as np
 
 # Create garage dataset and timesteps for simulation
@@ -41,4 +44,4 @@ weatherDataset = ton.TON_IoT_Datagen()
 weatherTrain, weatherTest = weatherDataset.create_dataset(train_stepsize=weatherDataset.weatherTrainStepsize, test_stepsize=weatherDataset.weatherTestStepsize, 
                                 train= weatherDataset.weatherTrainSet, test = weatherDataset.weatherTestSet)
 
-# print(np.shape(weatherTrain['Data']), np.shape(weatherTest['Data']))
+print(np.shape(weatherTrain['Data']), np.shape(weatherTest['Data']))

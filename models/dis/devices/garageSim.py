@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 
 """
-Application:        DIS Simulation of GPS Model 
-File name:          gpsSim.py
+Application:        DIS Simulation of Garage Model 
+File name:          garageSim.py
 Author:             Martin Manuel Lopez
 Creation:           8/28/2023
 
@@ -33,12 +33,15 @@ College of Engineering
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from evl_models import ton_iot_datagen as ton
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from evl import ton_iot_datagen as ton
 import numpy as np
 
 # Create garage dataset and timesteps for simulation
-gpsDataset = ton.TON_IoT_Datagen()
-gpsTrain, gpsTest = gpsDataset.create_dataset(train_stepsize=gpsDataset.gpsTrainStepsize, test_stepsize=gpsDataset.gpsTestStepsize, 
-                                train= gpsDataset.gpsTrainSet, test = gpsDataset.gpsTestSet)
+garageDataset = ton.TON_IoT_Datagen()
+garageTrain, garageTest = garageDataset.create_dataset(train_stepsize=garageDataset.garageTrainStepsize, test_stepsize=garageDataset.garageTestStepsize, 
+                                train= garageDataset.garageTrainSet, test = garageDataset.garageTestSet)
 
-# print(np.shape(gpsTrain['Data']), np.shape(gpsTest['Data']))
+# print(np.shape(garageTrain['Data']), np.shape(garageTest['Data']))

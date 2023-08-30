@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 
 """
-Application:        DIS Simulation of Modbus Model 
-File name:          modbusSim.py
+Application:        DIS Simulation of Real Time Indicator RTI Model 
+File name:          rti.py
 Author:             Martin Manuel Lopez
 Creation:           8/28/2023
 
@@ -33,12 +33,3 @@ College of Engineering
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from evl_models import ton_iot_datagen as ton
-import numpy as np
-
-# Create garage dataset and timesteps for simulation
-modbusDataset = ton.TON_IoT_Datagen()
-modbusTrain, modbusTest = modbusDataset.create_dataset(train_stepsize=modbusDataset.modbusTrainStepsize, test_stepsize=modbusDataset.modbusTestStepsize, 
-                                train= modbusDataset.modbusTrainSet, test = modbusDataset.modbusTestSet)
-
-# print(np.shape(modbusTrain['Data']), np.shape(modbusTest['Data']))

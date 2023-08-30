@@ -33,7 +33,10 @@ College of Engineering
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from evl_models import ton_iot_datagen as ton
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from evl import ton_iot_datagen as ton
 import numpy as np
 
 # Create garage dataset and timesteps for simulation
