@@ -44,4 +44,4 @@ modbusDataset = ton.TON_IoT_Datagen()
 modbusTrain, modbusTest = modbusDataset.create_dataset(train_stepsize=modbusDataset.modbusTrainStepsize, test_stepsize=modbusDataset.modbusTestStepsize, 
                                 train= modbusDataset.modbusTrainSet, test = modbusDataset.modbusTestSet)
 
-print(np.shape(modbusTrain['Data']), np.shape(modbusTest['Data']))
+# print(np.shape(modbusTrain['Data']), np.shape(modbusTest['Data']))

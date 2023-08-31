@@ -42,6 +42,8 @@ import numpy as np
 # Create garage dataset and timesteps for simulation
 garageDataset = ton.TON_IoT_Datagen()
 garageTrain, garageTest = garageDataset.create_dataset(train_stepsize=garageDataset.garageTrainStepsize, test_stepsize=garageDataset.garageTestStepsize, 
-                                train= garageDataset.garageTrainSet, test = garageDataset.garageTestSet)
+                                train= garageDataset.completeGarageTrainSet, test = garageDataset.completeGarageTestSet)
 
 # print(np.shape(garageTrain['Data']), np.shape(garageTest['Data']))
+
+print(garageTrain['Dataset'])

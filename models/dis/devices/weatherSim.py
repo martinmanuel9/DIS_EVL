@@ -44,4 +44,4 @@ weatherDataset = ton.TON_IoT_Datagen()
 weatherTrain, weatherTest = weatherDataset.create_dataset(train_stepsize=weatherDataset.weatherTrainStepsize, test_stepsize=weatherDataset.weatherTestStepsize, 
                                 train= weatherDataset.weatherTrainSet, test = weatherDataset.weatherTestSet)
 
-print(np.shape(weatherTrain['Data']), np.shape(weatherTest['Data']))
+# print(np.shape(weatherTrain['Data']), np.shape(weatherTest['Data']))
