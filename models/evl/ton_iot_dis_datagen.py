@@ -103,22 +103,28 @@ class TON_IoT_Datagen():
     def gps_data(self):
         gps_dataset = pd.read_csv('Train_Test_IoT_GPS_Tracker.csv')
         mapping = [{'col': 'type', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7}}]
-        gps_dataset = OrdinalEncoder(cols=['type'], mapping=mapping).fit(gps_dataset).transform(gps_dataset)
-        gps_dataset = gps_dataset[['latitude','longitude','type', 'label']]
-        train_gps, test_gps = train_test_split(gps_dataset, test_size=0.33)
+        gpsMapped= OrdinalEncoder(cols=['type'], mapping=mapping).fit(gps_dataset).transform(gps_dataset)
+        gpsMapped = gps_dataset[['latitude','longitude','type', 'label']]
+        complete_gps_dataset = gps_dataset[['ts','date','time','latitude','longitude','type', 'label']] 
+        train_gps, test_gps = train_test_split(gpsMapped, test_size=0.33)
+        completeTrainGPS, completeTestGPS = train_test_split(complete_gps_dataset, test_size=0.33)
         # print('gps:', len(train_gps), len(test_gps))
         self.gpsTrainStepsize = 194
         self.gpsTestStepsize = 396
         self.gpsTrainSet = train_gps
         self.gpsTestSet = test_gps 
+        self.completeGPSTrainSet = completeTrainGPS
+        self.completeGPSTestSet = completeTestGPS
 
     def modbus_data(self):
         modbus_dataset = pd.read_csv('Train_Test_IoT_Modbus.csv')
         mapping = [{'col': 'type', 'mapping': {'normal': 0, 'backdoor': 1, 'injection': 3, 'password': 4, 'scanning': 6, 'xss': 7}}]
-        modbus_dataset = OrdinalEncoder(cols=['type'], mapping=mapping).fit(modbus_dataset).transform(modbus_dataset)
+        modbusMapped = OrdinalEncoder(cols=['type'], mapping=mapping).fit(modbus_dataset).transform(modbus_dataset)
         features  = ['FC1_Read_Input_Register','FC2_Read_Discrete_Value','FC3_Read_Holding_Register','FC4_Read_Coil','type','label']
-        modbus_dataset = modbus_dataset[features]
-        train_modbus, test_modbus = train_test_split(modbus_dataset, test_size=0.33)
+        modbusMapped = modbusMapped[features]
+        complete_modbus_dataset = modbus_dataset[['ts','date','time','FC1_Read_Input_Register','FC2_Read_Discrete_Value','FC3_Read_Holding_Register','FC4_Read_Coil','type','label']]
+        completeTrainModbus, completeTestModbus = train_test_split(complete_modbus_dataset, test_size=0.33)
+        train_modbus, test_modbus = train_test_split(modbusMapped, test_size=0.33)
         # train_modbus = train_modbus[features]
         # test_modbus = test_modbus[features]
         # print('modbus:', len(train_modbus), len(test_modbus))
@@ -126,42 +132,57 @@ class TON_IoT_Datagen():
         self.modbusTestStepsize = 336
         self.modbusTrainSet = train_modbus
         self.modbusTestSet = test_modbus
+        self.completeModbusTrainSet = completeTrainModbus
+        self.completeModbusTestSet = completeTestModbus
     
     def light_data(self):
         light_dataset = pd.read_csv('Train_Test_IoT_Motion_Light.csv')
         mapping = [{'col':'light_status', 'mapping': {' off': 0, ' on': 1}}, {'col': 'type', 'mapping':{'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
-        light_dataset = OrdinalEncoder(cols=['light_status', 'type'], mapping = mapping).fit(light_dataset).transform(light_dataset)
-        light_dataset = light_dataset[['motion_status','light_status','type','label']]
-        train_light, test_light = train_test_split(light_dataset, test_size=0.33)
+        lightMapped = OrdinalEncoder(cols=['light_status', 'type'], mapping = mapping).fit(light_dataset).transform(light_dataset)
+        lightMapped = lightMapped[['motion_status','light_status','type','label']]
+        complete_light_dataset = light_dataset[['ts','date','time','motion_status','light_status','type','label']]
+        train_light, test_light = train_test_split(lightMapped, test_size=0.33)
+        completeTrainLight, completeTestLight = train_test_split(complete_light_dataset, test_size=0.33)
         # print('light:', len(train_light), len(test_light))
         self.lightTrainStepsize = 196
         self.lightTestStepsize = 396
         self.lightTrainSet = train_light
         self.lightTestSet = test_light
+        self.completeLightTrainSet = completeTrainLight
+        self.completeLightTestSet = completeTestLight
 
     def thermostat_data(self):
         thermostat_dataset = pd.read_csv('Train_Test_IoT_Thermostat.csv')
         mapping = [{'col': 'type', 'mapping':{'normal': 0, 'backdoor': 1, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
-        thermostat_dataset = OrdinalEncoder(cols=['type'], mapping=mapping).fit(thermostat_dataset).transform(thermostat_dataset)
-        thermostat_dataset = thermostat_dataset[['current_temperature','thermostat_status','type','label']]
+        thermostatMapped = OrdinalEncoder(cols=['type'], mapping=mapping).fit(thermostat_dataset).transform(thermostat_dataset)
+        thermostatMapped = thermostatMapped[['current_temperature','thermostat_status','type','label']]
+        complete_thermostat_dataset = thermostat_dataset[['ts','date','time','current_temperature','thermostat_status','type','label']]
         train_thermo, test_thermo = train_test_split(thermostat_dataset, test_size=0.33)
+        completeTrainThermo, completeTestThermo = train_test_split(complete_thermostat_dataset, test_size=0.33)
         # print('thermo', len(train_thermo), len(test_thermo))
         self.thermoTrainStepsize = 174
         self.thermoTestStepsize = 348
         self.thermoTrainSet = train_thermo
         self.thermoTestSet = test_thermo
+        self.completeThermoTrainSet = completeTrainThermo
+        self.completeThermoTestSet = completeTestThermo
 
     def weather_data(self):
         weather_dataset = pd.read_csv('Train_Test_IoT_Weather.csv')
         mapping = [{'col': 'type', 'mapping':{'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
-        weather_dataset = OrdinalEncoder(cols=['type'], mapping=mapping).fit(weather_dataset).transform(weather_dataset)
-        weather_dataset = weather_dataset[['temperature','pressure','humidity','type','label']]
-        train_weather, test_weather = train_test_split(weather_dataset, test_size=0.33)
+        weatherMapped = OrdinalEncoder(cols=['type'], mapping=mapping).fit(weather_dataset).transform(weather_dataset)
+        weatherMapped = weatherMapped[['temperature','pressure','humidity','type','label']]
+        complete_weather_dataset = weather_dataset[['ts','date','time','temperature','pressure','humidity','type','label']]
+        train_weather, test_weather = train_test_split(weatherMapped, test_size=0.33)
+        completeTrainWeather, completeTestWeather = train_test_split(complete_weather_dataset, test_size=0.33)
         # print('weather:', len(train_weather), len(test_weather))
         self.weatherTrainStepsize = 194
         self.weatherTestStepsize = 396
         self.weatherTrainSet = train_weather
         self.weatherTestSet = test_weather
+        self.completeWeatherTrainSet = completeTrainWeather
+        self.completeWeatherTestSet = completeTestWeather
+        
     
     def batch(self, iterable, n=1):
         l = len(iterable)

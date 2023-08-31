@@ -36,12 +36,13 @@ College of Engineering
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from evl import ton_iot_datagen as ton
+from evl import ton_iot_dis_datagen as ton
 import numpy as np
 
 # Create garage dataset and timesteps for simulation
 weatherDataset = ton.TON_IoT_Datagen()
 weatherTrain, weatherTest = weatherDataset.create_dataset(train_stepsize=weatherDataset.weatherTrainStepsize, test_stepsize=weatherDataset.weatherTestStepsize, 
-                                train= weatherDataset.weatherTrainSet, test = weatherDataset.weatherTestSet)
+                                train= weatherDataset.completeWeatherTrainSet, test = weatherDataset.completeWeatherTestSet)
 
-# print(np.shape(weatherTrain['Data']), np.shape(weatherTest['Data']))
+# try to send the first timestep to using the opendis 
+print(weatherTrain['Dataframe'])

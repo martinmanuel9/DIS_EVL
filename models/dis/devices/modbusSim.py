@@ -36,12 +36,12 @@ College of Engineering
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from evl import ton_iot_datagen as ton
+from evl import ton_iot_dis_datagen as ton
 import numpy as np
 
 # Create garage dataset and timesteps for simulation
 modbusDataset = ton.TON_IoT_Datagen()
 modbusTrain, modbusTest = modbusDataset.create_dataset(train_stepsize=modbusDataset.modbusTrainStepsize, test_stepsize=modbusDataset.modbusTestStepsize, 
-                                train= modbusDataset.modbusTrainSet, test = modbusDataset.modbusTestSet)
+                                train= modbusDataset.completeModbusTrainSet, test = modbusDataset.completeModbusTestSet)
 
-# print(np.shape(modbusTrain['Data']), np.shape(modbusTest['Data']))
+# try to send the first timestep to using the opendis 

@@ -36,12 +36,12 @@ College of Engineering
 import os
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from evl import ton_iot_datagen as ton
+from evl import ton_iot_dis_datagen as ton
 import numpy as np
 
 # Create garage dataset and timesteps for simulation
 gpsDataset = ton.TON_IoT_Datagen()
 gpsTrain, gpsTest = gpsDataset.create_dataset(train_stepsize=gpsDataset.gpsTrainStepsize, test_stepsize=gpsDataset.gpsTestStepsize, 
-                                train= gpsDataset.gpsTrainSet, test = gpsDataset.gpsTestSet)
+                                train= gpsDataset.completeGPSTrainSet, test = gpsDataset.completeGPSTestSet)
 
-# print(np.shape(gpsTrain['Data']), np.shape(gpsTest['Data']))
+# try to send the first timestep to using the opendis 
