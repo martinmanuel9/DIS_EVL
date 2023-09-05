@@ -57,12 +57,15 @@ thermoDataset = ton.TON_IoT_Datagen()
 thermoTrain, thermoTest = thermoDataset.create_dataset(train_stepsize=thermoDataset.thermoTrainStepsize, test_stepsize=thermoDataset.thermoTestStepsize, 
                                 train= thermoDataset.completeThermoTrainSet, test = thermoDataset.completeThermoTestSet)
 
+
+print(thermoTest.head())
 # try to send the first timestep to using the opendis
 pdu = EntityStatePdu()
 pdu.entityID.entityID = 42
 pdu.entityID.siteID = 17
 pdu.entityID.applicationID = 23
 pdu.marking.setString('Igor3d')
+
 
 memoryStream = BytesIO()
 outputStream = DataOutputStream(memoryStream)
