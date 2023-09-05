@@ -33,3 +33,25 @@ College of Engineering
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import socket 
+import time
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+from opendismodel.opendis.dis7 import *
+from opendismodel.opendis.PduFactory import createPdu
+
+UDP_PORT = 3001
+
+udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+udpSocket.bind(("", UDP_PORT))
+
+print("Listening for DIS on UDP socket {}".format(UDP_PORT))
+
+def recv():
+    data = udpSocket.recv(1024) # buffer size in bytes
+    pdu = createPdu(data)
+    pduTypeName = pdu.__class__.__name__
+
+    
