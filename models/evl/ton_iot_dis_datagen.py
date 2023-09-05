@@ -33,7 +33,6 @@ College of Engineering
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import random
 import pandas as pd
 import numpy as np
 import os
@@ -69,6 +68,7 @@ class TON_IoT_Datagen():
         mapping = [{'col': 'type', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3,  'password': 4, 'ransomware': 5, 'xss': 7 }}]
         fridgeMapped = OrdinalEncoder(cols=['type'], mapping=mapping).fit(fridgeMapped).transform(fridgeMapped)
         complete_fridge_dataset = fridge_dataset[['ts','date','time','fridge_temperature','temp_condition','type','label']]
+        complete_fridge_dataset.sort_values(by=['ts','date','time'])
         fridgeMapped = fridgeMapped[['fridge_temperature','temp_condition','type','label']]
         completeTrainFridge,  completeTestFridge = train_test_split(complete_fridge_dataset, test_size=0.33)
         train_fridge, test_fridge = train_test_split(fridgeMapped, test_size=0.33)
@@ -89,6 +89,7 @@ class TON_IoT_Datagen():
         garageMapped = OrdinalEncoder(cols=['door_state', 'type', 'sphone_signal'], mapping=mapping).fit(garage_dataset).transform(garage_dataset)
         garageMapped = garageMapped[['door_state','sphone_signal','type', 'label']]
         complete_garage_dataset = garage_dataset[['ts','date','time','door_state','sphone_signal','type', 'label']]
+        complete_garage_dataset.sort_values(by=['ts','date','time'])
         train_garage, test_garage = train_test_split(garageMapped, test_size=0.33)
         completeTrainGarage, completeTestGarage = train_test_split(complete_garage_dataset, test_size=0.33)
         # print('garage:', len(train_garage), len(test_garage))
@@ -99,13 +100,13 @@ class TON_IoT_Datagen():
         self.completeGarageTrainSet = completeTrainGarage
         self.completeGarageTestSet = completeTestGarage
         
-
     def gps_data(self):
         gps_dataset = pd.read_csv('Train_Test_IoT_GPS_Tracker.csv')
         mapping = [{'col': 'type', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7}}]
         gpsMapped= OrdinalEncoder(cols=['type'], mapping=mapping).fit(gps_dataset).transform(gps_dataset)
         gpsMapped = gps_dataset[['latitude','longitude','type', 'label']]
         complete_gps_dataset = gps_dataset[['ts','date','time','latitude','longitude','type', 'label']] 
+        complete_gps_dataset.sort_values(by=['ts','date','time'])
         train_gps, test_gps = train_test_split(gpsMapped, test_size=0.33)
         completeTrainGPS, completeTestGPS = train_test_split(complete_gps_dataset, test_size=0.33)
         # print('gps:', len(train_gps), len(test_gps))
@@ -123,6 +124,7 @@ class TON_IoT_Datagen():
         features  = ['FC1_Read_Input_Register','FC2_Read_Discrete_Value','FC3_Read_Holding_Register','FC4_Read_Coil','type','label']
         modbusMapped = modbusMapped[features]
         complete_modbus_dataset = modbus_dataset[['ts','date','time','FC1_Read_Input_Register','FC2_Read_Discrete_Value','FC3_Read_Holding_Register','FC4_Read_Coil','type','label']]
+        complete_modbus_dataset.sort_values(by=['ts','date','time'])
         completeTrainModbus, completeTestModbus = train_test_split(complete_modbus_dataset, test_size=0.33)
         train_modbus, test_modbus = train_test_split(modbusMapped, test_size=0.33)
         # train_modbus = train_modbus[features]
@@ -141,6 +143,7 @@ class TON_IoT_Datagen():
         lightMapped = OrdinalEncoder(cols=['light_status', 'type'], mapping = mapping).fit(light_dataset).transform(light_dataset)
         lightMapped = lightMapped[['motion_status','light_status','type','label']]
         complete_light_dataset = light_dataset[['ts','date','time','motion_status','light_status','type','label']]
+        complete_light_dataset.sort_values(by=['ts','date','time'])
         train_light, test_light = train_test_split(lightMapped, test_size=0.33)
         completeTrainLight, completeTestLight = train_test_split(complete_light_dataset, test_size=0.33)
         # print('light:', len(train_light), len(test_light))
@@ -157,8 +160,16 @@ class TON_IoT_Datagen():
         thermostatMapped = OrdinalEncoder(cols=['type'], mapping=mapping).fit(thermostat_dataset).transform(thermostat_dataset)
         thermostatMapped = thermostatMapped[['current_temperature','thermostat_status','type','label']]
         complete_thermostat_dataset = thermostat_dataset[['ts','date','time','current_temperature','thermostat_status','type','label']]
+        complete_thermostat_dataset['ts'] = pd.to_numeric(complete_thermostat_dataset['ts'])
+        complete_thermostat_dataset['date'] = pd.to_datetime(complete_thermostat_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_thermostat_dataset['time'] = complete_thermostat_dataset['time'].str.strip()
+        complete_thermostat_dataset['time'] = pd.to_datetime(complete_thermostat_dataset['time'], format='%H:%M:%S').dt.time
+        complete_thermostat_dataset.sort_values(by=['ts','date','time'])
         train_thermo, test_thermo = train_test_split(thermostat_dataset, test_size=0.33)
         completeTrainThermo, completeTestThermo = train_test_split(complete_thermostat_dataset, test_size=0.33)
+         
+        completeTestThermo.sort_values(by=['date'])
+        print(completeTestThermo.head(10))
         # print('thermo', len(train_thermo), len(test_thermo))
         self.thermoTrainStepsize = 174
         self.thermoTestStepsize = 348
@@ -173,6 +184,7 @@ class TON_IoT_Datagen():
         weatherMapped = OrdinalEncoder(cols=['type'], mapping=mapping).fit(weather_dataset).transform(weather_dataset)
         weatherMapped = weatherMapped[['temperature','pressure','humidity','type','label']]
         complete_weather_dataset = weather_dataset[['ts','date','time','temperature','pressure','humidity','type','label']]
+        complete_weather_dataset.sort_values(by=['ts','date','time'])
         train_weather, test_weather = train_test_split(weatherMapped, test_size=0.33)
         completeTrainWeather, completeTestWeather = train_test_split(complete_weather_dataset, test_size=0.33)
         # print('weather:', len(train_weather), len(test_weather))
@@ -196,20 +208,12 @@ class TON_IoT_Datagen():
         testSet = train.to_numpy()
         column_names = test.columns
 
-        # N = len(trainSet)
-        # V = len(testSet)
-        # ii = np.random.randint(0, N, N)
-        # jj = np.random.randint(0, V, V)
-        # trainSet = trainSet[ii] 
-        # testSet =  testSet[jj]
-
         a = []
         indx = []
         for d in range(train_stepsize-1): # teststpesize
             a.append(d)
-        for v in range(int(0.5 * len(a))):
-            rnd = random.choice(a)
-            indx.append(rnd)
+
+        indx = a
 
         self.trainDataset = trainSet
         self.trainData = trainSet

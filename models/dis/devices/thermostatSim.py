@@ -42,7 +42,7 @@ import numpy as np
 import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from evl import ton_iot_dis_datagen as ton
-from opendismodel.opendis.dis7 import EntityStatePdu
+from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.DataOutputStream import DataOutputStream
 
 DP_PORT = 3001
@@ -58,17 +58,8 @@ thermoTrain, thermoTest = thermoDataset.create_dataset(train_stepsize=thermoData
 
 # try to send the first timestep to using the opendis
 columnNames = thermoTrain['Dataframe'].columns
-print(columnNames)
-pdu = EntityStatePdu()
-pdu.entityID.entityID = 42
-pdu.entityID.siteID = 17
-pdu.entityID.applicationID = 23
-pdu.marking.setString('Igor3d')
-
-
-while True:
-    udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
-    print("Sent {}. {} bytes".format(pdu.__class__.__name__, len(data)))
-    time.sleep(60)
-
+print(thermoTrain['Data'][0][0])
+print(sys.getsizeof(thermoTrain['Data'][0][0][0][3]))
+envTempPdu = Environment()
+envTempPdu.environmentType = thermoTrain['Data'][0][0][0][3]
 
