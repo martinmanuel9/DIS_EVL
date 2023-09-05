@@ -35,13 +35,43 @@ College of Engineering
 
 import os
 import sys
+import socket 
+import time 
+from io import BytesIO
+import numpy as np
+import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from evl import ton_iot_dis_datagen as ton
-import numpy as np
+from opendismodel.opendis.dis7 import EntityStatePdu
+from opendismodel.opendis.DataOutputStream import DataOutputStream
+
+
+UDP_PORT = 3001
+DESTINATION_ADDRESS = "127.0.0.1"
+
+udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 # Create garage dataset and timesteps for simulation
 thermoDataset = ton.TON_IoT_Datagen()
 thermoTrain, thermoTest = thermoDataset.create_dataset(train_stepsize=thermoDataset.thermoTrainStepsize, test_stepsize=thermoDataset.thermoTestStepsize, 
                                 train= thermoDataset.completeThermoTrainSet, test = thermoDataset.completeThermoTestSet)
 
-# try to send the first timestep to using the opendis 
+# try to send the first timestep to using the opendis
+pdu = EntityStatePdu()
+pdu.entityID.entityID = 42
+pdu.entityID.siteID = 17
+pdu.entityID.applicationID = 23
+pdu.marking.setString('Igor3d')
+
+memoryStream = BytesIO()
+outputStream = DataOutputStream(memoryStream)
+pdu.serialize(outputStream)
+data = memoryStream.getvalue()
+
+while True:
+    udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
+    print("Sent {}. {} bytes".format(pdu.__class__.__name__, len(data)))
+    time.sleep(60)
+
+

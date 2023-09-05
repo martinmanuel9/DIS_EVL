@@ -45,4 +45,3 @@ weatherTrain, weatherTest = weatherDataset.create_dataset(train_stepsize=weather
                                 train= weatherDataset.completeWeatherTrainSet, test = weatherDataset.completeWeatherTestSet)
 
 # try to send the first timestep to using the opendis 
-print(weatherTrain['Dataframe'])
