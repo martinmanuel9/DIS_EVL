@@ -56,10 +56,28 @@ thermoDataset = ton.TON_IoT_Datagen()
 thermoTrain, thermoTest = thermoDataset.create_dataset(train_stepsize=thermoDataset.thermoTrainStepsize, test_stepsize=thermoDataset.thermoTestStepsize, 
                                 train= thermoDataset.completeThermoTrainSet, test = thermoDataset.completeThermoTestSet)
 
-# try to send the first timestep to using the opendis
-columnNames = thermoTrain['Dataframe'].columns
-print(thermoTrain['Data'][0][0])
-print(sys.getsizeof(thermoTrain['Data'][0][0][0][3]))
-envTempPdu = Environment()
-envTempPdu.environmentType = thermoTrain['Data'][0][0][0][3]
+def sendTrainTemp():
+    columnNames = thermoTrain['Dataframe'].columns
+    for i in range(len(thermoTrain['Data'][0])):
+        
+        envTempPdu = Environment()
+        envTempPdu.environmentType = int(thermoTrain['Data'][0][i][0][3])
+        envTempPdu.length = sys.getsizeof(thermoTrain['Data'][0][i][0][3]) 
+        envTempPdu.index = 0 
 
+
+        memoryStream = BytesIO()
+        outputStream = DataOutputStream(memoryStream)
+        envTempPdu.serialize(outputStream)
+        data = memoryStream.getvalue()
+
+        udpSocket.sendto(data, (DESTINATION_ADDRESS, DP_PORT))
+        print('Train Data Temperature: ', thermoTrain['Data'][0][i][0][3]) # temperature
+        print('Packet Size: ' , sys.getsizeof(thermoTrain['Data'][0][i][0][3]))
+        print("Sent {}: {} bytes".format(envTempPdu.__class__.__name__, len(data)))
+        time.sleep(10)
+
+sendTrainTemp()
+
+
+    

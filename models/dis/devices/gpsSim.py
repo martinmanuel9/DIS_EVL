@@ -44,10 +44,55 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import EntityStatePdu
 from opendismodel.opendis.DataOutputStream import DataOutputStream
+from opendismodel.opendis.RangeCoordinates import GPS
+
+UDP_PORT = 3001
+DESTINATION_ADDRESS = "127.0.0.1"
+
+udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
 
 # Create garage dataset and timesteps for simulation
 gpsDataset = ton.TON_IoT_Datagen()
 gpsTrain, gpsTest = gpsDataset.create_dataset(train_stepsize=gpsDataset.gpsTrainStepsize, test_stepsize=gpsDataset.gpsTestStepsize, 
                                 train= gpsDataset.completeGPSTrainSet, test = gpsDataset.completeGPSTestSet)
 
-# try to send the first timestep to using the opendis 
+gps = GPS()
+
+def sendTrainGPS():
+    columnNames = gpsTrain['Dataframe'].columns
+    for i in range(len(gpsTrain['Data'][0])):
+        gpsPDU = EntityStatePdu()
+        gpsPDU.entityID.entityID = 42
+        gpsPDU.entityID.siteID = 17
+        gpsPDU.entityID.applicationID = 23
+        gpsPDU.marking.setString('Igor3d')
+
+        gpsLocation = gps.llarpy2ecef(np.deg2rad(gpsTrain['Data'][0][i][0][3]),   # longitude (radians)   
+                                    np.deg2rad(gpsTrain['Data'][0][i][0][4]), # latitude (radians)
+                                    1,               # altitude (meters)
+                                    0,               # roll (radians)
+                                    0,               # pitch (radians)
+                                    0                # yaw (radians)
+                                    )
+        
+        gpsPDU.entityLocation.x = gpsLocation[0]
+        gpsPDU.entityLocation.y = gpsLocation[1]
+        gpsPDU.entityLocation.z = gpsLocation[2]
+        gpsPDU.entityOrientation.psi = gpsLocation[3]
+        gpsPDU.entityOrientation.theta = gpsLocation[4]
+        gpsPDU.entityOrientation.phi = gpsLocation[5]
+
+        memoryStream = BytesIO()
+        outputStream = DataOutputStream(memoryStream)
+        gpsPDU.serialize(outputStream)
+        data = memoryStream.getvalue()
+
+        udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
+        print('Train Data GPS: \n', 'Longitude: ', gpsTrain['Data'][0][i][0][3], '\n', 'Latitude:', gpsTrain['Data'][0][i][0][4]) # latitude, longitude
+        print('Packet Size: ' , sys.getsizeof(gpsTrain['Data'][0][i][0][3]))
+        print("Sent {}: {} bytes".format(gpsPDU.__class__.__name__, len(data)))
+        time.sleep(15)
+
+sendTrainGPS()

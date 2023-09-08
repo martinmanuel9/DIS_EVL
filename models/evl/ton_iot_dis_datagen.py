@@ -68,11 +68,15 @@ class TON_IoT_Datagen():
         mapping = [{'col': 'type', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3,  'password': 4, 'ransomware': 5, 'xss': 7 }}]
         fridgeMapped = OrdinalEncoder(cols=['type'], mapping=mapping).fit(fridgeMapped).transform(fridgeMapped)
         complete_fridge_dataset = fridge_dataset[['ts','date','time','fridge_temperature','temp_condition','type','label']]
+        complete_fridge_dataset['ts'] = pd.to_numeric(complete_fridge_dataset['ts'])
+        complete_fridge_dataset['date'] = pd.to_datetime(complete_fridge_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_fridge_dataset['time'] = complete_fridge_dataset['time'].str.strip()
+        complete_fridge_dataset['time'] = pd.to_datetime(complete_fridge_dataset['time'], format='%H:%M:%S').dt.time
         complete_fridge_dataset.sort_values(by=['ts','date','time'])
         fridgeMapped = fridgeMapped[['fridge_temperature','temp_condition','type','label']]
         completeTrainFridge,  completeTestFridge = train_test_split(complete_fridge_dataset, test_size=0.33)
         train_fridge, test_fridge = train_test_split(fridgeMapped, test_size=0.33)
-        
+        complete_fridge_dataset.sort_values(by=['date']) 
         # print('fridge:', len(train_fridge), len(test_fridge))
         self.fridgeTrainStepsize = 197
         self.fridgeTestStepsize = 396
@@ -89,10 +93,15 @@ class TON_IoT_Datagen():
         garageMapped = OrdinalEncoder(cols=['door_state', 'type', 'sphone_signal'], mapping=mapping).fit(garage_dataset).transform(garage_dataset)
         garageMapped = garageMapped[['door_state','sphone_signal','type', 'label']]
         complete_garage_dataset = garage_dataset[['ts','date','time','door_state','sphone_signal','type', 'label']]
+        complete_garage_dataset['ts'] = pd.to_numeric(complete_garage_dataset['ts'])
+        complete_garage_dataset['date'] = pd.to_datetime(complete_garage_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_garage_dataset['time'] = complete_garage_dataset['time'].str.strip()
+        complete_garage_dataset['time'] = pd.to_datetime(complete_garage_dataset['time'], format='%H:%M:%S').dt.time
         complete_garage_dataset.sort_values(by=['ts','date','time'])
         train_garage, test_garage = train_test_split(garageMapped, test_size=0.33)
         completeTrainGarage, completeTestGarage = train_test_split(complete_garage_dataset, test_size=0.33)
         # print('garage:', len(train_garage), len(test_garage))
+        complete_garage_dataset.sort_values(by=['date'])
         self.garageTrainStepsize = 196
         self.garageTestStepsize = 396
         self.garageTrainSet = train_garage
@@ -106,10 +115,15 @@ class TON_IoT_Datagen():
         gpsMapped= OrdinalEncoder(cols=['type'], mapping=mapping).fit(gps_dataset).transform(gps_dataset)
         gpsMapped = gps_dataset[['latitude','longitude','type', 'label']]
         complete_gps_dataset = gps_dataset[['ts','date','time','latitude','longitude','type', 'label']] 
+        complete_gps_dataset['ts'] = pd.to_numeric(complete_gps_dataset['ts'])
+        complete_gps_dataset['date'] = pd.to_datetime(complete_gps_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_gps_dataset['time'] = complete_gps_dataset['time'].str.strip()
+        complete_gps_dataset['time'] = pd.to_datetime(complete_gps_dataset['time'], format='%H:%M:%S').dt.time
         complete_gps_dataset.sort_values(by=['ts','date','time'])
         train_gps, test_gps = train_test_split(gpsMapped, test_size=0.33)
         completeTrainGPS, completeTestGPS = train_test_split(complete_gps_dataset, test_size=0.33)
         # print('gps:', len(train_gps), len(test_gps))
+        complete_gps_dataset.sort_values(by=['date'])
         self.gpsTrainStepsize = 194
         self.gpsTestStepsize = 396
         self.gpsTrainSet = train_gps
@@ -124,12 +138,16 @@ class TON_IoT_Datagen():
         features  = ['FC1_Read_Input_Register','FC2_Read_Discrete_Value','FC3_Read_Holding_Register','FC4_Read_Coil','type','label']
         modbusMapped = modbusMapped[features]
         complete_modbus_dataset = modbus_dataset[['ts','date','time','FC1_Read_Input_Register','FC2_Read_Discrete_Value','FC3_Read_Holding_Register','FC4_Read_Coil','type','label']]
-        complete_modbus_dataset.sort_values(by=['ts','date','time'])
+        complete_modbus_dataset['ts'] = pd.to_numeric(complete_modbus_dataset['ts'])
+        complete_modbus_dataset['date'] = pd.to_datetime(complete_modbus_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_modbus_dataset['time'] = complete_modbus_dataset['time'].str.strip()
+        complete_modbus_dataset['time'] = pd.to_datetime(complete_modbus_dataset['time'], format='%H:%M:%S').dt.time
         completeTrainModbus, completeTestModbus = train_test_split(complete_modbus_dataset, test_size=0.33)
         train_modbus, test_modbus = train_test_split(modbusMapped, test_size=0.33)
         # train_modbus = train_modbus[features]
         # test_modbus = test_modbus[features]
         # print('modbus:', len(train_modbus), len(test_modbus))
+        complete_modbus_dataset.sort_values(by=['date'])
         self.modbusTrainStepsize = 168
         self.modbusTestStepsize = 336
         self.modbusTrainSet = train_modbus
@@ -143,10 +161,14 @@ class TON_IoT_Datagen():
         lightMapped = OrdinalEncoder(cols=['light_status', 'type'], mapping = mapping).fit(light_dataset).transform(light_dataset)
         lightMapped = lightMapped[['motion_status','light_status','type','label']]
         complete_light_dataset = light_dataset[['ts','date','time','motion_status','light_status','type','label']]
-        complete_light_dataset.sort_values(by=['ts','date','time'])
+        complete_light_dataset['ts'] = pd.to_numeric(complete_light_dataset['ts'])
+        complete_light_dataset['date'] = pd.to_datetime(complete_light_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_light_dataset['time'] = complete_light_dataset['time'].str.strip()
+        complete_light_dataset['time'] = pd.to_datetime(complete_light_dataset['time'], format='%H:%M:%S').dt.time
         train_light, test_light = train_test_split(lightMapped, test_size=0.33)
         completeTrainLight, completeTestLight = train_test_split(complete_light_dataset, test_size=0.33)
         # print('light:', len(train_light), len(test_light))
+        complete_light_dataset.sort_values(by=['date'])
         self.lightTrainStepsize = 196
         self.lightTestStepsize = 396
         self.lightTrainSet = train_light
@@ -164,12 +186,9 @@ class TON_IoT_Datagen():
         complete_thermostat_dataset['date'] = pd.to_datetime(complete_thermostat_dataset['date']).dt.strftime('%Y-%m-%d')
         complete_thermostat_dataset['time'] = complete_thermostat_dataset['time'].str.strip()
         complete_thermostat_dataset['time'] = pd.to_datetime(complete_thermostat_dataset['time'], format='%H:%M:%S').dt.time
-        complete_thermostat_dataset.sort_values(by=['ts','date','time'])
         train_thermo, test_thermo = train_test_split(thermostat_dataset, test_size=0.33)
-        completeTrainThermo, completeTestThermo = train_test_split(complete_thermostat_dataset, test_size=0.33)
-         
+        completeTrainThermo, completeTestThermo = train_test_split(complete_thermostat_dataset, test_size=0.33) 
         completeTestThermo.sort_values(by=['date'])
-        print(completeTestThermo.head(10))
         # print('thermo', len(train_thermo), len(test_thermo))
         self.thermoTrainStepsize = 174
         self.thermoTestStepsize = 348
@@ -184,10 +203,15 @@ class TON_IoT_Datagen():
         weatherMapped = OrdinalEncoder(cols=['type'], mapping=mapping).fit(weather_dataset).transform(weather_dataset)
         weatherMapped = weatherMapped[['temperature','pressure','humidity','type','label']]
         complete_weather_dataset = weather_dataset[['ts','date','time','temperature','pressure','humidity','type','label']]
-        complete_weather_dataset.sort_values(by=['ts','date','time'])
+        complete_weather_dataset['ts'] = pd.to_numeric(complete_weather_dataset['ts'])
+        complete_weather_dataset['date'] = pd.to_datetime(complete_weather_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_weather_dataset['time'] = complete_weather_dataset['time'].str.strip()
+        complete_weather_dataset['time'] = pd.to_datetime(complete_weather_dataset['time'], format='%H:%M:%S').dt.time
+        
         train_weather, test_weather = train_test_split(weatherMapped, test_size=0.33)
         completeTrainWeather, completeTestWeather = train_test_split(complete_weather_dataset, test_size=0.33)
         # print('weather:', len(train_weather), len(test_weather))
+        complete_weather_dataset.sort_values(by=['date'])
         self.weatherTrainStepsize = 194
         self.weatherTestStepsize = 396
         self.weatherTrainSet = train_weather
