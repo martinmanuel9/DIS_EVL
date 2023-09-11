@@ -55,16 +55,7 @@ def recv():
     data = udpSocket.recv(1024) # buffer size in bytes
     pdu = createPdu(data)
     pduTypeName = pdu.__class__.__name__
-    print(pdu)
-
-
-    if pdu.pduType == 70: # Environment 
-        print("Received {}\n".format(pduTypeName)
-                + " Environment Type: {}\n".format(pdu.environmentType)
-                + " Length: {}\n".format(pdu.length)
-                )
-        
-    
+     
     if pdu.pduType == 1: # PduTypeDecoders.EntityStatePdu:
         loc = (pdu.entityLocation.x,
                 pdu.entityLocation.y,
@@ -75,7 +66,6 @@ def recv():
                 )
         
         body = gps.ecef2llarpy(*loc)
-
         print("Received {}\n".format(pduTypeName)
                 + " Id        : {}\n".format(pdu.entityID.entityID)
                 + " Latitude  : {:.2f} degrees\n".format(rad2deg(body[0]))
@@ -85,12 +75,16 @@ def recv():
                 + " Pitch     : {:.2f} degrees\n".format(rad2deg(body[4]))
                 + " Roll      : {:.2f} degrees\n".format(rad2deg(body[5]))
                 )
-        
+    
+    if pduTypeName == 'Environment': 
+        print("Received {}\n".format(pduTypeName)
+                + " Environment Type: {}\n".format(pdu.environmentType)
+                + " Length: {}\n".format(pdu.length)
+                )
+
     else:
+        print('else')
         print("Received {}, {} bytes".format(pduTypeName, len(data)), flush=True)
 
 while True:
     recv()
-
-
-    

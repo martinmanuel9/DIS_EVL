@@ -59,17 +59,14 @@ thermoTrain, thermoTest = thermoDataset.create_dataset(train_stepsize=thermoData
 def sendTrainTemp():
     columnNames = thermoTrain['Dataframe'].columns
     for i in range(len(thermoTrain['Data'][0])):
-        
         envTempPdu = Environment()
-        envTempPdu.environmentType = int(thermoTrain['Data'][0][i][0][3])
-        envTempPdu.length = sys.getsizeof(thermoTrain['Data'][0][i][0][3]) 
-        envTempPdu.index = 0 
-
-
+        envTempPdu.environmentType = thermoTrain['Data'][0][i][0][3]
+        envTempPdu.length = sys.getsizeof(thermoTrain['Data'][0][i][0][3])  
+       
         memoryStream = BytesIO()
         outputStream = DataOutputStream(memoryStream)
         envTempPdu.serialize(outputStream)
-        data = memoryStream.getvalue()
+        data = memoryStream.getvalue() 
 
         udpSocket.sendto(data, (DESTINATION_ADDRESS, DP_PORT))
         print('Train Data Temperature: ', thermoTrain['Data'][0][i][0][3]) # temperature
