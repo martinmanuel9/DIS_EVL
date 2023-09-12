@@ -62,6 +62,7 @@ gps = GPS()
 
 def sendTrainGPS():
     columnNames = gpsTrain['Dataframe'].columns
+    # print(gpsTrain['Dataframe'].head())
     for i in range(len(gpsTrain['Data'][0])):
         gpsPDU = EntityStatePdu()
         gpsPDU.entityID.entityID = 42
@@ -83,6 +84,9 @@ def sendTrainGPS():
         gpsPDU.entityOrientation.psi = gpsLocation[3]
         gpsPDU.entityOrientation.theta = gpsLocation[4]
         gpsPDU.entityOrientation.phi = gpsLocation[5]
+
+        gpsPDU.attack = gpsTrain['Data'][0][i][0][5].encode()
+        gpsPDU.label = gpsTrain['Data'][0][i][0][6] 
 
         memoryStream = BytesIO()
         outputStream = DataOutputStream(memoryStream)

@@ -56,12 +56,15 @@ thermoDataset = ton.TON_IoT_Datagen()
 thermoTrain, thermoTest = thermoDataset.create_dataset(train_stepsize=thermoDataset.thermoTrainStepsize, test_stepsize=thermoDataset.thermoTestStepsize, 
                                 train= thermoDataset.completeThermoTrainSet, test = thermoDataset.completeThermoTestSet)
 
-def sendTrainTemp():
+def sendThermostat():
     columnNames = thermoTrain['Dataframe'].columns
+    
     for i in range(len(thermoTrain['Data'][0])):
         envTempPdu = Environment()
-        envTempPdu.environmentType = thermoTrain['Data'][0][i][0][3]
-        envTempPdu.length = sys.getsizeof(thermoTrain['Data'][0][i][0][3])  
+        envTempPdu.temperature = thermoTrain['Data'][0][i][0][3] # temperature
+        envTempPdu.index = thermoTrain['Data'][0][i][0][4] # thermostat_status
+        envTempPdu.attack = thermoTrain['Data'][0][i][0][5].encode()
+        envTempPdu.label = thermoTrain['Data'][0][i][0][6]
        
         memoryStream = BytesIO()
         outputStream = DataOutputStream(memoryStream)
@@ -70,11 +73,10 @@ def sendTrainTemp():
 
         udpSocket.sendto(data, (DESTINATION_ADDRESS, DP_PORT))
         print('Train Data Temperature: ', thermoTrain['Data'][0][i][0][3]) # temperature
-        print('Packet Size: ' , sys.getsizeof(thermoTrain['Data'][0][i][0][3]))
         print("Sent {}: {} bytes".format(envTempPdu.__class__.__name__, len(data)))
         time.sleep(10)
 
-sendTrainTemp()
+sendThermostat()
 
 
     

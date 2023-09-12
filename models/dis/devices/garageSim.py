@@ -42,12 +42,37 @@ import numpy as np
 import pandas as pd
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from evl import ton_iot_dis_datagen as ton
-from opendismodel.opendis.dis7 import EntityStatePdu
+from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.DataOutputStream import DataOutputStream
+
+UDP_PORT = 3001
+DESTINATION_ADDRESS = "127.0.0.1"
+
+udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
 # Create garage dataset and timesteps for simulation
 garageDataset = ton.TON_IoT_Datagen()
 garageTrain, garageTest = garageDataset.create_dataset(train_stepsize=garageDataset.garageTrainStepsize, test_stepsize=garageDataset.garageTestStepsize, 
                                 train= garageDataset.completeGarageTrainSet, test = garageDataset.completeGarageTestSet)
 
-# try to send the first timestep to using the opendis 
+def sendGarageTrain():
+    columnNames = garageTrain['Dataframe'].columns
+    # print(garageTrain['Dataframe'].head())
+    for i in range(len(garageTrain['Data'][0])):
+        garagePdu = Pdu()
+        garagePdu.door_state = garageTrain['Data'][0][i][0][3]
+        garagePdu.sphone = garageTrain['Data'][0][i][0][4]
+        garagePdu.attack = garageTrain['Data'][0][i][0][5]
+        garagePdu.label = garageTrain['Data'][0][i][0][6]
+
+        memoryStream = BytesIO()
+        outputStream = DataOutputStream(memoryStream)
+        garagePdu.serialize(outputStream)
+        data = memoryStream.getvalue()
+
+        udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
+        print("Sent {}: {} bytes".format(garagePdu.__class__.__name__, len(data)))
+        time.sleep(18)
+
+sendGarageTrain()
