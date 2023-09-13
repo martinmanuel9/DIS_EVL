@@ -37,6 +37,7 @@ import socket
 import time
 import sys
 import os
+import json
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.PduFactory import createPdu
@@ -74,13 +75,45 @@ def recv():
                 + " Yaw       : {:.2f} degrees\n".format(rad2deg(body[3]))
                 + " Pitch     : {:.2f} degrees\n".format(rad2deg(body[4]))
                 + " Roll      : {:.2f} degrees\n".format(rad2deg(body[5]))
+                + " Attack    : {}\n".format(pdu.attack.decode())
+                + " Label     : {}\n".format(pdu.label)
                 )
+    
+    if pdu.pduType == 2:
+        print("Received {}\n".format(pduTypeName)
+              + "Motion Status    : {}\n".format(pdu.motion_status)
+              + "Light Status     : {}\n".format(pdu.light_status.decode())
+              + "Attack           : {}\n".format(pdu.attack.decode())
+              + "Label            : {}\n".format(pdu.label)
+              )
     
     if pduTypeName == 'Environment': 
         print("Received {}\n".format(pduTypeName)
-                + " Environment Type: {}\n".format(pdu.environmentType)
-                + " Length: {}\n".format(pdu.length)
+                + " Temperature : {}\n".format(pdu.temperature)
+                + " Pressure :{}\n".format(pdu.pressure)
+                + " Humidity: {}\n".format(pdu.humidity)
+                + " Condition: {}\n".format(pdu.condition.decode())
+                + " Index: {}\n".format(pdu.index)
+                + " Attack: {}\n".format(pdu.attack.decode())
+                + " Label : {}\n".format(pdu.label)  
                 )
+    # if pdu.pduType == 71:
+    #     if pdu.device.decode() == 'GarageDevice':
+    #         print("Received {}\n".format(pduTypeName)
+    #               + " Door State: {}\n".format(pdu.door_state)
+    #               + " Sphone : {}\n".format(pdu.sphone)
+    #               + " Attack : {}\n".format(pdu.attack.decode)
+    #               + " Lebel  : {}\n".format(pdu.label)
+    #         )
+    #     if pdu.device.decode() == "modbus":
+    #         print("Received {}\n".format(pduTypeName)
+    #               + " FC1 Read Input Register: {}\n".format(pdu.fc1_read_input_register)
+    #               + " FC2 Read Discrete Value: {}\n".format(pdu.fc2_read_discrete_value)
+    #               + " FC3 Read Holding Register: {}\n".format(pdu.fc3_read_holding_register)
+    #               + " FC4 Read Coil: {}\n".format(pdu.fc4_read_coil)
+    #               + " Attack: {}\n".format(pdu.attack.decode())
+    #               + " Label: {}\n".format(pdu.label)
+    #               )
 
     else:
         print('else')

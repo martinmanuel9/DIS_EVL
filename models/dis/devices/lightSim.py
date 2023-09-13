@@ -61,9 +61,9 @@ def sendLightTrain():
     # print(lightTrain['Dataframe'].head())
     for i in range(len(lightTrain['Data'][0])):
         lightTrainPdu = FirePdu()
-        lightTrainPdu.motion_statis = lightTrain['Data'][0][i][0][3] # motion status
+        lightTrainPdu.motion_status = lightTrain['Data'][0][i][0][3] # motion status
         lightTrainPdu.light_status = lightTrain['Data'][0][i][0][4].encode() #light status
-        lightTrainPdu.attack = lightTrain['Data'][0][i][0][5]
+        lightTrainPdu.attack = lightTrain['Data'][0][i][0][5].encode()
         lightTrainPdu.label = lightTrain['Data'][0][i][0][6]
 
         memoryStream = BytesIO()

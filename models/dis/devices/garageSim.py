@@ -61,9 +61,11 @@ def sendGarageTrain():
     # print(garageTrain['Dataframe'].head())
     for i in range(len(garageTrain['Data'][0])):
         garagePdu = Pdu()
+        device = 'GarageDevice'
+        garagePdu.device = device.encode('utf-8')
         garagePdu.door_state = garageTrain['Data'][0][i][0][3]
         garagePdu.sphone = garageTrain['Data'][0][i][0][4]
-        garagePdu.attack = garageTrain['Data'][0][i][0][5]
+        garagePdu.attack = garageTrain['Data'][0][i][0][5].encode()
         garagePdu.label = garageTrain['Data'][0][i][0][6]
 
         memoryStream = BytesIO()

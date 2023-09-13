@@ -64,7 +64,7 @@ def sendFridgeTrain():
     for i in range(len(fridgeTrain['Data'][0])):
         fridgeEnvPdu = Environment()
         fridgeEnvPdu.temperature = fridgeTrain['Data'][0][i][0][3] # fridge row  
-        fridgeEnvPdu.character =  fridgeTrain['Data'][0][i][0][4].encode() # temp condition
+        fridgeEnvPdu.condition =  fridgeTrain['Data'][0][i][0][4].encode() # temp condition
         fridgeEnvPdu.attack = fridgeTrain['Data'][0][i][0][5].encode()
         fridgeEnvPdu.label = fridgeTrain['Data'][0][i][0][6]
 
