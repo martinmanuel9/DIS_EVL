@@ -45,7 +45,7 @@ from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.DataOutputStream import DataOutputStream
 
-DP_PORT = 3001
+UDP_PORT = 3001
 DESTINATION_ADDRESS = "127.0.0.1"
 
 udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -58,11 +58,10 @@ thermoTrain, thermoTest = thermoDataset.create_dataset(train_stepsize=thermoData
 
 def sendThermostat():
     columnNames = thermoTrain['Dataframe'].columns
-    
+    # print(thermoTrain['Dataframe'].head())
     for i in range(len(thermoTrain['Data'][0])):
         envTempPdu = Environment()
         envTempPdu.temperature = thermoTrain['Data'][0][i][0][3] # temperature
-        envTempPdu.index = thermoTrain['Data'][0][i][0][4] # thermostat_status
         envTempPdu.attack = thermoTrain['Data'][0][i][0][5].encode()
         envTempPdu.label = thermoTrain['Data'][0][i][0][6]
        
@@ -71,7 +70,7 @@ def sendThermostat():
         envTempPdu.serialize(outputStream)
         data = memoryStream.getvalue() 
 
-        udpSocket.sendto(data, (DESTINATION_ADDRESS, DP_PORT))
+        udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
         print('Train Data Temperature: ', thermoTrain['Data'][0][i][0][3]) # temperature
         print("Sent {}: {} bytes".format(envTempPdu.__class__.__name__, len(data)))
         time.sleep(10)

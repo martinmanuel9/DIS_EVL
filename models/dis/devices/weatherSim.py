@@ -45,7 +45,7 @@ from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.DataOutputStream import DataOutputStream
 
-DP_PORT = 3001
+UDP_PORT = 3001
 DESTINATION_ADDRESS = "127.0.0.1"
 
 udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -73,7 +73,7 @@ def sendWeatherTrain():
         weatherPdu.serialize(outputStream)
         data = memoryStream.getvalue()
 
-        udpSocket.sendto(data, (DESTINATION_ADDRESS, DP_PORT))
+        udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
         print('Temperature: ', weatherTrain['Data'][0][i][0][3])
         print('Pressure: ', weatherTrain['Data'][0][i][0][4])
         print('Humidity: ', weatherTrain['Data'][0][i][0][5])

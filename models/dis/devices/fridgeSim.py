@@ -45,7 +45,7 @@ from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.DataOutputStream import DataOutputStream
 
-DP_PORT = 3001
+UDP_PORT = 3001
 DESTINATION_ADDRESS = "127.0.0.1"
 
 udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -64,16 +64,16 @@ def sendFridgeTrain():
     for i in range(len(fridgeTrain['Data'][0])):
         fridgeEnvPdu = Environment()
         fridgeEnvPdu.temperature = fridgeTrain['Data'][0][i][0][3] # fridge row  
-        fridgeEnvPdu.condition =  fridgeTrain['Data'][0][i][0][4].encode() # temp condition
-        fridgeEnvPdu.attack = fridgeTrain['Data'][0][i][0][5].encode()
-        fridgeEnvPdu.label = fridgeTrain['Data'][0][i][0][6]
+        fridgeEnvPdu.condition =  fridgeTrain['Data'][0][i][0][4].encode('utf-8') # temp condition
+        fridgeEnvPdu.attack = fridgeTrain['Data'][0][i][0][5].encode('utf-8') # attack
+        fridgeEnvPdu.label = fridgeTrain['Data'][0][i][0][6]  #label
 
         memoryStream = BytesIO()
         outputStream = DataOutputStream(memoryStream)
         fridgeEnvPdu.serialize(outputStream)
         data = memoryStream.getvalue()
 
-        udpSocket.sendto(data, (DESTINATION_ADDRESS, DP_PORT))
+        udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
         print('Fridge Temp Row: ', fridgeTrain['Data'][0][i][0][3])
         print('Fridge Temp Condition: ' , fridgeTrain['Data'][0][i][0][4])
         print("Sent {}: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data)))
