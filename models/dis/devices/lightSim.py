@@ -60,7 +60,7 @@ def sendLightTrain():
     columnNames = lightTrain['Dataframe'].columns
     # print(lightTrain['Dataframe'].head())
     for i in range(len(lightTrain['Data'][0])):
-        lightTrainPdu = FirePdu()
+        lightTrainPdu = Light()
         lightTrainPdu.motion_status = lightTrain['Data'][0][i][0][3] # motion status
         lightTrainPdu.light_status = lightTrain['Data'][0][i][0][4].encode() #light status
         lightTrainPdu.attack = lightTrain['Data'][0][i][0][5].encode()
@@ -72,9 +72,8 @@ def sendLightTrain():
         data = memoryStream.getvalue()
 
         udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
-
         print("Sent {}: {} bytes".format(lightTrainPdu.__class__.__name__, len(data)))
-        time.sleep(24)
+        time.sleep(12)
 
 sendLightTrain()
 

@@ -64,7 +64,7 @@ def sendFridgeTrain():
     for i in range(len(fridgeTrain['Data'][0])):
         fridgeEnvPdu = Environment()
         fridgeEnvPdu.temperature = fridgeTrain['Data'][0][i][0][3] # fridge row  
-        fridgeEnvPdu.condition =  fridgeTrain['Data'][0][i][0][4].encode('utf-8') # temp condition
+        fridgeEnvPdu.condition = fridgeTrain['Data'][0][i][0][4].encode('utf-8')
         fridgeEnvPdu.attack = fridgeTrain['Data'][0][i][0][5].encode('utf-8') # attack
         fridgeEnvPdu.label = fridgeTrain['Data'][0][i][0][6]  #label
 
@@ -77,6 +77,6 @@ def sendFridgeTrain():
         print('Fridge Temp Row: ', fridgeTrain['Data'][0][i][0][3])
         print('Fridge Temp Condition: ' , fridgeTrain['Data'][0][i][0][4])
         print("Sent {}: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data)))
-        time.sleep(15)
+        time.sleep(5)
 
 sendFridgeTrain()

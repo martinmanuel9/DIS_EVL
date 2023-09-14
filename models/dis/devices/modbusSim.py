@@ -63,13 +63,11 @@ def sendModbusTrain():
     columnNames = modbusTrain['Dataframe'].columns
     # print(modbusTrain['Dataframe'].head())
     for i in range(len(modbusTrain['Data'][0])):
-        modbusPdu = Pdu()
-        device = 'modbus'
-        modbusPdu.device = device.encode('utf-8')
-        modbusPdu.fc1_read_input_register = modbusTrain['Data'][0][i][0][3]
-        modbusPdu.fc2_read_discrete_value = modbusTrain['Data'][0][i][0][4]
-        modbusPdu.fc3_read_holding_register = modbusTrain['Data'][0][i][0][5]
-        modbusPdu.fc4_read_coil = modbusTrain['Data'][0][i][0][6]
+        modbusPdu = Modbus() 
+        modbusPdu.fc1 = modbusTrain['Data'][0][i][0][3]
+        modbusPdu.fc2 = modbusTrain['Data'][0][i][0][4]
+        modbusPdu.fc3 = modbusTrain['Data'][0][i][0][5]
+        modbusPdu.fc4 = modbusTrain['Data'][0][i][0][6]
         modbusPdu.attack = modbusTrain['Data'][0][i][0][7].encode()
         modbusPdu.label = modbusTrain['Data'][0][i][0][8]
 
@@ -80,6 +78,6 @@ def sendModbusTrain():
 
         udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
         print("Sent {}: {} bytes".format(modbusPdu.__class__.__name__, len(data)))
-        time.sleep(8)
+        time.sleep(14)
 
 sendModbusTrain()

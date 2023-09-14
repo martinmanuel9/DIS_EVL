@@ -97,6 +97,6 @@ def sendTrainGPS():
         print('Train Data GPS: \n', 'Longitude: ', gpsTrain['Data'][0][i][0][3], '\n', 'Latitude:', gpsTrain['Data'][0][i][0][4]) # latitude, longitude
         print('Packet Size: ' , sys.getsizeof(gpsTrain['Data'][0][i][0][3]))
         print("Sent {}: {} bytes".format(gpsPDU.__class__.__name__, len(data)))
-        time.sleep(15)
+        time.sleep(10)
 
 sendTrainGPS()

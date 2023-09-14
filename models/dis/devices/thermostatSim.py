@@ -63,7 +63,7 @@ def sendThermostat():
         envTempPdu = Environment()
         envTempPdu.temperature = thermoTrain['Data'][0][i][0][3] # temperature
         envTempPdu.temp_status = thermoTrain['Data'][0][i][0][4] #temp status
-        envTempPdu.attack = thermoTrain['Data'][0][i][0][5].encode('utf-8')
+        envTempPdu.attack = thermoTrain['Data'][0][i][0][5].encode('utf-8') # attack
         envTempPdu.label = thermoTrain['Data'][0][i][0][6]
        
         memoryStream = BytesIO()
@@ -74,6 +74,6 @@ def sendThermostat():
         udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
         print('Thermostat Temperature: ', thermoTrain['Data'][0][i][0][3]) # temperature
         print("Sent {}: {} bytes".format(envTempPdu.__class__.__name__, len(data)))
-        time.sleep(10)
+        time.sleep(16)
 
 sendThermostat()

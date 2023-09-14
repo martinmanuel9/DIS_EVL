@@ -92,7 +92,9 @@ class TON_IoT_Datagen():
                     'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7}}, {'col': 'sphone_signal', 'mapping': {'false  ': 0, 'true  ': 1, '0': 0, '1':1}}]
         garageMapped = OrdinalEncoder(cols=['door_state', 'type', 'sphone_signal'], mapping=mapping).fit(garage_dataset).transform(garage_dataset)
         garageMapped = garageMapped[['door_state','sphone_signal','type', 'label']]
-        complete_garage_dataset = garage_dataset[['ts','date','time','door_state','sphone_signal','type', 'label']]
+        completeMapped = [{'col': 'sphone_signal', 'mapping': {'false  ': 0, 'true  ': 1, '0': 0, '1':1}}]
+        complete_garage_dataset = OrdinalEncoder(cols=['sphone_signal'], mapping=completeMapped).fit(garage_dataset).transform(garage_dataset)
+        complete_garage_dataset = complete_garage_dataset[['ts','date','time','door_state','sphone_signal','type', 'label']]
         complete_garage_dataset['ts'] = pd.to_numeric(complete_garage_dataset['ts'])
         complete_garage_dataset['date'] = pd.to_datetime(complete_garage_dataset['date'], format="%d-%b-%y")
         complete_garage_dataset['time'] = complete_garage_dataset['time'].str.strip()

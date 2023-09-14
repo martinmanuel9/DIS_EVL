@@ -60,12 +60,10 @@ def sendGarageTrain():
     columnNames = garageTrain['Dataframe'].columns
     # print(garageTrain['Dataframe'].head())
     for i in range(len(garageTrain['Data'][0])):
-        garagePdu = Pdu()
-        device = 'GarageDevice'
-        garagePdu.device = device.encode('utf-8')
-        garagePdu.door_state = garageTrain['Data'][0][i][0][3]
+        garagePdu = Garage() 
+        garagePdu.door_state = garageTrain['Data'][0][i][0][3].encode('utf-8')
         garagePdu.sphone = garageTrain['Data'][0][i][0][4]
-        garagePdu.attack = garageTrain['Data'][0][i][0][5].encode()
+        garagePdu.attack = garageTrain['Data'][0][i][0][5].encode('utf-8')
         garagePdu.label = garageTrain['Data'][0][i][0][6]
 
         memoryStream = BytesIO()
@@ -75,6 +73,6 @@ def sendGarageTrain():
 
         udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
         print("Sent {}: {} bytes".format(garagePdu.__class__.__name__, len(data)))
-        time.sleep(18)
+        time.sleep(8)
 
 sendGarageTrain()

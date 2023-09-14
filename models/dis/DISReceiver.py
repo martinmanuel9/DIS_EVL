@@ -67,7 +67,7 @@ def recv():
                 )
         
         body = gps.ecef2llarpy(*loc)
-        print("Received {}\n".format(pduTypeName)
+        print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
                 + " Id        : {}\n".format(pdu.entityID.entityID)
                 + " Latitude  : {:.2f} degrees\n".format(rad2deg(body[0]))
                 + " Longitude : {:.2f} degrees\n".format(rad2deg(body[1]))
@@ -79,16 +79,16 @@ def recv():
                 + " Label     : {}\n".format(pdu.label)
                 )
     
-    if pdu.pduType == 2:
-        print("Received {}\n".format(pduTypeName)
+    if pdu.pduType == 73: # Light
+        print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
               + "Motion Status    : {}\n".format(pdu.motion_status)
               + "Light Status     : {}\n".format(pdu.light_status.decode())
               + "Attack           : {}\n".format(pdu.attack.decode())
               + "Label            : {}\n".format(pdu.label)
               )
     
-    if pduTypeName == 'Environment': 
-        print("Received {}\n".format(pduTypeName)
+    if pdu.pduType == 70:  # environment
+        print("Received {}: {} Bytes \n".format(pduTypeName, len(data), flush=True)
                 + " Temperature : {}\n".format(pdu.temperature)
                 + " Pressure :{}\n".format(pdu.pressure)
                 + " Humidity: {}\n".format(pdu.humidity)
@@ -97,26 +97,26 @@ def recv():
                 + " Attack: {}\n".format(pdu.attack.decode())
                 + " Label : {}\n".format(pdu.label)  
                 )
-    # if pdu.pduType == 71:
-    #     if pdu.device.decode() == 'GarageDevice':
-    #         print("Received {}\n".format(pduTypeName)
-    #               + " Door State: {}\n".format(pdu.door_state)
-    #               + " Sphone : {}\n".format(pdu.sphone)
-    #               + " Attack : {}\n".format(pdu.attack.decode)
-    #               + " Lebel  : {}\n".format(pdu.label)
-    #         )
-    #     if pdu.device.decode() == "modbus":
-    #         print("Received {}\n".format(pduTypeName)
-    #               + " FC1 Read Input Register: {}\n".format(pdu.fc1_read_input_register)
-    #               + " FC2 Read Discrete Value: {}\n".format(pdu.fc2_read_discrete_value)
-    #               + " FC3 Read Holding Register: {}\n".format(pdu.fc3_read_holding_register)
-    #               + " FC4 Read Coil: {}\n".format(pdu.fc4_read_coil)
-    #               + " Attack: {}\n".format(pdu.attack.decode())
-    #               + " Label: {}\n".format(pdu.label)
-    #               )
+        
+    if pdu.pduType == 71: # modbus
+        print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
+            + " FC1 Read Input Register: {}\n".format(pdu.fc1)
+            + " FC2 Read Discrete Value: {}\n".format(pdu.fc2)
+            + " FC3 Read Holding Register: {}\n".format(pdu.fc3)
+            + " FC4 Read Coil: {}\n".format(pdu.fc4)
+            + " Attack: {}\n".format(pdu.attack.decode())
+            + " Label : {}\n".format(pdu.label)
+            )
+    
+    if pdu.pduType == 72: # garage
+        print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
+            + " Door State: {}\n".format(pdu.door_state.decode())
+            + " SPhone: {}\n".format(pdu.sphone)
+            + " Attack: {}\n".format(pdu.attack.decode())
+            + " Label : {}\n".format(pdu.label)
+            )
 
-    else:
-        print('else')
+    else: 
         print("Received {}, {} bytes".format(pduTypeName, len(data)), flush=True)
 
 while True:
