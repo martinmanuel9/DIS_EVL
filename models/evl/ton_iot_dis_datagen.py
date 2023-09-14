@@ -69,7 +69,7 @@ class TON_IoT_Datagen():
         fridgeMapped = OrdinalEncoder(cols=['type'], mapping=mapping).fit(fridgeMapped).transform(fridgeMapped)
         complete_fridge_dataset = fridge_dataset[['ts','date','time','fridge_temperature','temp_condition','type','label']]
         complete_fridge_dataset['ts'] = pd.to_numeric(complete_fridge_dataset['ts'])
-        complete_fridge_dataset['date'] = pd.to_datetime(complete_fridge_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_fridge_dataset['date'] = pd.to_datetime(complete_fridge_dataset['date'], format="%d-%b-%y")
         complete_fridge_dataset['time'] = complete_fridge_dataset['time'].str.strip()
         complete_fridge_dataset['time'] = pd.to_datetime(complete_fridge_dataset['time'], format='%H:%M:%S').dt.time
         complete_fridge_dataset.sort_values(by=['ts','date','time'])
@@ -94,7 +94,7 @@ class TON_IoT_Datagen():
         garageMapped = garageMapped[['door_state','sphone_signal','type', 'label']]
         complete_garage_dataset = garage_dataset[['ts','date','time','door_state','sphone_signal','type', 'label']]
         complete_garage_dataset['ts'] = pd.to_numeric(complete_garage_dataset['ts'])
-        complete_garage_dataset['date'] = pd.to_datetime(complete_garage_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_garage_dataset['date'] = pd.to_datetime(complete_garage_dataset['date'], format="%d-%b-%y")
         complete_garage_dataset['time'] = complete_garage_dataset['time'].str.strip()
         complete_garage_dataset['time'] = pd.to_datetime(complete_garage_dataset['time'], format='%H:%M:%S').dt.time
         complete_garage_dataset.sort_values(by=['ts','date','time'])
@@ -116,7 +116,7 @@ class TON_IoT_Datagen():
         gpsMapped = gps_dataset[['latitude','longitude','type', 'label']]
         complete_gps_dataset = gps_dataset[['ts','date','time','latitude','longitude','type', 'label']] 
         complete_gps_dataset['ts'] = pd.to_numeric(complete_gps_dataset['ts'])
-        complete_gps_dataset['date'] = pd.to_datetime(complete_gps_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_gps_dataset['date'] = pd.to_datetime(complete_gps_dataset['date'], format="%d-%b-%y")
         complete_gps_dataset['time'] = complete_gps_dataset['time'].str.strip()
         complete_gps_dataset['time'] = pd.to_datetime(complete_gps_dataset['time'], format='%H:%M:%S').dt.time
         complete_gps_dataset.sort_values(by=['ts','date','time'])
@@ -139,7 +139,7 @@ class TON_IoT_Datagen():
         modbusMapped = modbusMapped[features]
         complete_modbus_dataset = modbus_dataset[['ts','date','time','FC1_Read_Input_Register','FC2_Read_Discrete_Value','FC3_Read_Holding_Register','FC4_Read_Coil','type','label']]
         complete_modbus_dataset['ts'] = pd.to_numeric(complete_modbus_dataset['ts'])
-        complete_modbus_dataset['date'] = pd.to_datetime(complete_modbus_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_modbus_dataset['date'] = pd.to_datetime(complete_modbus_dataset['date'], format="%d-%b-%y")
         complete_modbus_dataset['time'] = complete_modbus_dataset['time'].str.strip()
         complete_modbus_dataset['time'] = pd.to_datetime(complete_modbus_dataset['time'], format='%H:%M:%S').dt.time
         completeTrainModbus, completeTestModbus = train_test_split(complete_modbus_dataset, test_size=0.33)
@@ -162,7 +162,7 @@ class TON_IoT_Datagen():
         lightMapped = lightMapped[['motion_status','light_status','type','label']]
         complete_light_dataset = light_dataset[['ts','date','time','motion_status','light_status','type','label']]
         complete_light_dataset['ts'] = pd.to_numeric(complete_light_dataset['ts'])
-        complete_light_dataset['date'] = pd.to_datetime(complete_light_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_light_dataset['date'] = pd.to_datetime(complete_light_dataset['date'], format="%d-%b-%y")
         complete_light_dataset['time'] = complete_light_dataset['time'].str.strip()
         complete_light_dataset['time'] = pd.to_datetime(complete_light_dataset['time'], format='%H:%M:%S').dt.time
         train_light, test_light = train_test_split(lightMapped, test_size=0.33)
@@ -183,7 +183,7 @@ class TON_IoT_Datagen():
         thermostatMapped = thermostatMapped[['current_temperature','thermostat_status','type','label']]
         complete_thermostat_dataset = thermostat_dataset[['ts','date','time','current_temperature','thermostat_status','type','label']]
         complete_thermostat_dataset['ts'] = pd.to_numeric(complete_thermostat_dataset['ts'])
-        complete_thermostat_dataset['date'] = pd.to_datetime(complete_thermostat_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_thermostat_dataset['date'] = pd.to_datetime(complete_thermostat_dataset['date'], format="%d-%b-%y")
         complete_thermostat_dataset['time'] = complete_thermostat_dataset['time'].str.strip()
         complete_thermostat_dataset['time'] = pd.to_datetime(complete_thermostat_dataset['time'], format='%H:%M:%S').dt.time
         train_thermo, test_thermo = train_test_split(thermostat_dataset, test_size=0.33)
@@ -204,7 +204,7 @@ class TON_IoT_Datagen():
         weatherMapped = weatherMapped[['temperature','pressure','humidity','type','label']]
         complete_weather_dataset = weather_dataset[['ts','date','time','temperature','pressure','humidity','type','label']]
         complete_weather_dataset['ts'] = pd.to_numeric(complete_weather_dataset['ts'])
-        complete_weather_dataset['date'] = pd.to_datetime(complete_weather_dataset['date']).dt.strftime('%Y-%m-%d')
+        complete_weather_dataset['date'] = pd.to_datetime(complete_weather_dataset['date'], format="%d-%b-%y")
         complete_weather_dataset['time'] = complete_weather_dataset['time'].str.strip()
         complete_weather_dataset['time'] = pd.to_datetime(complete_weather_dataset['time'], format='%H:%M:%S').dt.time
         

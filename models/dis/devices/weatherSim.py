@@ -65,7 +65,7 @@ def sendWeatherTrain():
         weatherPdu.temperature = weatherTrain['Data'][0][i][0][3] # tempeature
         weatherPdu.pressure = weatherTrain['Data'][0][i][0][4] # pressure
         weatherPdu.humidity = weatherTrain['Data'][0][i][0][5] # humidity 
-        weatherPdu.attack = weatherTrain['Data'][0][i][0][6].encode()
+        weatherPdu.attack = weatherTrain['Data'][0][i][0][6].encode('utf-8')
         weatherPdu.label = weatherTrain['Data'][0][i][0][7]
 
         memoryStream = BytesIO()
