@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 
 """
-Application:        DIS Simulation of Real Time Indicator RTI Model 
-File name:          rti.py
+Application:        DIS Simulation of Receiver 
+File name:          DISReceiver.py
 Author:             Martin Manuel Lopez
 Creation:           8/28/2023
 
