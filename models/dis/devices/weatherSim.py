@@ -77,6 +77,7 @@ def sendWeatherTrain():
         print('Temperature: ', weatherTrain['Data'][0][i][0][3])
         print('Pressure: ', weatherTrain['Data'][0][i][0][4])
         print('Humidity: ', weatherTrain['Data'][0][i][0][5])
+        print('Label: ', weatherTrain['Data'][0][i][0][7])
         print("Sent {}: {}".format(weatherPdu.__class__.__name__, len(data)))
         time.sleep(18)
 

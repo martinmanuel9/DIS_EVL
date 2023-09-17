@@ -55,11 +55,12 @@ class KafkaProducer:
         except Exception as e:
             print(f"Error producing message: {e}")
 
-    def close(self):
-        self.producer.close()
+    
 
 if __name__ == "__main__":
     producer = KafkaProducer('localhost:9092', 'my-topic')
-    producer.produce_message('Hello, Kafka!')
-    producer.close()
+    producer.produce_message('Hello, Kafka! This is me running kafka')
+    producer.produce_message('Hello, Kafka! This is Marty Manny')
+    del producer
+    
 
