@@ -57,10 +57,10 @@ class KafkaProducer:
 
     
 
-if __name__ == "__main__":
-    producer = KafkaProducer('localhost:9092', 'my-topic')
-    producer.produce_message('Hello, Kafka! This is me running kafka')
-    producer.produce_message('Hello, Kafka! This is Marty Manny')
-    del producer
+# if __name__ == "__main__":
+#     producer = KafkaProducer('localhost:9092', 'my-topic')
+#     producer.produce_message('Hello, Kafka! This is me running kafka')
+#     producer.produce_message('Hello, Kafka! This is Marty Manny')
+#     del producer
     
 

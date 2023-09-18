@@ -75,49 +75,49 @@ def recv():
                 + " Yaw       : {:.2f} degrees\n".format(rad2deg(body[3]))
                 + " Pitch     : {:.2f} degrees\n".format(rad2deg(body[4]))
                 + " Roll      : {:.2f} degrees\n".format(rad2deg(body[5]))
-                + " Attack    : {}\n".format(pdu.attack.decode())
+                + " Attack    : {}\n".format(pdu.attack.decode('utf-8'))
                 + " Label     : {}\n".format(pdu.label)
                 )
     
-    if pdu.pduType == 73: # Light
+    elif pdu.pduType == 73: # Light
         print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
               + "Motion Status    : {}\n".format(pdu.motion_status)
-              + "Light Status     : {}\n".format(pdu.light_status.decode())
-              + "Attack           : {}\n".format(pdu.attack.decode())
+              + "Light Status     : {}\n".format(pdu.light_status.decode('utf-8'))
+              + "Attack           : {}\n".format(pdu.attack.decode('utf-8'))
               + "Label            : {}\n".format(pdu.label)
               )
     
-    if pdu.pduType == 70:  # environment
+    elif pdu.pduType == 70:  # environment
         print("Received {}: {} Bytes \n".format(pduTypeName, len(data), flush=True)
                 + " Temperature : {}\n".format(pdu.temperature)
                 + " Pressure :{}\n".format(pdu.pressure)
                 + " Humidity: {}\n".format(pdu.humidity)
-                + " Condition: {}\n".format(pdu.condition.decode())
+                + " Condition: {}\n".format(pdu.condition.decode('utf-8'))
                 + " Index: {}\n".format(pdu.index)
-                + " Attack: {}\n".format(pdu.attack.decode())
+                + " Attack: {}\n".format(pdu.attack.decode('utf-8'))
                 + " Label : {}\n".format(pdu.label)  
                 )
         
-    if pdu.pduType == 71: # modbus
+    elif pdu.pduType == 71: # modbus
         print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
             + " FC1 Read Input Register: {}\n".format(pdu.fc1)
             + " FC2 Read Discrete Value: {}\n".format(pdu.fc2)
             + " FC3 Read Holding Register: {}\n".format(pdu.fc3)
             + " FC4 Read Coil: {}\n".format(pdu.fc4)
-            + " Attack: {}\n".format(pdu.attack.decode())
+            + " Attack: {}\n".format(pdu.attack.decode('utf-8'))
             + " Label : {}\n".format(pdu.label)
             )
     
-    if pdu.pduType == 72: # garage
+    elif pdu.pduType == 72: # garage
         print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
-            + " Door State: {}\n".format(pdu.door_state.decode())
+            + " Door State: {}\n".format(pdu.door_state.decode('utf-8'))
             + " SPhone: {}\n".format(pdu.sphone)
-            + " Attack: {}\n".format(pdu.attack.decode())
+            + " Attack: {}\n".format(pdu.attack.decode('utf-8'))
             + " Label : {}\n".format(pdu.label)
             )
 
     else: 
-        print("Received {}, {} bytes".format(pduTypeName, len(data)), flush=True)
+        print("Received not a PDU?? {}, {} bytes".format(pduTypeName, len(data)), flush=True)
 
 while True:
     recv()

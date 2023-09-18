@@ -41,6 +41,15 @@ import os
 import json
 import logging
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from opendismodel.opendis.dis7 import *
+from opendismodel.opendis.PduFactory import createPdu
+from opendismodel.opendis.RangeCoordinates import *
+
+UDP_PORT = 3001
+
+udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+udpSocket.bind(("", UDP_PORT))
 
 class KafkaConsumer:
     def __init__(self, bootstrap_servers, group_id, topic):
@@ -61,12 +70,20 @@ class KafkaConsumer:
                 if msg.error():
                     logging.error(f"Consumer error: {msg.error()}")
                 else:
-                    message = msg.value().decode('utf-8')
-                    logging.info(f"Received message: {message}")
+                    message = msg.value()
+                    if isinstance(message, bytes):
+                        try:   
+                            message = message.decode('utf-8')
+                            logging.info(f"Received message: {message}")
+                        except UnicodeDecodeError as e:
+                            print("UnicodeDecodeError: ", e)
+                    else:
+                        logging.error("Received message is not a byte-like object.")
         except KeyboardInterrupt:
             pass
         except Exception as e:
             logging.error(f"Error consuming message: {e}")
+
 
     def close(self):
         self.consumer.close()
@@ -76,11 +93,11 @@ if __name__ == "__main__":
     
     bootstrap_servers = 'localhost:9092'
     group_id = 'dis'
-    topic = 'my-topic'
+    topic = 'dis'
 
     consumer = KafkaConsumer(bootstrap_servers, group_id, topic)
     consumer.consume_messages()
-    consumer.close()
+    # consumer.close()
 
     
             

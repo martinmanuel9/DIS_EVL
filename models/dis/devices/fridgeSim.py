@@ -44,39 +44,85 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.DataOutputStream import DataOutputStream
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import KafkaProducer as kp
+import xml.etree.ElementTree as ET
 
-UDP_PORT = 3001
-DESTINATION_ADDRESS = "127.0.0.1"
+class FridgeSim:
+    def __init__(self):
+        self.UDP_PORT = 3001
+        self.DESTINATION_ADDRESS = "127.0.0.1"
 
-udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+        self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-# Create garage dataset and timesteps for simulation
-fridgeDataset = ton.TON_IoT_Datagen()
-fridgeTrain, fridgeTest = fridgeDataset.create_dataset(train_stepsize=fridgeDataset.fridgeTrainStepsize, test_stepsize=fridgeDataset.fridgeTestStepsize, 
-                                train= fridgeDataset.completeFridgeTrainSet, test = fridgeDataset.completeFridgeTestSet)
+        # Kafka Producer
+        self.KAFKA_TOPIC = 'dis'
+        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+        
 
-# print(np.shape(fridgeTrain['Data']), np.shape(fridgeTest['Data']))
+        # Create garage dataset and timesteps for simulation
+        fridgeDataset = ton.TON_IoT_Datagen()
+        self.fridgeTrain, self.fridgeTest = fridgeDataset.create_dataset(train_stepsize=fridgeDataset.fridgeTrainStepsize, test_stepsize=fridgeDataset.fridgeTestStepsize, 
+                                        train= fridgeDataset.completeFridgeTrainSet, test = fridgeDataset.completeFridgeTestSet)
 
-def sendFridgeTrain():
-    columnNames = fridgeTrain['Dataframe'].columns
-    # print(fridgeTrain['Dataframe'].head())
-    for i in range(len(fridgeTrain['Data'][0])):
-        fridgeEnvPdu = Environment()
-        fridgeEnvPdu.temperature = fridgeTrain['Data'][0][i][0][3] # fridge row  
-        fridgeEnvPdu.condition = fridgeTrain['Data'][0][i][0][4].encode('utf-8')
-        fridgeEnvPdu.attack = fridgeTrain['Data'][0][i][0][5].encode('utf-8') # attack
-        fridgeEnvPdu.label = fridgeTrain['Data'][0][i][0][6]  #label
 
-        memoryStream = BytesIO()
-        outputStream = DataOutputStream(memoryStream)
-        fridgeEnvPdu.serialize(outputStream)
-        data = memoryStream.getvalue()
+    def sendFridgeTrain(self, transmission = 'kafka'):
+        columnNames = self.fridgeTrain['Dataframe'].columns
+        # print(fridgeTrain['Dataframe'].head())
+        for i in range(len(self.fridgeTrain['Data'][0])):
+            """Sending via PDU and UDP Protocol via Open DIS """
+            if transmission == 'pdu':
+                fridgeEnvPdu = Environment()
+                fridgeEnvPdu.temperature = self.fridgeTrain['Data'][0][i][0][3] # fridge row  
+                fridgeEnvPdu.condition = self.fridgeTrain['Data'][0][i][0][4].encode('utf-8')
+                fridgeEnvPdu.attack = self.fridgeTrain['Data'][0][i][0][5].encode('utf-8') # attack
+                fridgeEnvPdu.label = int(self.fridgeTrain['Data'][0][i][0][6])  #label
 
-        udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
-        print('Fridge Temp Row: ', fridgeTrain['Data'][0][i][0][3])
-        print('Fridge Temp Condition: ' , fridgeTrain['Data'][0][i][0][4])
-        print("Sent {}: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data)))
-        time.sleep(5)
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                fridgeEnvPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
 
-sendFridgeTrain()
+                self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
+
+                print('Fridge Temp Row: ', self.fridgeTrain['Data'][0][i][0][3])
+                print('Fridge Temp Condition: ' , self.fridgeTrain['Data'][0][i][0][4])
+                print('Fridge Temp Attack: ', self.fridgeTrain['Data'][0][i][0][5])
+                print('Fridge Label: ', self.fridgeTrain['Data'][0][i][0][6])
+                print("Sent {}: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data)))
+                time.sleep(5)
+
+            """Sending via Kafka Producer"""
+            if transmission == 'kafka':
+                # Create an XML element for the data
+                root = ET.Element("FridgeData")
+                row_element = ET.SubElement(root, "FridgeTempRow")
+                row_element.text = str(self.fridgeTrain['Data'][0][i][0][3])
+
+                condition_element = ET.SubElement(root, "FridgeTempCondition")
+                condition_element.text = self.fridgeTrain['Data'][0][i][0][4]
+
+                attack_element = ET.SubElement(root, "FridgeTempAttack")
+                attack_element.text = self.fridgeTrain['Data'][0][i][0][5]
+
+                label_element = ET.SubElement(root, "FridgeLabel")
+                label_element.text = str(self.fridgeTrain['Data'][0][i][0][6])
+
+                # Convert the XML element to a string
+                xml_data = ET.tostring(root, encoding='utf-8')
+
+                # Send the XML data to Kafka
+                self.producer.produce_message(xml_data)
+
+                print('Fridge Temp Row: ', self.fridgeTrain['Data'][0][i][0][3])
+                print('Fridge Temp Condition: ' , self.fridgeTrain['Data'][0][i][0][4])
+                print('Fridge Temp Attack: ', self.fridgeTrain['Data'][0][i][0][5])
+                print('Fridge Label: ', self.fridgeTrain['Data'][0][i][0][6])
+                print("Sent {}: {} bytes".format("FridgeData", len(xml_data)))
+                time.sleep(5)
+
+
+if __name__ == "__main__":
+    FridgeSim = FridgeSim()
+    FridgeSim.sendFridgeTrain()
