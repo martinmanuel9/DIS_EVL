@@ -44,40 +44,108 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.DataOutputStream import DataOutputStream
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import KafkaProducer as kp
+import xml.etree.ElementTree as ET
+
+class ModbusSim:
+    def __init__(self):
+        self.UDP_PORT = 3001
+        self.DESTINATION_ADDRESS = "127.0.0.1"
+
+        self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+
+        # Kafka Producer
+        self.KAFKA_TOPIC = 'dis'
+        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+
+        # Create garage dataset and timesteps for simulation
+        modbusDataset = ton.TON_IoT_Datagen()
+        self.modbusTrain, self.modbusTest = modbusDataset.create_dataset(train_stepsize=modbusDataset.modbusTrainStepsize, test_stepsize=modbusDataset.modbusTestStepsize, 
+                                        train= modbusDataset.completeModbusTrainSet, test = modbusDataset.completeModbusTestSet)
 
 
-UDP_PORT = 3001
-DESTINATION_ADDRESS = "127.0.0.1"
+    def sendModbusTrain(self, transmission = 'kafka'):
+        columnNames = self.modbusTrain['Dataframe'].columns
+        # print(self.modbusTrain['Dataframe'].head())
+        for i in range(len(self.modbusTrain['Data'][0])):
+            if transmission == 'pdu':
+                modbusPdu = Modbus() 
+                modbusPdu.fc1 = self.modbusTrain['Data'][0][i][0][3]
+                modbusPdu.fc2 = self.modbusTrain['Data'][0][i][0][4]
+                modbusPdu.fc3 = self.modbusTrain['Data'][0][i][0][5]
+                modbusPdu.fc4 = self.modbusTrain['Data'][0][i][0][6]
+                modbusPdu.attack = self.modbusTrain['Data'][0][i][0][7].encode()
+                modbusPdu.label = self.modbusTrain['Data'][0][i][0][8]
 
-udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                modbusPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
 
+                self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
+                print("Sent {}: {} bytes".format(modbusPdu.__class__.__name__, len(data)))
+                time.sleep(14)
 
-# Create garage dataset and timesteps for simulation
-modbusDataset = ton.TON_IoT_Datagen()
-modbusTrain, modbusTest = modbusDataset.create_dataset(train_stepsize=modbusDataset.modbusTrainStepsize, test_stepsize=modbusDataset.modbusTestStepsize, 
-                                train= modbusDataset.completeModbusTrainSet, test = modbusDataset.completeModbusTestSet)
+            elif transmission == 'kafka':
+                # Create an XML element for each row in the dataframe
+                root = ET.Element('Modbus')
+                ET.SubElement(root, 'fc1').text = str(self.modbusTrain['Data'][0][i][0][3])
+                ET.SubElement(root, 'fc2').text = str(self.modbusTrain['Data'][0][i][0][4])
+                ET.SubElement(root, 'fc3').text = str(self.modbusTrain['Data'][0][i][0][5])
+                ET.SubElement(root, 'fc4').text = str(self.modbusTrain['Data'][0][i][0][6])
+                ET.SubElement(root, 'attack').text = str(self.modbusTrain['Data'][0][i][0][7])
+                ET.SubElement(root, 'label').text = str(self.modbusTrain['Data'][0][i][0][8])
 
+                # Create XML string
+                xml_data = ET.tostring(root, encoding = 'utf8')
+                
+                self.producer.produce_message(xml_data)
+                print("Sent {}: {} bytes".format(root.tag, len(xml_data)))
+                time.sleep(14)
 
-def sendModbusTrain():
-    columnNames = modbusTrain['Dataframe'].columns
-    # print(modbusTrain['Dataframe'].head())
-    for i in range(len(modbusTrain['Data'][0])):
-        modbusPdu = Modbus() 
-        modbusPdu.fc1 = modbusTrain['Data'][0][i][0][3]
-        modbusPdu.fc2 = modbusTrain['Data'][0][i][0][4]
-        modbusPdu.fc3 = modbusTrain['Data'][0][i][0][5]
-        modbusPdu.fc4 = modbusTrain['Data'][0][i][0][6]
-        modbusPdu.attack = modbusTrain['Data'][0][i][0][7].encode()
-        modbusPdu.label = modbusTrain['Data'][0][i][0][8]
+    def sendModbusTest(self, transmission = 'kafka'):
+        columnNames = self.modbusTest['Dataframe'].columns
+        # print(self.modbumodbusTestsTrain['Dataframe'].head())
+        for i in range(len(self.modbusTrain['Data'][0])):
+            if transmission == 'pdu':
+                modbusPdu = Modbus() 
+                modbusPdu.fc1 = self.modbusTest['Data'][0][i][0][3]
+                modbusPdu.fc2 = self.modbusTest['Data'][0][i][0][4]
+                modbusPdu.fc3 = self.modbusTest['Data'][0][i][0][5]
+                modbusPdu.fc4 = self.modbusTest['Data'][0][i][0][6]
+                modbusPdu.attack = self.modbusTest['Data'][0][i][0][7].encode()
+                modbusPdu.label = self.modbusTest['Data'][0][i][0][8]
 
-        memoryStream = BytesIO()
-        outputStream = DataOutputStream(memoryStream)
-        modbusPdu.serialize(outputStream)
-        data = memoryStream.getvalue()
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                modbusPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
 
-        udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
-        print("Sent {}: {} bytes".format(modbusPdu.__class__.__name__, len(data)))
-        time.sleep(14)
+                self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
+                print("Sent {}: {} bytes".format(modbusPdu.__class__.__name__, len(data)))
+                time.sleep(14)
 
-sendModbusTrain()
+            elif transmission == 'kafka':
+                # Create an XML element for each row in the dataframe
+                root = ET.Element('Modbus')
+                ET.SubElement(root, 'fc1').text = str(self.modbusTest['Data'][0][i][0][3])
+                ET.SubElement(root, 'fc2').text = str(self.modbusTest['Data'][0][i][0][4])
+                ET.SubElement(root, 'fc3').text = str(self.modbusTest['Data'][0][i][0][5])
+                ET.SubElement(root, 'fc4').text = str(self.modbusTest['Data'][0][i][0][6])
+                ET.SubElement(root, 'attack').text = str(self.modbusTest['Data'][0][i][0][7])
+                ET.SubElement(root, 'label').text = str(self.modbusTest['Data'][0][i][0][8])
+
+                # Create XML string
+                xml_data = ET.tostring(root, encoding = 'utf8')
+                
+                self.producer.produce_message(xml_data)
+                print("Sent {}: {} bytes".format(root.tag, len(xml_data)))
+                time.sleep(14)
+
+if __name__ == '__main__':
+    modbusSim = ModbusSim()
+    modbusSim.sendModbusTrain(transmission = 'kafka')
+    # modbusSim.sendModbusTrain(transmission = 'pdu')
+

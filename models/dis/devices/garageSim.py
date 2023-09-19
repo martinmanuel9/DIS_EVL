@@ -44,35 +44,106 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.DataOutputStream import DataOutputStream
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import KafkaProducer as kp
+import xml.etree.ElementTree as ET
 
-UDP_PORT = 3001
-DESTINATION_ADDRESS = "127.0.0.1"
 
-udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+class GarageSim:
 
-# Create garage dataset and timesteps for simulation
-garageDataset = ton.TON_IoT_Datagen()
-garageTrain, garageTest = garageDataset.create_dataset(train_stepsize=garageDataset.garageTrainStepsize, test_stepsize=garageDataset.garageTestStepsize, 
-                                train= garageDataset.completeGarageTrainSet, test = garageDataset.completeGarageTestSet)
+    def __init__(self):
+        self.UDP_PORT = 3001
+        self.DESTINATION_ADDRESS = "127.0.0.1"
 
-def sendGarageTrain():
-    columnNames = garageTrain['Dataframe'].columns
-    # print(garageTrain['Dataframe'].head())
-    for i in range(len(garageTrain['Data'][0])):
-        garagePdu = Garage() 
-        garagePdu.door_state = garageTrain['Data'][0][i][0][3].encode('utf-8')
-        garagePdu.sphone = garageTrain['Data'][0][i][0][4]
-        garagePdu.attack = garageTrain['Data'][0][i][0][5].encode('utf-8')
-        garagePdu.label = garageTrain['Data'][0][i][0][6]
+        self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        memoryStream = BytesIO()
-        outputStream = DataOutputStream(memoryStream)
-        garagePdu.serialize(outputStream)
-        data = memoryStream.getvalue()
+        # Kafka Producer
+        self.KAFKA_TOPIC = 'dis'
+        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+        
 
-        udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
-        print("Sent {}: {} bytes".format(garagePdu.__class__.__name__, len(data)))
-        time.sleep(8)
+        # Create garage dataset and timesteps for simulation
+        garageDataset = ton.TON_IoT_Datagen()
+        self.garageTrain, self.garageTest = garageDataset.create_dataset(train_stepsize=garageDataset.garageTrainStepsize, test_stepsize=garageDataset.garageTestStepsize, 
+                                        train= garageDataset.completeGarageTrainSet, test = garageDataset.completeGarageTestSet)
 
-sendGarageTrain()
+    def sendGarageTrain(self, transmission = 'kafka'):
+        columnNames = self.garageTrain['Dataframe'].columns
+        # print(self.garageTrain['Dataframe'].head())
+        for i in range(len(self.garageTrain['Data'][0])):
+            if transmission == 'pdu':
+                garagePdu = Garage() 
+                garagePdu.door_state = self.garageTrain['Data'][0][i][0][3].encode('utf-8')
+                garagePdu.sphone = self.garageTrain['Data'][0][i][0][4]
+                garagePdu.attack = self.garageTrain['Data'][0][i][0][5].encode('utf-8')
+                garagePdu.label = self.garageTrain['Data'][0][i][0][6]
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                garagePdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
+                print("Sent {}: {} bytes".format(garagePdu.__class__.__name__, len(data)))
+                time.sleep(8)
+
+            """Sending via Kafka Producer"""
+            if transmission == 'kafka':
+                # Create an XML element for the data
+                root = ET.Element("GarageData")
+                ET.SubElement(root, "DoorState").text = str(self.garageTrain['Data'][0][i][0][3])
+                ET.SubElement(root, "Sphone").text = str(self.garageTrain['Data'][0][i][0][4])
+                ET.SubElement(root, "Attack").text = str(self.garageTrain['Data'][0][i][0][5])
+                ET.SubElement(root, "Label").text = str(self.garageTrain['Data'][0][i][0][6])
+
+                # Convert the XML element to a string
+                xml_data = ET.tostring(root, encoding='utf8')
+
+                # send xml data to Kafka
+                self.producer.produce_message(xml_data)
+
+                print("Sent {}: {} bytes".format("GarageData", len(xml_data)))
+                time.sleep(8)
+
+    def sendGarageTest(self, transmission = 'kafka'):
+        columnNames = self.garageTest['Dataframe'].columns
+        # print(self.garageTest['Dataframe'].head())
+        for i in range(len(self.garageTest['Data'][0])):
+            if transmission == 'pdu':
+                garagePdu = Garage() 
+                garagePdu.door_state = self.garageTest['Data'][0][i][0][3].encode('utf-8')
+                garagePdu.sphone = self.garageTest['Data'][0][i][0][4]
+                garagePdu.attack = self.garageTest['Data'][0][i][0][5].encode('utf-8')
+                garagePdu.label = self.garageTest['Data'][0][i][0][6]
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                garagePdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
+                print("Sent {}: {} bytes".format(garagePdu.__class__.__name__, len(data)))
+                time.sleep(8)
+
+            """Sending via Kafka Producer"""
+            if transmission == 'kafka':
+                # Create an XML element for the data
+                root = ET.Element("GarageData")
+                ET.SubElement(root, "DoorState").text = str(self.garageTest['Data'][0][i][0][3])
+                ET.SubElement(root, "Sphone").text = str(self.garageTest['Data'][0][i][0][4])
+                ET.SubElement(root, "Attack").text = str(self.garageTest['Data'][0][i][0][5])
+                ET.SubElement(root, "Label").text = str(self.garageTest['Data'][0][i][0][6])
+
+                # Convert the XML element to a string
+                xml_data = ET.tostring(root, encoding='utf8')
+
+                # send xml data to Kafka
+                self.producer.produce_message(xml_data)
+
+                print("Sent {}: {} bytes".format("GarageData", len(xml_data)))
+                time.sleep(8)
+
+if __name__ == "__main__":
+    GarageSim = GarageSim()
+    GarageSim.sendGarageTrain(transmission = 'kafka')

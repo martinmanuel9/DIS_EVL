@@ -44,41 +44,102 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import * 
 from opendismodel.opendis.DataOutputStream import DataOutputStream
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+import KafkaProducer as kp
+import xml.etree.ElementTree as ET
 
-UDP_PORT = 3001
-DESTINATION_ADDRESS = "127.0.0.1"
+class LightSim:
 
-udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    def __init__(self):
+        self.UDP_PORT = 3001
+        self.DESTINATION_ADDRESS = "127.0.0.1"
 
-# Create garage dataset and timesteps for simulation
-lightDataset = ton.TON_IoT_Datagen()
-lightTrain, lightTest = lightDataset.create_dataset(train_stepsize=lightDataset.lightTrainStepsize, test_stepsize=lightDataset.lightTestStepsize, 
-                                train= lightDataset.completeLightTrainSet, test = lightDataset.completeLightTestSet)
+        self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-def sendLightTrain():
-    columnNames = lightTrain['Dataframe'].columns
-    # print(lightTrain['Dataframe'].head())
-    for i in range(len(lightTrain['Data'][0])):
-        lightTrainPdu = Light()
-        lightTrainPdu.motion_status = lightTrain['Data'][0][i][0][3] # motion status
-        lightTrainPdu.light_status = lightTrain['Data'][0][i][0][4].encode() #light status
-        lightTrainPdu.attack = lightTrain['Data'][0][i][0][5].encode()
-        lightTrainPdu.label = lightTrain['Data'][0][i][0][6]
+        # Kafka Producer
+        self.KAFKA_TOPIC = 'dis'
+        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+        
 
-        memoryStream = BytesIO()
-        outputStream = DataOutputStream(memoryStream)
-        lightTrainPdu.serialize(outputStream)
-        data = memoryStream.getvalue()
+        # Create garage dataset and timesteps for simulation
+        lightDataset = ton.TON_IoT_Datagen()
+        self.lightTrain, self.lightTest = lightDataset.create_dataset(train_stepsize=lightDataset.lightTrainStepsize, test_stepsize=lightDataset.lightTestStepsize, 
+                                        train= lightDataset.completeLightTrainSet, test = lightDataset.completeLightTestSet)
 
-        udpSocket.sendto(data, (DESTINATION_ADDRESS, UDP_PORT))
-        print("Sent {}: {} bytes".format(lightTrainPdu.__class__.__name__, len(data)))
-        time.sleep(12)
+    def sendLightTrain(self, transmission = 'kafka'):
+        columnNames = self.lightTrain['Dataframe'].columns
+        # print(self.lightTrain['Dataframe'].head())
+        for i in range(len(self.lightTrain['Data'][0])):
+            if transmission == 'pdu':
+                lightTrainPdu = Light()
+                lightTrainPdu.motion_status = self.lightTrain['Data'][0][i][0][3] # motion status
+                lightTrainPdu.light_status = self.lightTrain['Data'][0][i][0][4].encode() #light status
+                lightTrainPdu.attack = self.lightTrain['Data'][0][i][0][5].encode()
+                lightTrainPdu.label = self.lightTrain['Data'][0][i][0][6]
 
-sendLightTrain()
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                lightTrainPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
+                print("Sent {}: {} bytes".format(lightTrainPdu.__class__.__name__, len(data)))
+                time.sleep(12)
+            
+            elif transmission == 'kafka':
+                # Create an XML element for each row in the dataframe
+                root = ET.Element('LightData')
+                ET.SubElement(root, 'MotionStatus').text = str(self.lightTrain['Data'][0][i][0][3])
+                ET.SubElement(root, 'LightStatus').text = str(self.lightTrain['Data'][0][i][0][4])
+                ET.SubElement(root, 'Attack').text = str(self.lightTrain['Data'][0][i][0][5])
+                ET.SubElement(root, 'Label').text = str(self.lightTrain['Data'][0][i][0][6])
+
+                # Create XML string
+                xml_data = ET.tostring(root, encoding='utf8')
+
+                self.producer.produce_message(xml_data)
+
+                print("Sent Light Data: {}".format(xml_data))
+                time.sleep(12)
+
+    def sendLightTest(self, transmission = 'kafka'):
+        columnNames = self.lightTest['Dataframe'].columns
+        # print(self.lightTest['Dataframe'].head())
+        for i in range(len(self.lightTrain['Data'][0])):
+            if transmission == 'pdu':
+                lightPdu = Light()
+                lightPdu.motion_status = self.lightTest['Data'][0][i][0][3] # motion status
+                lightPdu.light_status = self.lightTest['Data'][0][i][0][4].encode() #light status
+                lightPdu.attack = self.lightTest['Data'][0][i][0][5].encode()
+                lightPdu.label = self.lightTest['Data'][0][i][0][6]
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                lightPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
+                print("Sent {}: {} bytes".format(lightPdu.__class__.__name__, len(data)))
+                time.sleep(12)
+            
+            elif transmission == 'kafka':
+                # Create an XML element for each row in the dataframe
+                root = ET.Element('LightData')
+                ET.SubElement(root, 'MotionStatus').text = str(self.lightTest['Data'][0][i][0][3])
+                ET.SubElement(root, 'LightStatus').text = str(self.lightTest['Data'][0][i][0][4])
+                ET.SubElement(root, 'Attack').text = str(self.lightTest['Data'][0][i][0][5])
+                ET.SubElement(root, 'Label').text = str(self.lightTest['Data'][0][i][0][6])
+
+                # Create XML string
+                xml_data = ET.tostring(root, encoding='utf8')
+
+                self.producer.produce_message(xml_data)
+
+                print("Sent Light Data: {}".format(xml_data))
+                time.sleep(12)
 
 
-
-
-
-sendLightTrain()
+if __name__ == '__main__':
+    LightSim = LightSim()
+    LightSim.sendLightTrain(transmission='kafka')

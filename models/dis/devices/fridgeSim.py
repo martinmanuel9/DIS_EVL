@@ -69,7 +69,7 @@ class FridgeSim:
 
     def sendFridgeTrain(self, transmission = 'kafka'):
         columnNames = self.fridgeTrain['Dataframe'].columns
-        # print(fridgeTrain['Dataframe'].head())
+        # print(self.fridgeTrain['Dataframe'].head())
         for i in range(len(self.fridgeTrain['Data'][0])):
             """Sending via PDU and UDP Protocol via Open DIS """
             if transmission == 'pdu':
@@ -97,17 +97,10 @@ class FridgeSim:
             if transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("FridgeData")
-                row_element = ET.SubElement(root, "FridgeTempRow")
-                row_element.text = str(self.fridgeTrain['Data'][0][i][0][3])
-
-                condition_element = ET.SubElement(root, "FridgeTempCondition")
-                condition_element.text = self.fridgeTrain['Data'][0][i][0][4]
-
-                attack_element = ET.SubElement(root, "FridgeTempAttack")
-                attack_element.text = self.fridgeTrain['Data'][0][i][0][5]
-
-                label_element = ET.SubElement(root, "FridgeLabel")
-                label_element.text = str(self.fridgeTrain['Data'][0][i][0][6])
+                ET.SubElement(root, "FridgeTempRow").text = str(self.fridgeTrain['Data'][0][i][0][3])
+                ET.SubElement(root, "FridgeTempCondition").text = str(self.fridgeTrain['Data'][0][i][0][4])
+                ET.SubElement(root, "Attack").text = str(self.fridgeTrain['Data'][0][i][0][5])
+                ET.SubElement(root, "Label").text = str(self.fridgeTrain['Data'][0][i][0][6])
 
                 # Convert the XML element to a string
                 xml_data = ET.tostring(root, encoding='utf-8')
@@ -122,7 +115,55 @@ class FridgeSim:
                 print("Sent {}: {} bytes".format("FridgeData", len(xml_data)))
                 time.sleep(5)
 
+    def sendFridgeTest(self, transmission = 'kafka'):
+        columnNames = self.fridgeTest['Dataframe'].columns
+        # print(self.fridgeTest['Dataframe'].head())
+        for i in range(len(self.fridgeTest['Data'][0])):
+            """Sending via PDU and UDP Protocol via Open DIS """
+            if transmission == 'pdu':
+                fridgeEnvPdu = Environment()
+                fridgeEnvPdu.temperature = self.fridgeTest['Data'][0][i][0][3] # fridge row  
+                fridgeEnvPdu.condition = self.fridgeTest['Data'][0][i][0][4].encode('utf-8')
+                fridgeEnvPdu.attack = self.fridgeTest['Data'][0][i][0][5].encode('utf-8') # attack
+                fridgeEnvPdu.label = int(self.fridgeTest['Data'][0][i][0][6])  #label
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                fridgeEnvPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
+
+                print('Fridge Temp Row: ', self.fridgeTest['Data'][0][i][0][3])
+                print('Fridge Temp Condition: ' , self.fridgeTest['Data'][0][i][0][4])
+                print('Fridge Temp Attack: ', self.fridgeTest['Data'][0][i][0][5])
+                print('Fridge Label: ', self.fridgeTest['Data'][0][i][0][6])
+                print("Sent {}: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data)))
+                time.sleep(5)
+
+            """Sending via Kafka Producer"""
+            if transmission == 'kafka':
+                # Create an XML element for the data
+                root = ET.Element("FridgeData")
+                ET.SubElement(root, "FridgeTempRow").text = str(self.fridgeTest['Data'][0][i][0][3])
+                ET.SubElement(root, "FridgeTempCondition").text = str(self.fridgeTest['Data'][0][i][0][4])
+                ET.SubElement(root, "Attack").text = str(self.fridgeTest['Data'][0][i][0][5])
+                ET.SubElement(root, "Label").text = str(self.fridgeTest['Data'][0][i][0][6])
+
+                # Convert the XML element to a string
+                xml_data = ET.tostring(root, encoding='utf-8')
+
+                # Send the XML data to Kafka
+                self.producer.produce_message(xml_data)
+
+                print('Fridge Temp Row: ', self.fridgeTest['Data'][0][i][0][3])
+                print('Fridge Temp Condition: ' , self.fridgeTest['Data'][0][i][0][4])
+                print('Fridge Temp Attack: ', self.fridgeTest['Data'][0][i][0][5])
+                print('Fridge Label: ', self.fridgeTest['Data'][0][i][0][6])
+                print("Sent {}: {} bytes".format("FridgeData", len(xml_data)))
+                time.sleep(5)
+
 
 if __name__ == "__main__":
     FridgeSim = FridgeSim()
-    FridgeSim.sendFridgeTrain()
+    FridgeSim.sendFridgeTrain(transmission='kafka')
