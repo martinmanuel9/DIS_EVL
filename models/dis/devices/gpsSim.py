@@ -50,16 +50,18 @@ import KafkaProducer as kp
 import xml.etree.ElementTree as ET
 
 class GPSSim:
-    def __init__(self):
+    def __init__(self, transmission):
+        self.transmission = transmission
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        # Kafka Producer
-        self.KAFKA_TOPIC = 'dis'
-        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+        if self.transmission == 'kafka':
+            # Kafka Producer
+            self.KAFKA_TOPIC = 'dis'
+            self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
 
 
         # Create garage dataset and timesteps for simulation
@@ -69,12 +71,12 @@ class GPSSim:
 
         self.gps = GPS()
 
-    def sendTrainGPS(self, transmission ):
+    def sendTrainGPS(self):
         columnNames = self.gpsTrain['Dataframe'].columns
         # print(self.gpsTrain['Dataframe'].head())
         for i in range(len(self.gpsTrain['Data'][0])):
             """Sending via PDU and UDP Protocol via Open DIS """
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 gpsPDU = EntityStatePdu()
                 gpsPDU.entityID.entityID = 42
                 gpsPDU.entityID.siteID = 17
@@ -110,7 +112,7 @@ class GPSSim:
                 print("Sent {}: {} bytes".format(gpsPDU.__class__.__name__, len(data)))
                 time.sleep(10)
 
-            if transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("GPSData")
                 ET.SubElement(root, "Longitude").text = str(self.gpsTrain['Data'][0][i][0][3])
@@ -129,12 +131,12 @@ class GPSSim:
                 print("Sent {}: {} bytes".format("GPSData", len(xml_data)))
                 time.sleep(10)
 
-    def sendTestGPS(self, transmission):
+    def sendTestGPS(self):
         columnNames = self.gpsTest['Dataframe'].columns
         # print(self.gpsTest['Dataframe'].head())
         for i in range(len(self.gpsTest['Data'][0])):
             """Sending via PDU and UDP Protocol via Open DIS """
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 gpsPDU = EntityStatePdu()
                 gpsPDU.entityID.entityID = 42
                 gpsPDU.entityID.siteID = 17
@@ -170,7 +172,7 @@ class GPSSim:
                 print("Sent {}: {} bytes".format(gpsPDU.__class__.__name__, len(data)))
                 time.sleep(10)
 
-            if transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("GPSData")
                 ET.SubElement(root, "Longitude").text = str(self.gpsTest['Data'][0][i][0][3])
@@ -190,5 +192,5 @@ class GPSSim:
                 time.sleep(10)
 
 if __name__ == '__main__':
-    gpsSim = GPSSim()
-    gpsSim.sendTrainGPS(transmission = 'pdu')
+    gpsSim = GPSSim(transmission='kafka')
+    gpsSim.sendTrainGPS()

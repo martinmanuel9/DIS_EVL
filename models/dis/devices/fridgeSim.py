@@ -49,16 +49,18 @@ import KafkaProducer as kp
 import xml.etree.ElementTree as ET
 
 class FridgeSim:
-    def __init__(self):
+    def __init__(self, transmission):
+        self.transmission = transmission
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        # Kafka Producer
-        self.KAFKA_TOPIC = 'dis'
-        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+        if self.transmission == 'kafka':
+            # Kafka Producer
+            self.KAFKA_TOPIC = 'dis'
+            self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
         
 
         # Create garage dataset and timesteps for simulation
@@ -67,12 +69,12 @@ class FridgeSim:
                                         train= fridgeDataset.completeFridgeTrainSet, test = fridgeDataset.completeFridgeTestSet)
 
 
-    def sendFridgeTrain(self, transmission ):
+    def sendFridgeTrain(self ):
         columnNames = self.fridgeTrain['Dataframe'].columns
         # print(self.fridgeTrain['Dataframe'].head())
         for i in range(len(self.fridgeTrain['Data'][0])):
             """Sending via PDU and UDP Protocol via Open DIS """
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 fridgeEnvPdu = Environment()
                 fridgeEnvPdu.temperature = self.fridgeTrain['Data'][0][i][0][3] # fridge row  
                 fridgeEnvPdu.condition = self.fridgeTrain['Data'][0][i][0][4].encode('utf-8')
@@ -94,7 +96,7 @@ class FridgeSim:
                 time.sleep(5)
 
             """Sending via Kafka Producer"""
-            if transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("FridgeData")
                 ET.SubElement(root, "FridgeTempRow").text = str(self.fridgeTrain['Data'][0][i][0][3])
@@ -115,12 +117,12 @@ class FridgeSim:
                 print("Sent {}: {} bytes".format("FridgeData", len(xml_data)))
                 time.sleep(5)
 
-    def sendFridgeTest(self, transmission = 'kafka'):
+    def sendFridgeTest(self):
         columnNames = self.fridgeTest['Dataframe'].columns
         # print(self.fridgeTest['Dataframe'].head())
         for i in range(len(self.fridgeTest['Data'][0])):
             """Sending via PDU and UDP Protocol via Open DIS """
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 fridgeEnvPdu = Environment()
                 fridgeEnvPdu.temperature = self.fridgeTest['Data'][0][i][0][3] # fridge row  
                 fridgeEnvPdu.condition = self.fridgeTest['Data'][0][i][0][4].encode('utf-8')
@@ -142,7 +144,7 @@ class FridgeSim:
                 time.sleep(5)
 
             """Sending via Kafka Producer"""
-            if transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("FridgeData")
                 ET.SubElement(root, "FridgeTempRow").text = str(self.fridgeTest['Data'][0][i][0][3])
@@ -165,5 +167,5 @@ class FridgeSim:
 
 
 if __name__ == "__main__":
-    FridgeSim = FridgeSim()
-    FridgeSim.sendFridgeTrain(transmission='pdu')
+    FridgeSim = FridgeSim(transmission='pdu')
+    FridgeSim.sendFridgeTrain()

@@ -49,18 +49,18 @@ import KafkaProducer as kp
 import xml.etree.ElementTree as ET
 
 class ThermostatSim:
-    def __init__(self):
+    def __init__(self, transmission):
+        self.transmission = transmission
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        # Kafka Producer
-        self.KAFKA_TOPIC = 'dis'
-        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
-
-
+        if self.transmission == 'kafka':
+            # Kafka Producer
+            self.KAFKA_TOPIC = 'dis'
+            self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
 
 
         # Create garage dataset and timesteps for simulation
@@ -68,11 +68,11 @@ class ThermostatSim:
         self.thermoTrain, self.thermoTest = thermoDataset.create_dataset(train_stepsize=thermoDataset.thermoTrainStepsize, test_stepsize=thermoDataset.thermoTestStepsize, 
                                         train= thermoDataset.completeThermoTrainSet, test = thermoDataset.completeThermoTestSet)
 
-    def sendThermostatTrain(self, transmission):
+    def sendThermostatTrain(self):
         columnNames = self.thermoTrain['Dataframe'].columns
         # print(self.thermoTrain['Dataframe'].head())
         for i in range(len(self.thermoTrain['Data'][0])):
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 envTempPdu = Environment()
                 envTempPdu.temperature = self.thermoTrain['Data'][0][i][0][3] # temperature
                 envTempPdu.temp_status = self.thermoTrain['Data'][0][i][0][4] #temp status
@@ -89,7 +89,7 @@ class ThermostatSim:
                 print("Sent {}: {} bytes".format(envTempPdu.__class__.__name__, len(data)))
                 time.sleep(16)
 
-            elif transmission == 'kafka':
+            elif self.transmission == 'kafka':
                 #create an xml element for data
                 root = ET.Element('ThermostatData')
                 ET.SubElement(root, 'Temperature').text = str(self.thermoTrain['Data'][0][i][0][3])
@@ -105,11 +105,11 @@ class ThermostatSim:
                 print("Sent {}: {} bytes".format("ThermostatData", len(xml_data)))
                 time.sleep(16)
 
-    def sendThermostatTest(self, transmission ):
+    def sendThermostatTest(self ):
         columnNames = self.thermoTest['Dataframe'].columns
         # print(self.thermoTest['Dataframe'].head())
         for i in range(len(self.thermoTrain['Data'][0])):
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 envTempPdu = Environment()
                 envTempPdu.temperature = self.thermoTest['Data'][0][i][0][3] # temperature
                 envTempPdu.temp_status = self.thermoTest['Data'][0][i][0][4] #temp status
@@ -126,7 +126,7 @@ class ThermostatSim:
                 print("Sent {}: {} bytes".format(envTempPdu.__class__.__name__, len(data)))
                 time.sleep(16)
 
-            elif transmission == 'kafka':
+            elif self.transmission == 'kafka':
                 #create an xml element for data
                 root = ET.Element('ThermostatData')
                 ET.SubElement(root, 'Temperature').text = str(self.thermoTest['Data'][0][i][0][3])
@@ -143,5 +143,5 @@ class ThermostatSim:
                 time.sleep(16)
 
 if __name__ == '__main__':
-    thermostat = ThermostatSim()
-    thermostat.sendThermostatTrain(transmission = 'pdu')
+    thermostat = ThermostatSim(transmission= 'kafka')
+    thermostat.sendThermostatTrain()

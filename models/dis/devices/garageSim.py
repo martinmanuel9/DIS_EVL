@@ -51,16 +51,18 @@ import xml.etree.ElementTree as ET
 
 class GarageSim:
 
-    def __init__(self):
+    def __init__(self, transmission):
+        self.transmission = transmission
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        # Kafka Producer
-        self.KAFKA_TOPIC = 'dis'
-        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+        if self.transmission == 'kafka':
+            # Kafka Producer
+            self.KAFKA_TOPIC = 'dis'
+            self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
         
 
         # Create garage dataset and timesteps for simulation
@@ -68,11 +70,11 @@ class GarageSim:
         self.garageTrain, self.garageTest = garageDataset.create_dataset(train_stepsize=garageDataset.garageTrainStepsize, test_stepsize=garageDataset.garageTestStepsize, 
                                         train= garageDataset.completeGarageTrainSet, test = garageDataset.completeGarageTestSet)
 
-    def sendGarageTrain(self, transmission ):
+    def sendGarageTrain(self):
         columnNames = self.garageTrain['Dataframe'].columns
         # print(self.garageTrain['Dataframe'].head())
         for i in range(len(self.garageTrain['Data'][0])):
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 garagePdu = Garage() 
                 garagePdu.door_state = self.garageTrain['Data'][0][i][0][3].encode('utf-8')
                 garagePdu.sphone = self.garageTrain['Data'][0][i][0][4]
@@ -89,7 +91,7 @@ class GarageSim:
                 time.sleep(8)
 
             """Sending via Kafka Producer"""
-            if transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("GarageData")
                 ET.SubElement(root, "DoorState").text = str(self.garageTrain['Data'][0][i][0][3])
@@ -106,11 +108,11 @@ class GarageSim:
                 print("Sent {}: {} bytes".format("GarageData", len(xml_data)))
                 time.sleep(8)
 
-    def sendGarageTest(self, transmission = 'kafka'):
+    def sendGarageTest(self):
         columnNames = self.garageTest['Dataframe'].columns
         # print(self.garageTest['Dataframe'].head())
         for i in range(len(self.garageTest['Data'][0])):
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 garagePdu = Garage() 
                 garagePdu.door_state = self.garageTest['Data'][0][i][0][3].encode('utf-8')
                 garagePdu.sphone = self.garageTest['Data'][0][i][0][4]
@@ -127,7 +129,7 @@ class GarageSim:
                 time.sleep(8)
 
             """Sending via Kafka Producer"""
-            if transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("GarageData")
                 ET.SubElement(root, "DoorState").text = str(self.garageTest['Data'][0][i][0][3])
@@ -145,5 +147,5 @@ class GarageSim:
                 time.sleep(8)
 
 if __name__ == "__main__":
-    GarageSim = GarageSim()
-    GarageSim.sendGarageTrain(transmission = 'pdu')
+    GarageSim = GarageSim(transmission='pdu')
+    GarageSim.sendGarageTrain()

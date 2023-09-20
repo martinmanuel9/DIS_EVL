@@ -49,16 +49,19 @@ import KafkaProducer as kp
 import xml.etree.ElementTree as ET
 
 class ModbusSim:
-    def __init__(self):
+
+    def __init__(self, transmission):
+        self.transmission = transmission
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        # Kafka Producer
-        self.KAFKA_TOPIC = 'dis'
-        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+        if self.transmission == 'kafka':
+            # Kafka Producer
+            self.KAFKA_TOPIC = 'dis'
+            self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
 
         # Create garage dataset and timesteps for simulation
         modbusDataset = ton.TON_IoT_Datagen(dataset= 'modbus')
@@ -66,11 +69,11 @@ class ModbusSim:
                                         train= modbusDataset.completeModbusTrainSet, test = modbusDataset.completeModbusTestSet)
 
 
-    def sendModbusTrain(self, transmission ):
+    def sendModbusTrain(self):
         columnNames = self.modbusTrain['Dataframe'].columns
         # print(self.modbusTrain['Dataframe'].head())
         for i in range(len(self.modbusTrain['Data'][0])):
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 modbusPdu = Modbus() 
                 modbusPdu.fc1 = self.modbusTrain['Data'][0][i][0][3]
                 modbusPdu.fc2 = self.modbusTrain['Data'][0][i][0][4]
@@ -88,7 +91,7 @@ class ModbusSim:
                 print("Sent {}: {} bytes".format(modbusPdu.__class__.__name__, len(data)))
                 time.sleep(14)
 
-            elif transmission == 'kafka':
+            elif self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('Modbus')
                 ET.SubElement(root, 'fc1').text = str(self.modbusTrain['Data'][0][i][0][3])
@@ -105,11 +108,11 @@ class ModbusSim:
                 print("Sent {}: {} bytes".format(root.tag, len(xml_data)))
                 time.sleep(14)
 
-    def sendModbusTest(self, transmission ):
+    def sendModbusTest(self ):
         columnNames = self.modbusTest['Dataframe'].columns
         # print(self.modbumodbusTestsTrain['Dataframe'].head())
         for i in range(len(self.modbusTrain['Data'][0])):
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 modbusPdu = Modbus() 
                 modbusPdu.fc1 = self.modbusTest['Data'][0][i][0][3]
                 modbusPdu.fc2 = self.modbusTest['Data'][0][i][0][4]
@@ -127,7 +130,7 @@ class ModbusSim:
                 print("Sent {}: {} bytes".format(modbusPdu.__class__.__name__, len(data)))
                 time.sleep(14)
 
-            elif transmission == 'kafka':
+            elif self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('Modbus')
                 ET.SubElement(root, 'fc1').text = str(self.modbusTest['Data'][0][i][0][3])
@@ -145,7 +148,7 @@ class ModbusSim:
                 time.sleep(14)
 
 if __name__ == '__main__':
-    modbusSim = ModbusSim()
-    modbusSim.sendModbusTrain(transmission = 'kafka')
+    modbusSim = ModbusSim(transmission = 'pdu')
+    modbusSim.sendModbusTrain()
     # modbusSim.sendModbusTrain(transmission = 'pdu')
 

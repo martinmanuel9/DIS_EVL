@@ -49,16 +49,18 @@ import KafkaProducer as kp
 import xml.etree.ElementTree as ET
 
 class WeatherSim:
-    def __init__(self):
+    def __init__(self, transmission):
+        self.transmission = transmission
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        # Kafka Producer
-        self.KAFKA_TOPIC = 'dis'
-        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+        if self.transmission == 'kafka':
+            # Kafka Producer
+            self.KAFKA_TOPIC = 'dis'
+            self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
 
 
         # Create garage dataset and timesteps for simulation
@@ -66,11 +68,11 @@ class WeatherSim:
         self.weatherTrain, self.weatherTest = weatherDataset.create_dataset(train_stepsize=weatherDataset.weatherTrainStepsize, test_stepsize=weatherDataset.weatherTestStepsize, 
                                         train= weatherDataset.completeWeatherTrainSet, test = weatherDataset.completeWeatherTestSet)
 
-    def sendWeatherTrain(self, transmission):
+    def sendWeatherTrain(self):
         columnNames = self.weatherTrain['Dataframe'].columns
         # print(self.weatherTrain['Dataframe'].head())
         for i in range((len(self.weatherTrain['Data'][0]))):
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 weatherPdu = Environment()
                 weatherPdu.temperature = self.weatherTrain['Data'][0][i][0][3] # tempeature
                 weatherPdu.pressure = self.weatherTrain['Data'][0][i][0][4] # pressure
@@ -91,7 +93,7 @@ class WeatherSim:
                 print("Sent {}: {}".format(weatherPdu.__class__.__name__, len(data)))
                 time.sleep(18)
 
-            elif transmission == 'kafka':
+            elif self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('WeatherData')
                 ET.SubElement(root, 'Temperature').text = str(self.weatherTrain['Data'][0][i][0][3])
@@ -111,11 +113,11 @@ class WeatherSim:
                 print('Label: ', self.weatherTrain['Data'][0][i][0][7])
                 time.sleep(18)
 
-    def sendWeatherTest(self, transmission ):
+    def sendWeatherTest(self ):
         columnNames = self.weatherTest['Dataframe'].columns
         # print(self.weatherTrain['Dataframe'].head())
         for i in range((len(self.weatherTrain['Data'][0]))):
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 weatherPdu = Environment()
                 weatherPdu.temperature = self.weatherTest['Data'][0][i][0][3] # tempeature
                 weatherPdu.pressure = self.weatherTest['Data'][0][i][0][4] # pressure
@@ -136,7 +138,7 @@ class WeatherSim:
                 print("Sent {}: {}".format(weatherPdu.__class__.__name__, len(data)))
                 time.sleep(18)
 
-            elif transmission == 'kafka':
+            elif self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('WeatherData')
                 ET.SubElement(root, 'Temperature').text = str(self.weatherTest['Data'][0][i][0][3])
@@ -158,5 +160,5 @@ class WeatherSim:
 
 
 if __name__ == '__main__':
-    weatherSim = WeatherSim()
-    weatherSim.sendWeatherTrain(transmission='kafka')
+    weatherSim = WeatherSim(transmission='kafka')
+    weatherSim.sendWeatherTrain()

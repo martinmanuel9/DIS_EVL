@@ -50,16 +50,18 @@ import xml.etree.ElementTree as ET
 
 class LightSim:
 
-    def __init__(self):
+    def __init__(self, transmission):
+        self.transmission = transmission
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        # Kafka Producer
-        self.KAFKA_TOPIC = 'dis'
-        self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+        if self.transmission == 'kafka':
+            # Kafka Producer
+            self.KAFKA_TOPIC = 'dis'
+            self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
         
 
         # Create garage dataset and timesteps for simulation
@@ -67,11 +69,11 @@ class LightSim:
         self.lightTrain, self.lightTest = lightDataset.create_dataset(train_stepsize=lightDataset.lightTrainStepsize, test_stepsize=lightDataset.lightTestStepsize, 
                                         train= lightDataset.completeLightTrainSet, test = lightDataset.completeLightTestSet)
 
-    def sendLightTrain(self, transmission ):
+    def sendLightTrain(self):
         columnNames = self.lightTrain['Dataframe'].columns
         # print(self.lightTrain['Dataframe'].head())
         for i in range(len(self.lightTrain['Data'][0])):
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 lightTrainPdu = Light()
                 lightTrainPdu.motion_status = self.lightTrain['Data'][0][i][0][3] # motion status
                 lightTrainPdu.light_status = self.lightTrain['Data'][0][i][0][4].encode() #light status
@@ -87,7 +89,7 @@ class LightSim:
                 print("Sent {}: {} bytes".format(lightTrainPdu.__class__.__name__, len(data)))
                 time.sleep(12)
             
-            elif transmission == 'kafka':
+            elif self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('LightData')
                 ET.SubElement(root, 'MotionStatus').text = str(self.lightTrain['Data'][0][i][0][3])
@@ -103,11 +105,11 @@ class LightSim:
                 print("Sent Light Data: {}".format(xml_data))
                 time.sleep(12)
 
-    def sendLightTest(self, transmission):
+    def sendLightTest(self):
         columnNames = self.lightTest['Dataframe'].columns
         # print(self.lightTest['Dataframe'].head())
         for i in range(len(self.lightTrain['Data'][0])):
-            if transmission == 'pdu':
+            if self.transmission == 'pdu':
                 lightPdu = Light()
                 lightPdu.motion_status = self.lightTest['Data'][0][i][0][3] # motion status
                 lightPdu.light_status = self.lightTest['Data'][0][i][0][4].encode() #light status
@@ -123,7 +125,7 @@ class LightSim:
                 print("Sent {}: {} bytes".format(lightPdu.__class__.__name__, len(data)))
                 time.sleep(12)
             
-            elif transmission == 'kafka':
+            elif self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('LightData')
                 ET.SubElement(root, 'MotionStatus').text = str(self.lightTest['Data'][0][i][0][3])
@@ -141,5 +143,5 @@ class LightSim:
 
 
 if __name__ == '__main__':
-    LightSim = LightSim()
-    LightSim.sendLightTrain(transmission='pdu')
+    LightSim = LightSim(transmission='pdu')
+    LightSim.sendLightTrain()

@@ -85,16 +85,11 @@ class TON_IoT_Datagen():
         mapping = [{'col': 'temp_condition', 'mapping' : {"low": 1, "high": 2}}, 
                    {'col': 'type', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomware': 5, 'scanning': 6, 'xss': 7 }}] 
         fridgeMapped = OrdinalEncoder(cols=['temp_condition', 'type'], mapping=mapping).fit(fridge_dataset).transform(fridge_dataset)
-
-        totalMapping = [{'col': 'temp_condition', 'mapping': {"low": "Low", "high": "High"}},
-                    {'col': 'type', 'mapping': {'normal': 'Normal', 'backdoor': 'Backdoor', 'ddos': 'DDoS', 'injection': 'Injection', 'password': 'Password', 'ransomware': 'Ransomware', 'scanning': 'Scanning', 'xss': 'XSS'}}]
-        
-        completeFridgeMapped = OrdinalEncoder(cols=['temp_condition', 'type'], mapping=totalMapping).fit(fridge_dataset).transform(fridge_dataset) 
-        
-        complete_fridge_dataset = completeFridgeMapped[['ts','date','time','fridge_temperature','temp_condition','type','label']]
+        complete_fridge_dataset = fridge_dataset[['ts','date','time','fridge_temperature','temp_condition','type','label']]
         complete_fridge_dataset['ts'] = pd.to_numeric(complete_fridge_dataset['ts'])
         complete_fridge_dataset['date'] = pd.to_datetime(complete_fridge_dataset['date'], format="%d-%b-%y")
         complete_fridge_dataset['time'] = complete_fridge_dataset['time'].str.strip()
+        complete_fridge_dataset['temp_condition'] = complete_fridge_dataset['temp_condition'].str.strip()
         complete_fridge_dataset['time'] = pd.to_datetime(complete_fridge_dataset['time'], format='%H:%M:%S').dt.time
         complete_fridge_dataset.sort_values(by=['ts','date','time'])
         fridgeMapped = fridgeMapped[['fridge_temperature','temp_condition','type','label']]
@@ -190,6 +185,7 @@ class TON_IoT_Datagen():
         complete_light_dataset['ts'] = pd.to_numeric(complete_light_dataset['ts'])
         complete_light_dataset['date'] = pd.to_datetime(complete_light_dataset['date'], format="%d-%b-%y")
         complete_light_dataset['time'] = complete_light_dataset['time'].str.strip()
+        complete_light_dataset['light_status'] = complete_light_dataset['light_status'].str.strip()
         complete_light_dataset['time'] = pd.to_datetime(complete_light_dataset['time'], format='%H:%M:%S').dt.time
         train_light, test_light = train_test_split(lightMapped, test_size=0.33)
         completeTrainLight, completeTestLight = train_test_split(complete_light_dataset, test_size=0.33)
@@ -319,7 +315,7 @@ class TON_IoT_Datagen():
 
         return self.trainDict, self.testDict
 
-datagen = TON_IoT_Datagen(dataset='fridge')
-fridgeTrain, fridgeTest = datagen.create_dataset(train_stepsize=datagen.fridgeTrainStepsize, test_stepsize=datagen.fridgeTestStepsize, 
-                                train= datagen.completeFridgeTestSet, test = datagen.completeFridgeTestSet)
-print(fridgeTrain['Data'])
+# datagen = TON_IoT_Datagen(dataset='fridge')
+# fridgeTrain, fridgeTest = datagen.create_dataset(train_stepsize=datagen.fridgeTrainStepsize, test_stepsize=datagen.fridgeTestStepsize, 
+#                                 train= datagen.completeFridgeTestSet, test = datagen.completeFridgeTestSet)
+# print(fridgeTrain['Data'])
