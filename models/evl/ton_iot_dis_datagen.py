@@ -117,6 +117,7 @@ class TON_IoT_Datagen():
         complete_garage_dataset['ts'] = pd.to_numeric(complete_garage_dataset['ts'])
         complete_garage_dataset['date'] = pd.to_datetime(complete_garage_dataset['date'], format="%d-%b-%y")
         complete_garage_dataset['time'] = complete_garage_dataset['time'].str.strip()
+        complete_garage_dataset['door_state'] = complete_garage_dataset['door_state'].str.strip()
         complete_garage_dataset['time'] = pd.to_datetime(complete_garage_dataset['time'], format='%H:%M:%S').dt.time
         complete_garage_dataset.sort_values(by=['ts','date','time'])
         train_garage, test_garage = train_test_split(garageMapped, test_size=0.33)
