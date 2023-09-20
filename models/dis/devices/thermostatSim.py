@@ -64,11 +64,11 @@ class ThermostatSim:
 
 
         # Create garage dataset and timesteps for simulation
-        thermoDataset = ton.TON_IoT_Datagen()
+        thermoDataset = ton.TON_IoT_Datagen(dataset = 'thermostat')
         self.thermoTrain, self.thermoTest = thermoDataset.create_dataset(train_stepsize=thermoDataset.thermoTrainStepsize, test_stepsize=thermoDataset.thermoTestStepsize, 
                                         train= thermoDataset.completeThermoTrainSet, test = thermoDataset.completeThermoTestSet)
 
-    def sendThermostatTrain(self, transmission = 'kafka'):
+    def sendThermostatTrain(self, transmission):
         columnNames = self.thermoTrain['Dataframe'].columns
         # print(self.thermoTrain['Dataframe'].head())
         for i in range(len(self.thermoTrain['Data'][0])):
@@ -105,7 +105,7 @@ class ThermostatSim:
                 print("Sent {}: {} bytes".format("ThermostatData", len(xml_data)))
                 time.sleep(16)
 
-    def sendThermostatTest(self, transmission = 'kafka'):
+    def sendThermostatTest(self, transmission ):
         columnNames = self.thermoTest['Dataframe'].columns
         # print(self.thermoTest['Dataframe'].head())
         for i in range(len(self.thermoTrain['Data'][0])):
@@ -144,4 +144,4 @@ class ThermostatSim:
 
 if __name__ == '__main__':
     thermostat = ThermostatSim()
-    thermostat.sendThermostat(transmission = 'kafka')
+    thermostat.sendThermostatTrain(transmission = 'pdu')

@@ -64,11 +64,11 @@ class GarageSim:
         
 
         # Create garage dataset and timesteps for simulation
-        garageDataset = ton.TON_IoT_Datagen()
+        garageDataset = ton.TON_IoT_Datagen(dataset= 'garage')
         self.garageTrain, self.garageTest = garageDataset.create_dataset(train_stepsize=garageDataset.garageTrainStepsize, test_stepsize=garageDataset.garageTestStepsize, 
                                         train= garageDataset.completeGarageTrainSet, test = garageDataset.completeGarageTestSet)
 
-    def sendGarageTrain(self, transmission = 'kafka'):
+    def sendGarageTrain(self, transmission ):
         columnNames = self.garageTrain['Dataframe'].columns
         # print(self.garageTrain['Dataframe'].head())
         for i in range(len(self.garageTrain['Data'][0])):
@@ -146,4 +146,4 @@ class GarageSim:
 
 if __name__ == "__main__":
     GarageSim = GarageSim()
-    GarageSim.sendGarageTrain(transmission = 'kafka')
+    GarageSim.sendGarageTrain(transmission = 'pdu')

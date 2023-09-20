@@ -62,11 +62,11 @@ class WeatherSim:
 
 
         # Create garage dataset and timesteps for simulation
-        weatherDataset = ton.TON_IoT_Datagen()
+        weatherDataset = ton.TON_IoT_Datagen(dataset = 'weather')
         self.weatherTrain, self.weatherTest = weatherDataset.create_dataset(train_stepsize=weatherDataset.weatherTrainStepsize, test_stepsize=weatherDataset.weatherTestStepsize, 
                                         train= weatherDataset.completeWeatherTrainSet, test = weatherDataset.completeWeatherTestSet)
 
-    def sendWeatherTrain(self, transmission = 'kafka'):
+    def sendWeatherTrain(self, transmission):
         columnNames = self.weatherTrain['Dataframe'].columns
         # print(self.weatherTrain['Dataframe'].head())
         for i in range((len(self.weatherTrain['Data'][0]))):
@@ -111,7 +111,7 @@ class WeatherSim:
                 print('Label: ', self.weatherTrain['Data'][0][i][0][7])
                 time.sleep(18)
 
-    def sendWeatherTest(self, transmission = 'kafka'):
+    def sendWeatherTest(self, transmission ):
         columnNames = self.weatherTest['Dataframe'].columns
         # print(self.weatherTrain['Dataframe'].head())
         for i in range((len(self.weatherTrain['Data'][0]))):

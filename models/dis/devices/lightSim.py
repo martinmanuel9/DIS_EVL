@@ -63,11 +63,11 @@ class LightSim:
         
 
         # Create garage dataset and timesteps for simulation
-        lightDataset = ton.TON_IoT_Datagen()
+        lightDataset = ton.TON_IoT_Datagen(dataset = 'light')
         self.lightTrain, self.lightTest = lightDataset.create_dataset(train_stepsize=lightDataset.lightTrainStepsize, test_stepsize=lightDataset.lightTestStepsize, 
                                         train= lightDataset.completeLightTrainSet, test = lightDataset.completeLightTestSet)
 
-    def sendLightTrain(self, transmission = 'kafka'):
+    def sendLightTrain(self, transmission ):
         columnNames = self.lightTrain['Dataframe'].columns
         # print(self.lightTrain['Dataframe'].head())
         for i in range(len(self.lightTrain['Data'][0])):
@@ -103,7 +103,7 @@ class LightSim:
                 print("Sent Light Data: {}".format(xml_data))
                 time.sleep(12)
 
-    def sendLightTest(self, transmission = 'kafka'):
+    def sendLightTest(self, transmission):
         columnNames = self.lightTest['Dataframe'].columns
         # print(self.lightTest['Dataframe'].head())
         for i in range(len(self.lightTrain['Data'][0])):
@@ -142,4 +142,4 @@ class LightSim:
 
 if __name__ == '__main__':
     LightSim = LightSim()
-    LightSim.sendLightTrain(transmission='kafka')
+    LightSim.sendLightTrain(transmission='pdu')

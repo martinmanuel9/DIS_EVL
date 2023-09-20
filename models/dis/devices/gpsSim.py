@@ -63,13 +63,13 @@ class GPSSim:
 
 
         # Create garage dataset and timesteps for simulation
-        gpsDataset = ton.TON_IoT_Datagen()
+        gpsDataset = ton.TON_IoT_Datagen(dataset = 'gps')
         self.gpsTrain, self.gpsTest = gpsDataset.create_dataset(train_stepsize=gpsDataset.gpsTrainStepsize, test_stepsize=gpsDataset.gpsTestStepsize, 
                                         train= gpsDataset.completeGPSTrainSet, test = gpsDataset.completeGPSTestSet)
 
         self.gps = GPS()
 
-    def sendTrainGPS(self, transmission = 'kafka'):
+    def sendTrainGPS(self, transmission ):
         columnNames = self.gpsTrain['Dataframe'].columns
         # print(self.gpsTrain['Dataframe'].head())
         for i in range(len(self.gpsTrain['Data'][0])):
@@ -129,7 +129,7 @@ class GPSSim:
                 print("Sent {}: {} bytes".format("GPSData", len(xml_data)))
                 time.sleep(10)
 
-    def sendTestGPS(self, transmission = 'kafka'):
+    def sendTestGPS(self, transmission):
         columnNames = self.gpsTest['Dataframe'].columns
         # print(self.gpsTest['Dataframe'].head())
         for i in range(len(self.gpsTest['Data'][0])):
@@ -191,4 +191,4 @@ class GPSSim:
 
 if __name__ == '__main__':
     gpsSim = GPSSim()
-    gpsSim.sendTrainGPS(transmission = 'kafka')
+    gpsSim.sendTrainGPS(transmission = 'pdu')

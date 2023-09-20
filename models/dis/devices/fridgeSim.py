@@ -62,12 +62,12 @@ class FridgeSim:
         
 
         # Create garage dataset and timesteps for simulation
-        fridgeDataset = ton.TON_IoT_Datagen()
+        fridgeDataset = ton.TON_IoT_Datagen(dataset='fridge')
         self.fridgeTrain, self.fridgeTest = fridgeDataset.create_dataset(train_stepsize=fridgeDataset.fridgeTrainStepsize, test_stepsize=fridgeDataset.fridgeTestStepsize, 
                                         train= fridgeDataset.completeFridgeTrainSet, test = fridgeDataset.completeFridgeTestSet)
 
 
-    def sendFridgeTrain(self, transmission = 'kafka'):
+    def sendFridgeTrain(self, transmission ):
         columnNames = self.fridgeTrain['Dataframe'].columns
         # print(self.fridgeTrain['Dataframe'].head())
         for i in range(len(self.fridgeTrain['Data'][0])):
@@ -166,4 +166,4 @@ class FridgeSim:
 
 if __name__ == "__main__":
     FridgeSim = FridgeSim()
-    FridgeSim.sendFridgeTrain(transmission='kafka')
+    FridgeSim.sendFridgeTrain(transmission='pdu')

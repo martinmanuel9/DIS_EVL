@@ -42,8 +42,10 @@ from category_encoders import OrdinalEncoder
 from datetime import datetime
 
 class TON_IoT_Datagen():
-    def __init__(self) -> None:
+    def __init__(self, dataset):
+        self.dataset = dataset
         self.import_data()
+        
 
     def change_directory(self):
         path = str(Path.home())
@@ -53,28 +55,49 @@ class TON_IoT_Datagen():
 
     def import_data(self):
         self.change_directory()
-        self.fridge_data()
-        self.garage_data()
-        self.gps_data()
-        self.modbus_data()
-        self.light_data()
-        self.thermostat_data() 
-        self.weather_data()
+        if self.dataset == 'all':
+            self.fridge_data()
+            self.garage_data()
+            self.gps_data()
+            self.modbus_data()
+            self.light_data()
+            self.thermostat_data() 
+            self.weather_data()
+        elif self.dataset == 'fridge':
+            self.fridge_data()
+        elif self.dataset == 'garage':
+            self.garage_data()
+        elif self.dataset == 'gps':
+            self.gps_data()
+        elif self.dataset == 'modbus':
+            self.modbus_data()
+        elif self.dataset == 'light':
+            self.light_data()
+        elif self.dataset == 'thermostat':
+            self.thermostat_data()
+        elif self.dataset == 'weather':
+            self.weather_data()
+        else:
+            print('Invalid dataset name')
 
     def fridge_data(self):
         fridge_dataset = pd.read_csv('Train_Test_IoT_Fridge.csv')
-        mapping = [{'col': 'temp_condition', 'mapping' : {"low": 1, "high": 2}}] 
-        fridgeMapped = OrdinalEncoder(cols=['temp_condition'], mapping=mapping).fit(fridge_dataset).transform(fridge_dataset)
-        mapping = [{'col': 'type', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3,  'password': 4, 'ransomware': 5, 'xss': 7 }}]
-        fridgeMapped = OrdinalEncoder(cols=['type'], mapping=mapping).fit(fridgeMapped).transform(fridgeMapped)
-        complete_fridge_dataset = fridge_dataset[['ts','date','time','fridge_temperature','temp_condition','type','label']]
+        mapping = [{'col': 'temp_condition', 'mapping' : {"low": 1, "high": 2}}, 
+                   {'col': 'type', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomware': 5, 'scanning': 6, 'xss': 7 }}] 
+        fridgeMapped = OrdinalEncoder(cols=['temp_condition', 'type'], mapping=mapping).fit(fridge_dataset).transform(fridge_dataset)
+
+        totalMapping = [{'col': 'temp_condition', 'mapping': {"low": "Low", "high": "High"}},
+                    {'col': 'type', 'mapping': {'normal': 'Normal', 'backdoor': 'Backdoor', 'ddos': 'DDoS', 'injection': 'Injection', 'password': 'Password', 'ransomware': 'Ransomware', 'scanning': 'Scanning', 'xss': 'XSS'}}]
+        
+        completeFridgeMapped = OrdinalEncoder(cols=['temp_condition', 'type'], mapping=totalMapping).fit(fridge_dataset).transform(fridge_dataset) 
+        
+        complete_fridge_dataset = completeFridgeMapped[['ts','date','time','fridge_temperature','temp_condition','type','label']]
         complete_fridge_dataset['ts'] = pd.to_numeric(complete_fridge_dataset['ts'])
         complete_fridge_dataset['date'] = pd.to_datetime(complete_fridge_dataset['date'], format="%d-%b-%y")
         complete_fridge_dataset['time'] = complete_fridge_dataset['time'].str.strip()
         complete_fridge_dataset['time'] = pd.to_datetime(complete_fridge_dataset['time'], format='%H:%M:%S').dt.time
         complete_fridge_dataset.sort_values(by=['ts','date','time'])
         fridgeMapped = fridgeMapped[['fridge_temperature','temp_condition','type','label']]
-
         completeTrainFridge,  completeTestFridge = train_test_split(complete_fridge_dataset, test_size=0.33)
         train_fridge, test_fridge = train_test_split(fridgeMapped, test_size=0.33)
         complete_fridge_dataset.sort_values(by=['date']) 
@@ -228,7 +251,7 @@ class TON_IoT_Datagen():
         for ndx in range(0, l, n):
             yield np.array(iterable[ndx:min(ndx + n, l)])
 
-    def create_dataset(self, train_stepsize, test_stepsize, test, train):
+    def create_dataset(self, train_stepsize, test_stepsize, test, train): 
         self.trainDict = {}
         self.testDict = {}
         trainSet = test.to_numpy()
@@ -296,7 +319,7 @@ class TON_IoT_Datagen():
 
         return self.trainDict, self.testDict
 
-# datagen = TON_IoT_Datagen()
-# fridgeTrain, fridgeTest = datagen.create_dataset(train_stepsize=datagen.thermoTrainStepsize, test_stepsize=datagen.thermoTestStepsize, 
-#                                 train= datagen.thermoTrainSet, test = datagen.thermoTestSet)
-# print(np.shape(fridgeTrain['Data']), np.shape(fridgeTest['Data']))
+datagen = TON_IoT_Datagen(dataset='fridge')
+fridgeTrain, fridgeTest = datagen.create_dataset(train_stepsize=datagen.fridgeTrainStepsize, test_stepsize=datagen.fridgeTestStepsize, 
+                                train= datagen.completeFridgeTestSet, test = datagen.completeFridgeTestSet)
+print(fridgeTrain['Data'])

@@ -61,12 +61,12 @@ class ModbusSim:
         self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
 
         # Create garage dataset and timesteps for simulation
-        modbusDataset = ton.TON_IoT_Datagen()
+        modbusDataset = ton.TON_IoT_Datagen(dataset= 'modbus')
         self.modbusTrain, self.modbusTest = modbusDataset.create_dataset(train_stepsize=modbusDataset.modbusTrainStepsize, test_stepsize=modbusDataset.modbusTestStepsize, 
                                         train= modbusDataset.completeModbusTrainSet, test = modbusDataset.completeModbusTestSet)
 
 
-    def sendModbusTrain(self, transmission = 'kafka'):
+    def sendModbusTrain(self, transmission ):
         columnNames = self.modbusTrain['Dataframe'].columns
         # print(self.modbusTrain['Dataframe'].head())
         for i in range(len(self.modbusTrain['Data'][0])):
@@ -105,7 +105,7 @@ class ModbusSim:
                 print("Sent {}: {} bytes".format(root.tag, len(xml_data)))
                 time.sleep(14)
 
-    def sendModbusTest(self, transmission = 'kafka'):
+    def sendModbusTest(self, transmission ):
         columnNames = self.modbusTest['Dataframe'].columns
         # print(self.modbumodbusTestsTrain['Dataframe'].head())
         for i in range(len(self.modbusTrain['Data'][0])):
