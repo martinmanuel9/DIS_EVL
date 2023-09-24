@@ -88,5 +88,5 @@ class DeviceTrain():
 
 if __name__ == "__main__":
     device_train = DeviceTrain()
-    device_train.runTrainingData(transmission='pdu')
+    device_train.runTrainingData()
 

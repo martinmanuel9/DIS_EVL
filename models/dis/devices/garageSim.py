@@ -87,7 +87,17 @@ class GarageSim:
                 data = memoryStream.getvalue()
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
-                print("Sent {}: {} bytes".format(garagePdu.__class__.__name__, len(data)))
+
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format(garagePdu.__class__.__name__, len(data))
+                    + "\n---------------------------------------|\n" 
+                    + "Garage Data Sent:"
+                    + "\n Door State: {}".format(garagePdu.door_state.decode('utf-8'))
+                    + "\n Sphone: {}".format(garagePdu.sphone)
+                    + "\n Attack: {}".format(garagePdu.attack.decode('utf-8'))
+                    + "\n Label: {}".format(garagePdu.label)
+                    + "\n_______________________________________|")
+                
                 time.sleep(8)
 
             """Sending via Kafka Producer"""
@@ -105,7 +115,16 @@ class GarageSim:
                 # send xml data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print("Sent {}: {} bytes".format("GarageData", len(xml_data)))
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format("GarageData", len(xml_data))
+                    + "\n---------------------------------------|\n" 
+                    + "Garage Data Sent:"
+                    + "\n Door State: {}".format(self.garageTrain['Data'][0][i][0][3])
+                    + "\n Sphone: {}".format(self.garageTrain['Data'][0][i][0][4])
+                    + "\n Attack: {}".format(self.garageTrain['Data'][0][i][0][5])
+                    + "\n Label: {}".format(self.garageTrain['Data'][0][i][0][6])
+                    + "\n_______________________________________|")
+                
                 time.sleep(8)
 
     def sendGarageTest(self):
@@ -125,8 +144,16 @@ class GarageSim:
                 data = memoryStream.getvalue()
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
-                print("Sent {}: {} bytes".format(garagePdu.__class__.__name__, len(data)))
-                time.sleep(8)
+
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format(garagePdu.__class__.__name__, len(data))
+                    + "\n---------------------------------------|\n" 
+                    + "Garage Data Sent:"
+                    + "\n Door State: {}".format(garagePdu.door_state.decode('utf-8'))
+                    + "\n Sphone: {}".format(garagePdu.sphone)
+                    + "\n Attack: {}".format(garagePdu.attack.decode('utf-8'))
+                    + "\n Label: {}".format(garagePdu.label)
+                    + "\n_______________________________________|")
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -143,9 +170,18 @@ class GarageSim:
                 # send xml data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print("Sent {}: {} bytes".format("GarageData", len(xml_data)))
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format("GarageData", len(xml_data))
+                    + "\n---------------------------------------|\n" 
+                    + "Garage Data Sent:"
+                    + "\n Door State: {}".format(self.garageTrain['Data'][0][i][0][3])
+                    + "\n Sphone: {}".format(self.garageTrain['Data'][0][i][0][4])
+                    + "\n Attack: {}".format(self.garageTrain['Data'][0][i][0][5])
+                    + "\n Label: {}".format(self.garageTrain['Data'][0][i][0][6])
+                    + "\n_______________________________________|")
+                
                 time.sleep(8)
 
 if __name__ == "__main__":
-    GarageSim = GarageSim(transmission='pdu')
+    GarageSim = GarageSim(transmission='kafka')
     GarageSim.sendGarageTrain()

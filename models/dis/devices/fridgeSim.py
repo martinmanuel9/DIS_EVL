@@ -88,11 +88,16 @@ class FridgeSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print('Fridge Temp Row: ', self.fridgeTrain['Data'][0][i][0][3])
-                print('Fridge Temp Condition: ' , self.fridgeTrain['Data'][0][i][0][4])
-                print('Fridge Temp Attack: ', self.fridgeTrain['Data'][0][i][0][5])
-                print('Fridge Label: ', self.fridgeTrain['Data'][0][i][0][6])
-                print("Sent {}: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data)))
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
+                    + "\n---------------------------------------|\n" 
+                    + "Fridge Data Sent:"
+                    + "\n Temperature: {}".format(fridgeEnvPdu.temperature)
+                    + "\n Temperature Condition: {}".format(fridgeEnvPdu.condition.decode('utf-8'))
+                    + "\n Attack: {}".format(fridgeEnvPdu.attack.decode('utf-8'))
+                    + "\n Label: {}".format(fridgeEnvPdu.label)
+                    + "\n_______________________________________|")
+                
                 time.sleep(5)
 
             """Sending via Kafka Producer"""
@@ -110,11 +115,16 @@ class FridgeSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print('Fridge Temp Row: ', self.fridgeTrain['Data'][0][i][0][3])
-                print('Fridge Temp Condition: ' , self.fridgeTrain['Data'][0][i][0][4])
-                print('Fridge Temp Attack: ', self.fridgeTrain['Data'][0][i][0][5])
-                print('Fridge Label: ', self.fridgeTrain['Data'][0][i][0][6])
-                print("Sent {}: {} bytes".format("FridgeData", len(xml_data)))
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
+                    + "\n---------------------------------------|\n" 
+                    + "Fridge Data Sent:"
+                    + "\n Temperature: {}".format(self.fridgeTrain['Data'][0][i][0][3])
+                    + "\n Temperature Condition: {}".format(self.fridgeTrain['Data'][0][i][0][4])
+                    + "\n Attack: {}".format(self.fridgeTrain['Data'][0][i][0][5])
+                    + "\n Label: {}".format(self.fridgeTrain['Data'][0][i][0][6])
+                    + "\n_______________________________________|")
+                
                 time.sleep(5)
 
     def sendFridgeTest(self):
@@ -136,11 +146,16 @@ class FridgeSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print('Fridge Temp Row: ', self.fridgeTest['Data'][0][i][0][3])
-                print('Fridge Temp Condition: ' , self.fridgeTest['Data'][0][i][0][4])
-                print('Fridge Temp Attack: ', self.fridgeTest['Data'][0][i][0][5])
-                print('Fridge Label: ', self.fridgeTest['Data'][0][i][0][6])
-                print("Sent {}: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data)))
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
+                    + "\n---------------------------------------|\n" 
+                    + "Fridge Data Sent:"
+                    + "\n Temperature: {}".format(fridgeEnvPdu.temperature)
+                    + "\n Temperature Condition: {}".format(fridgeEnvPdu.condition.decode('utf-8'))
+                    + "\n Attack: {}".format(fridgeEnvPdu.attack.decode('utf-8'))
+                    + "\n Label: {}".format(fridgeEnvPdu.label)
+                    + "\n_______________________________________|")
+                
                 time.sleep(5)
 
             """Sending via Kafka Producer"""
@@ -158,14 +173,19 @@ class FridgeSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print('Fridge Temp Row: ', self.fridgeTest['Data'][0][i][0][3])
-                print('Fridge Temp Condition: ' , self.fridgeTest['Data'][0][i][0][4])
-                print('Fridge Temp Attack: ', self.fridgeTest['Data'][0][i][0][5])
-                print('Fridge Label: ', self.fridgeTest['Data'][0][i][0][6])
-                print("Sent {}: {} bytes".format("FridgeData", len(xml_data)))
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
+                    + "\n---------------------------------------|\n" 
+                    + "Fridge Data Sent:"
+                    + "\n Temperature: {}".format(self.fridgeTrain['Data'][0][i][0][3])
+                    + "\n Temperature Condition: {}".format(self.fridgeTrain['Data'][0][i][0][4])
+                    + "\n Attack: {}".format(self.fridgeTrain['Data'][0][i][0][5])
+                    + "\n Label: {}".format(self.fridgeTrain['Data'][0][i][0][6])
+                    + "\n_______________________________________|")
+                
                 time.sleep(5)
 
 
 if __name__ == "__main__":
-    FridgeSim = FridgeSim(transmission='pdu')
+    FridgeSim = FridgeSim(transmission= 'kafka')
     FridgeSim.sendFridgeTrain()

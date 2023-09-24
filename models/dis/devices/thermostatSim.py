@@ -85,8 +85,17 @@ class ThermostatSim:
                 data = memoryStream.getvalue() 
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
-                print('Thermostat Temperature: ', self.thermoTrain['Data'][0][i][0][3]) # temperature
-                print("Sent {}: {} bytes".format(envTempPdu.__class__.__name__, len(data)))
+
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format(envTempPdu.__class__.__name__, len(data))
+                    + "\n---------------------------------------|\n" 
+                    + "Thermostat Data Sent:"
+                    + "\n Temperature: {}".format(envTempPdu.temperature)
+                    + "\n Temp Status: {}".format(envTempPdu.temp_status)
+                    + "\n Attack: {}".format(envTempPdu.attack.decode('utf-8'))
+                    + "\n Label: {}".format(envTempPdu.label)
+                    + "\n_______________________________________|")
+                
                 time.sleep(16)
 
             elif self.transmission == 'kafka':
@@ -101,8 +110,16 @@ class ThermostatSim:
                 xml_data = ET.tostring(root, encoding='utf8')
                 self.producer.produce_message(xml_data)
 
-                print('Thermostat Temperature: ', self.thermoTrain['Data'][0][i][0][3]) # temperature
-                print("Sent {}: {} bytes".format("ThermostatData", len(xml_data)))
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format("ThermostatData", len(xml_data))
+                    + "\n---------------------------------------|\n" 
+                    + "Thermostat Data Sent:"
+                    + "\n Temperature: {}".format(self.thermoTest['Data'][0][i][0][3])
+                    + "\n Temp Status: {}".format(self.thermoTest['Data'][0][i][0][4])
+                    + "\n Attack: {}".format(self.thermoTest['Data'][0][i][0][5])
+                    + "\n Label: {}".format(self.thermoTest['Data'][0][i][0][6])
+                    + "\n_______________________________________|") 
+                
                 time.sleep(16)
 
     def sendThermostatTest(self ):
@@ -122,8 +139,17 @@ class ThermostatSim:
                 data = memoryStream.getvalue() 
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
-                print('Thermostat Temperature: ', self.thermoTest['Data'][0][i][0][3]) # temperature
-                print("Sent {}: {} bytes".format(envTempPdu.__class__.__name__, len(data)))
+
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format(envTempPdu.__class__.__name__, len(data))
+                    + "\n---------------------------------------|\n" 
+                    + "Thermostat Data Sent:"
+                    + "\n Temperature: {}".format(envTempPdu.temperature)
+                    + "\n Temp Status: {}".format(envTempPdu.temp_status)
+                    + "\n Attack: {}".format(envTempPdu.attack.decode('utf-8'))
+                    + "\n Label: {}".format(envTempPdu.label)
+                    + "\n_______________________________________|")
+                 
                 time.sleep(16)
 
             elif self.transmission == 'kafka':
@@ -138,10 +164,18 @@ class ThermostatSim:
                 xml_data = ET.tostring(root, encoding='utf8')
                 self.producer.produce_message(xml_data)
 
-                print('Thermostat Temperature: ', self.thermoTest['Data'][0][i][0][3]) # temperature
-                print("Sent {}: {} bytes".format("ThermostatData", len(xml_data)))
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format("ThermostatData", len(xml_data))
+                    + "\n---------------------------------------|\n" 
+                    + "Thermostat Data Sent:"
+                    + "\n Temperature: {}".format(self.thermoTest['Data'][0][i][0][3])
+                    + "\n Temp Status: {}".format(self.thermoTest['Data'][0][i][0][4])
+                    + "\n Attack: {}".format(self.thermoTest['Data'][0][i][0][5])
+                    + "\n Label: {}".format(self.thermoTest['Data'][0][i][0][6])
+                    + "\n_______________________________________|") 
+                
                 time.sleep(16)
 
 if __name__ == '__main__':
-    thermostat = ThermostatSim(transmission= 'kafka')
+    thermostat = ThermostatSim(transmission= 'pdu')
     thermostat.sendThermostatTrain()

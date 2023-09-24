@@ -186,11 +186,10 @@ class TON_IoT_Datagen():
         complete_light_dataset['ts'] = pd.to_numeric(complete_light_dataset['ts'])
         complete_light_dataset['date'] = pd.to_datetime(complete_light_dataset['date'], format="%d-%b-%y")
         complete_light_dataset['time'] = complete_light_dataset['time'].str.strip()
-        complete_light_dataset['light_status'] = complete_light_dataset['light_status'].str.strip()
         complete_light_dataset['time'] = pd.to_datetime(complete_light_dataset['time'], format='%H:%M:%S').dt.time
+        complete_light_dataset['light_status'] = complete_light_dataset['light_status'].str.strip()
         train_light, test_light = train_test_split(lightMapped, test_size=0.33)
-        completeTrainLight, completeTestLight = train_test_split(complete_light_dataset, test_size=0.33)
-        # print('light:', len(train_light), len(test_light))
+        completeTrainLight, completeTestLight = train_test_split(complete_light_dataset, test_size=0.33) 
         complete_light_dataset.sort_values(by=['date'])
         self.lightTrainStepsize = 196
         self.lightTestStepsize = 396
@@ -230,9 +229,9 @@ class TON_IoT_Datagen():
         complete_weather_dataset['date'] = pd.to_datetime(complete_weather_dataset['date'], format="%d-%b-%y")
         complete_weather_dataset['time'] = complete_weather_dataset['time'].str.strip()
         complete_weather_dataset['time'] = pd.to_datetime(complete_weather_dataset['time'], format='%H:%M:%S').dt.time
-        
+        complete_weather_dataset['label'] = pd.to_numeric(complete_weather_dataset['label']) 
         train_weather, test_weather = train_test_split(weatherMapped, test_size=0.33)
-        completeTrainWeather, completeTestWeather = train_test_split(complete_weather_dataset, test_size=0.33)
+        completeTrainWeather, completeTestWeather = train_test_split(complete_weather_dataset, test_size=0.33) 
         # print('weather:', len(train_weather), len(test_weather))
         complete_weather_dataset.sort_values(by=['date'])
         self.weatherTrainStepsize = 194

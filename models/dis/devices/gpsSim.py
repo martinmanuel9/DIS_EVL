@@ -107,9 +107,22 @@ class GPSSim:
                 data = memoryStream.getvalue()
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
-                print('Train Data GPS: \n', 'Longitude: ', self.gpsTrain['Data'][0][i][0][3], '\n', 'Latitude:', self.gpsTrain['Data'][0][i][0][4]) # latitude, longitude
-                print('Packet Size: ' , sys.getsizeof(self.gpsTrain['Data'][0][i][0][3]))
-                print("Sent {}: {} bytes".format(gpsPDU.__class__.__name__, len(data)))
+
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data))
+                    + "\n---------------------------------------|\n" 
+                    + "GPS Data Sent:"
+                    + "\n Longitude: {}".format(gpsLocation[0]) 
+                    + "\n Latitude: {}".format(gpsLocation[1])
+                    + "\n Altitude: {}".format(gpsLocation[2])
+                    + "\n Roll: {}".format(gpsLocation[3])
+                    + "\n Pitch: {}".format(gpsLocation[4])
+                    + "\n Yaw: {}".format(gpsLocation[5])
+                    + "\n Attack: {}".format(gpsPDU.attack.decode('utf-8'))
+                    + "\n Label: {}".format(gpsPDU.label)
+                    + "\n_______________________________________|")
+
+
                 time.sleep(10)
 
             if self.transmission == 'kafka':
@@ -126,9 +139,21 @@ class GPSSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print('Train Data GPS: \n', 'Longitude: ', self.gpsTrain['Data'][0][i][0][3], '\n', 'Latitude:', self.gpsTrain['Data'][0][i][0][4]) # latitude, longitude
-                print('Packet Size: ' , sys.getsizeof(self.gpsTrain['Data'][0][i][0][3]))
-                print("Sent {}: {} bytes".format("GPSData", len(xml_data)))
+
+                print("---------------------------------------|\n"   
+                    + "Sent {} PDU: {} bytes".format("GPSData", len(data))
+                    + "\n---------------------------------------|\n" 
+                    + "GPS Data Sent:"
+                    + "\n Longitude: {}".format(self.gpsTrain['Data'][0][i][0][3]) 
+                    + "\n Latitude: {}".format(self.gpsTrain['Data'][0][i][0][4])
+                    + "\n Altitude: 1"
+                    + "\n Roll: 0"
+                    + "\n Pitch: 0"
+                    + "\n Yaw: 0"
+                    + "\n Attack: {}".format(self.gpsTrain['Data'][0][i][0][5])
+                    + "\n Label: {}".format(self.gpsTrain['Data'][0][i][0][6])
+                    + "\n_______________________________________|")
+
                 time.sleep(10)
 
     def sendTestGPS(self):
@@ -167,9 +192,21 @@ class GPSSim:
                 data = memoryStream.getvalue()
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
-                print('Train Data GPS: \n', 'Longitude: ', self.gpsTest['Data'][0][i][0][3], '\n', 'Latitude:', self.gpsTest['Data'][0][i][0][4]) # latitude, longitude
-                print('Packet Size: ' , sys.getsizeof(self.gpsTest['Data'][0][i][0][3]))
-                print("Sent {}: {} bytes".format(gpsPDU.__class__.__name__, len(data)))
+
+                print("---------------------------------------|\n" 
+                    + "Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data))
+                    + "\n---------------------------------------|\n" 
+                    + "GPS Data Sent:"
+                    + "\n Longitude: {}".format(gpsLocation[0]) 
+                    + "\n Latitude: {}".format(gpsLocation[1])
+                    + "\n Altitude: {}".format(gpsLocation[2])
+                    + "\n Roll: {}".format(gpsLocation[3])
+                    + "\n Pitch: {}".format(gpsLocation[4])
+                    + "\n Yaw: {}".format(gpsLocation[5])
+                    + "\n Attack: {}".format(gpsPDU.attack.decode('utf-8'))
+                    + "\n Label: {}".format(gpsPDU.label)
+                    + "\n_______________________________________|")
+                
                 time.sleep(10)
 
             if self.transmission == 'kafka':
@@ -186,11 +223,22 @@ class GPSSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print('Train Data GPS: \n', 'Longitude: ', self.gpsTest['Data'][0][i][0][3], '\n', 'Latitude:', self.gpsTrain['Data'][0][i][0][4]) # latitude, longitude
-                print('Packet Size: ' , sys.getsizeof(self.gpsTest['Data'][0][i][0][3]))
-                print("Sent {}: {} bytes".format("GPSData", len(xml_data)))
+                print("---------------------------------------|\n"  
+                    + "Sent {} PDU: {} bytes".format("GPSData", len(xml_data))
+                    + "\n---------------------------------------|\n" 
+                    + "GPS Data Sent:"
+                    + "\n Longitude: {}".format(self.gpsTrain['Data'][0][i][0][3]) 
+                    + "\n Latitude: {}".format(self.gpsTrain['Data'][0][i][0][4])
+                    + "\n Altitude: 1"
+                    + "\n Roll: 0"
+                    + "\n Pitch: 0"
+                    + "\n Yaw: 0"
+                    + "\n Attack: {}".format(self.gpsTrain['Data'][0][i][0][5])
+                    + "\n Label: {}".format(self.gpsTrain['Data'][0][i][0][6])
+                    + "\n_______________________________________|")
+                
                 time.sleep(10)
 
 if __name__ == '__main__':
-    gpsSim = GPSSim(transmission='kafka')
-    gpsSim.sendTrainGPS()
+    gpsSim = GPSSim(transmission= 'kafka')
+    gpsSim.sendTestGPS()

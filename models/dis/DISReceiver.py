@@ -81,21 +81,21 @@ def recv():
     
     elif pdu.pduType == 73: # Light
         print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
-              + "Motion Status    : {}\n".format(pdu.motion_status)
-              + "Light Status     : {}\n".format(pdu.light_status.decode('utf-8'))
-              + "Attack           : {}\n".format(pdu.attack.decode('utf-8'))
-              + "Label            : {}\n".format(pdu.label)
+              + " Motion Status    : {}\n".format(pdu.motion_status)
+              + " Light Status     : {}\n".format(pdu.light_status.decode('utf-8'))
+              + " Attack           : {}\n".format(pdu.attack.decode('utf-8'))
+              + " Label            : {}\n".format(pdu.label)
               )
     
     elif pdu.pduType == 70:  # environment
         print("Received {}: {} Bytes \n".format(pduTypeName, len(data), flush=True)
-                + " Temperature : {}\n".format(pdu.temperature)
-                + " Pressure :{}\n".format(pdu.pressure)
+                + " Temperature: {}\n".format(pdu.temperature)
+                + " Pressure: {}\n".format(pdu.pressure)
                 + " Humidity: {}\n".format(pdu.humidity)
                 + " Condition: {}\n".format(pdu.condition.decode('utf-8'))
-                + " Index: {}\n".format(pdu.index)
+                + " Temp Status: {}\n".format(pdu.temp_status)
                 + " Attack: {}\n".format(pdu.attack.decode('utf-8'))
-                + " Label : {}\n".format(pdu.label)  
+                + " Label: {}\n".format(pdu.label)  
                 )
         
     elif pdu.pduType == 71: # modbus
