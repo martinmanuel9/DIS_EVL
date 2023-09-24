@@ -89,6 +89,7 @@ def recv():
     
     elif pdu.pduType == 70:  # environment
         print("Received {}: {} Bytes \n".format(pduTypeName, len(data), flush=True)
+                + " Device: {}\n".format(pdu.device.decode('utf-8'))
                 + " Temperature: {}\n".format(pdu.temperature)
                 + " Pressure: {}\n".format(pdu.pressure)
                 + " Humidity: {}\n".format(pdu.humidity)

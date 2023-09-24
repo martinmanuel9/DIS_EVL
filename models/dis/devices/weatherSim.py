@@ -75,6 +75,8 @@ class WeatherSim:
         for i in range((len(self.weatherTrain['Data'][0]))):
             if self.transmission == 'pdu':
                 weatherPdu = Environment()
+                device = "Weather"
+                weatherPdu.device = device.encode('utf-8') # device
                 weatherPdu.temperature = self.weatherTrain['Data'][0][i][0][3] # tempeature
                 weatherPdu.pressure = self.weatherTrain['Data'][0][i][0][4] # pressure
                 weatherPdu.humidity = self.weatherTrain['Data'][0][i][0][5] # humidity 
@@ -92,6 +94,7 @@ class WeatherSim:
                     + "Sent {} PDU: {} bytes".format(weatherPdu.__class__.__name__, len(data))
                     + "\n---------------------------------------|\n" 
                     + "Weather Data Sent:"
+                    + "\n Device: {}".format(weatherPdu.device.decode('utf-8'))
                     + "\n Temperature: {}".format(weatherPdu.temperature)
                     + "\n Pressure: {}".format(weatherPdu.pressure)
                     + "\n Humidity: {}".format(weatherPdu.humidity)
@@ -135,6 +138,8 @@ class WeatherSim:
         for i in range((len(self.weatherTrain['Data'][0]))):
             if self.transmission == 'pdu':
                 weatherPdu = Environment()
+                device = "Weather"
+                weatherPdu.device = device.encode('utf-8') # device
                 weatherPdu.temperature = self.weatherTest['Data'][0][i][0][3] # tempeature
                 weatherPdu.pressure = self.weatherTest['Data'][0][i][0][4] # pressure
                 weatherPdu.humidity = self.weatherTest['Data'][0][i][0][5] # humidity 
@@ -152,6 +157,7 @@ class WeatherSim:
                     + "Sent {} PDU: {} bytes".format(weatherPdu.__class__.__name__, len(data))
                     + "\n---------------------------------------|\n" 
                     + "Weather Data Sent:"
+                    + "\n Device: {}".format(weatherPdu.device.decode('utf-8'))
                     + "\n Temperature: {}".format(weatherPdu.temperature)
                     + "\n Pressure: {}".format(weatherPdu.pressure)
                     + "\n Humidity: {}".format(weatherPdu.humidity)

@@ -73,27 +73,30 @@ class ThermostatSim:
         # print(self.thermoTrain['Dataframe'].head())
         for i in range(len(self.thermoTrain['Data'][0])):
             if self.transmission == 'pdu':
-                envTempPdu = Environment()
-                envTempPdu.temperature = self.thermoTrain['Data'][0][i][0][3] # temperature
-                envTempPdu.temp_status = self.thermoTrain['Data'][0][i][0][4] #temp status
-                envTempPdu.attack = self.thermoTrain['Data'][0][i][0][5].encode('utf-8') # attack
-                envTempPdu.label = self.thermoTrain['Data'][0][i][0][6]
+                thermostatPdu = Environment()
+                device = "Thermostat"
+                thermostatPdu.device = device.encode('utf-8') # device 
+                thermostatPdu.temperature = self.thermoTrain['Data'][0][i][0][3] # temperature
+                thermostatPdu.temp_status = self.thermoTrain['Data'][0][i][0][4] #temp status
+                thermostatPdu.attack = self.thermoTrain['Data'][0][i][0][5].encode('utf-8') # attack
+                thermostatPdu.label = self.thermoTrain['Data'][0][i][0][6]
             
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
-                envTempPdu.serialize(outputStream)
+                thermostatPdu.serialize(outputStream)
                 data = memoryStream.getvalue() 
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
                 print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(envTempPdu.__class__.__name__, len(data))
+                    + "Sent {} PDU: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
                     + "\n---------------------------------------|\n" 
                     + "Thermostat Data Sent:"
-                    + "\n Temperature: {}".format(envTempPdu.temperature)
-                    + "\n Temp Status: {}".format(envTempPdu.temp_status)
-                    + "\n Attack: {}".format(envTempPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(envTempPdu.label)
+                    + "\n Device: {}".format(thermostatPdu.device.decode('utf-8'))
+                    + "\n Temperature: {}".format(thermostatPdu.temperature)
+                    + "\n Temp Status: {}".format(thermostatPdu.temp_status)
+                    + "\n Attack: {}".format(thermostatPdu.attack.decode('utf-8'))
+                    + "\n Label: {}".format(thermostatPdu.label)
                     + "\n_______________________________________|")
                 
                 time.sleep(16)
@@ -127,27 +130,30 @@ class ThermostatSim:
         # print(self.thermoTest['Dataframe'].head())
         for i in range(len(self.thermoTrain['Data'][0])):
             if self.transmission == 'pdu':
-                envTempPdu = Environment()
-                envTempPdu.temperature = self.thermoTest['Data'][0][i][0][3] # temperature
-                envTempPdu.temp_status = self.thermoTest['Data'][0][i][0][4] #temp status
-                envTempPdu.attack = self.thermoTest['Data'][0][i][0][5].encode('utf-8') # attack
-                envTempPdu.label = self.thermoTest['Data'][0][i][0][6]
+                thermostatPdu = Environment()
+                device = "Thermostat"
+                thermostatPdu.device = device.encode('utf-8') # device 
+                thermostatPdu.temperature = self.thermoTest['Data'][0][i][0][3] # temperature
+                thermostatPdu.temp_status = self.thermoTest['Data'][0][i][0][4] #temp status
+                thermostatPdu.attack = self.thermoTest['Data'][0][i][0][5].encode('utf-8') # attack
+                thermostatPdu.label = self.thermoTest['Data'][0][i][0][6]
             
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
-                envTempPdu.serialize(outputStream)
+                thermostatPdu.serialize(outputStream)
                 data = memoryStream.getvalue() 
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
                 print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(envTempPdu.__class__.__name__, len(data))
+                    + "Sent {} PDU: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
                     + "\n---------------------------------------|\n" 
                     + "Thermostat Data Sent:"
-                    + "\n Temperature: {}".format(envTempPdu.temperature)
-                    + "\n Temp Status: {}".format(envTempPdu.temp_status)
-                    + "\n Attack: {}".format(envTempPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(envTempPdu.label)
+                    + "\n Device: {}".format(thermostatPdu.device.decode('utf-8'))
+                    + "\n Temperature: {}".format(thermostatPdu.temperature)
+                    + "\n Temp Status: {}".format(thermostatPdu.temp_status)
+                    + "\n Attack: {}".format(thermostatPdu.attack.decode('utf-8'))
+                    + "\n Label: {}".format(thermostatPdu.label)
                     + "\n_______________________________________|")
                  
                 time.sleep(16)

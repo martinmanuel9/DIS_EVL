@@ -76,7 +76,9 @@ class FridgeSim:
             """Sending via PDU and UDP Protocol via Open DIS """
             if self.transmission == 'pdu':
                 fridgeEnvPdu = Environment()
-                fridgeEnvPdu.temperature = self.fridgeTrain['Data'][0][i][0][3] # fridge row  
+                device = "Fridge"
+                fridgeEnvPdu.device = device.encode('utf-8')
+                fridgeEnvPdu.temperature = self.fridgeTrain['Data'][0][i][0][3] # fridge 
                 fridgeEnvPdu.condition = self.fridgeTrain['Data'][0][i][0][4].encode('utf-8')
                 fridgeEnvPdu.attack = self.fridgeTrain['Data'][0][i][0][5].encode('utf-8') # attack
                 fridgeEnvPdu.label = int(self.fridgeTrain['Data'][0][i][0][6])  #label
@@ -92,8 +94,14 @@ class FridgeSim:
                     + "Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
                     + "\n---------------------------------------|\n" 
                     + "Fridge Data Sent:"
+                    + "\n Device: {}".format(fridgeEnvPdu.device.decode('utf-8'))
                     + "\n Temperature: {}".format(fridgeEnvPdu.temperature)
                     + "\n Temperature Condition: {}".format(fridgeEnvPdu.condition.decode('utf-8'))
+                        # can delete below
+                    + "\n pressure: {}".format(fridgeEnvPdu.pressure)
+                    + "\n humidity: {}".format(fridgeEnvPdu.humidity)
+                    + "\n temp status: {}".format(fridgeEnvPdu.temp_status)
+                        # can delete above
                     + "\n Attack: {}".format(fridgeEnvPdu.attack.decode('utf-8'))
                     + "\n Label: {}".format(fridgeEnvPdu.label)
                     + "\n_______________________________________|")
@@ -134,6 +142,8 @@ class FridgeSim:
             """Sending via PDU and UDP Protocol via Open DIS """
             if self.transmission == 'pdu':
                 fridgeEnvPdu = Environment()
+                device = "Fridge"
+                fridgeEnvPdu.device = device.encode('utf-8')
                 fridgeEnvPdu.temperature = self.fridgeTest['Data'][0][i][0][3] # fridge row  
                 fridgeEnvPdu.condition = self.fridgeTest['Data'][0][i][0][4].encode('utf-8')
                 fridgeEnvPdu.attack = self.fridgeTest['Data'][0][i][0][5].encode('utf-8') # attack
@@ -150,6 +160,7 @@ class FridgeSim:
                     + "Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
                     + "\n---------------------------------------|\n" 
                     + "Fridge Data Sent:"
+                    + "\n Device: {}".format(fridgeEnvPdu.device.decode('utf-8'))
                     + "\n Temperature: {}".format(fridgeEnvPdu.temperature)
                     + "\n Temperature Condition: {}".format(fridgeEnvPdu.condition.decode('utf-8'))
                     + "\n Attack: {}".format(fridgeEnvPdu.attack.decode('utf-8'))
@@ -187,5 +198,5 @@ class FridgeSim:
 
 
 if __name__ == "__main__":
-    FridgeSim = FridgeSim(transmission= 'kafka')
+    FridgeSim = FridgeSim(transmission= 'pdu')
     FridgeSim.sendFridgeTrain()
