@@ -246,6 +246,6 @@ class WeatherSim:
                 time.sleep(18)
 
 
-if __name__ == '__main__':
-    weatherSim = WeatherSim(transmission= 'kafka_pdu')
-    weatherSim.sendWeatherTrain()
+# if __name__ == '__main__':
+#     weatherSim = WeatherSim(transmission= 'kafka_pdu')
+#     weatherSim.sendWeatherTrain()

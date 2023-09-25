@@ -228,6 +228,6 @@ class ThermostatSim:
                  
                 time.sleep(16)
 
-if __name__ == '__main__':
-    thermostat = ThermostatSim(transmission= 'kafka_pdu')
-    thermostat.sendThermostatTrain()
+# if __name__ == '__main__':
+#     thermostat = ThermostatSim(transmission= 'kafka_pdu')
+#     thermostat.sendThermostatTrain()

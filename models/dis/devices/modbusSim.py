@@ -243,8 +243,8 @@ class ModbusSim:
                 
                 time.sleep(14)
 
-if __name__ == '__main__':
-    modbusSim = ModbusSim(transmission = 'kafka_pdu')
-    modbusSim.sendModbusTrain()
+# if __name__ == '__main__':
+#     modbusSim = ModbusSim(transmission = 'kafka_pdu')
+#     modbusSim.sendModbusTrain()
     
 

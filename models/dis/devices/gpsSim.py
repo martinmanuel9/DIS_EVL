@@ -71,7 +71,7 @@ class GPSSim:
 
         self.gps = GPS()
 
-    def sendTrainGPS(self):
+    def sendGPSTrain(self):
         columnNames = self.gpsTrain['Dataframe'].columns
         # print(self.gpsTrain['Dataframe'].head())
         for i in range(len(self.gpsTrain['Data'][0])):
@@ -137,7 +137,7 @@ class GPSSim:
                 self.producer.produce_message(xml_data)
 
 
-                print( "Sent {} PDU: {} bytes".format("GPSData", len(data))  
+                print( "Sent {} PDU: {} bytes".format("GPSData", len(xml_data))  
                     + "\n GPS Data Sent:"
                     + "\n  Longitude   : {}".format(self.gpsTrain['Data'][0][i][0][3]) 
                     + "\n  Latitude    : {}".format(self.gpsTrain['Data'][0][i][0][4])
@@ -197,7 +197,7 @@ class GPSSim:
 
                 time.sleep(10)
 
-    def sendTestGPS(self):
+    def sendGPSTest(self):
         columnNames = self.gpsTest['Dataframe'].columns
         # print(self.gpsTest['Dataframe'].head())
         for i in range(len(self.gpsTest['Data'][0])):
@@ -262,7 +262,7 @@ class GPSSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print( "Sent {} PDU: {} bytes".format("GPSData", len(data))  
+                print( "Sent {} PDU: {} bytes".format("GPSData", len(xml_data))  
                     + "\n GPS Data Sent:"
                     + "\n  Longitude   : {}".format(self.gpsTest['Data'][0][i][0][3]) 
                     + "\n  Latitude    : {}".format(self.gpsTest['Data'][0][i][0][4])
@@ -322,6 +322,6 @@ class GPSSim:
                 
                 time.sleep(10)
 
-if __name__ == '__main__':
-    gpsSim = GPSSim(transmission= 'kafka_pdu')
-    gpsSim.sendTestGPS()
+# if __name__ == '__main__':
+#     gpsSim = GPSSim(transmission= 'kafka_pdu')
+#     gpsSim.sendTestGPS()
