@@ -57,7 +57,7 @@ class WeatherSim:
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        if self.transmission == 'kafka':
+        if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
             self.KAFKA_TOPIC = 'dis'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
@@ -129,6 +129,35 @@ class WeatherSim:
                   
                 time.sleep(18)
 
+            elif self.transmission == 'kafka_pdu':
+                weatherPdu = Environment()
+                device = "Weather"
+                weatherPdu.device = device.encode('utf-8') # device
+                weatherPdu.temperature = self.weatherTrain['Data'][0][i][0][3] # tempeature
+                weatherPdu.pressure = self.weatherTrain['Data'][0][i][0][4] # pressure
+                weatherPdu.humidity = self.weatherTrain['Data'][0][i][0][5] # humidity 
+                weatherPdu.attack = self.weatherTrain['Data'][0][i][0][6].encode('utf-8')
+                weatherPdu.label = self.weatherTrain['Data'][0][i][0][7] 
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                weatherPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+                
+                print("Sent {} PDU: {} bytes".format(weatherPdu.__class__.__name__, len(data)) 
+                    + "\n Weather Data Sent:"
+                    + "\n  Device          : {}".format(weatherPdu.device.decode('utf-8'))
+                    + "\n  Temperature     : {}".format(weatherPdu.temperature)
+                    + "\n  Pressure        : {}".format(weatherPdu.pressure)
+                    + "\n  Humidity        : {}".format(weatherPdu.humidity)
+                    + "\n  Attack          : {}".format(weatherPdu.attack.decode('utf-8'))
+                    + "\n  Label           : {}\n".format(weatherPdu.label)
+                    )
+
+                time.sleep(20)
+
     def sendWeatherTest(self ):
         columnNames = self.weatherTest['Dataframe'].columns
         # print(self.weatherTrain['Dataframe'].head())
@@ -187,7 +216,36 @@ class WeatherSim:
                     )
                 time.sleep(18)
 
+            elif self.transmission == 'kafka_pdu':
+                weatherPdu = Environment()
+                device = "Weather"
+                weatherPdu.device = device.encode('utf-8') # device
+                weatherPdu.temperature = self.weatherTest['Data'][0][i][0][3] # tempeature
+                weatherPdu.pressure = self.weatherTest['Data'][0][i][0][4] # pressure
+                weatherPdu.humidity = self.weatherTest['Data'][0][i][0][5] # humidity 
+                weatherPdu.attack = self.weatherTest['Data'][0][i][0][6].encode('utf-8')
+                weatherPdu.label = self.weatherTest['Data'][0][i][0][7]
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                weatherPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(weatherPdu.__class__.__name__, len(data)) 
+                    + "\n Weather Data Sent:"
+                    + "\n  Device          : {}".format(weatherPdu.device.decode('utf-8'))
+                    + "\n  Temperature     : {}".format(weatherPdu.temperature)
+                    + "\n  Pressure        : {}".format(weatherPdu.pressure)
+                    + "\n  Humidity        : {}".format(weatherPdu.humidity)
+                    + "\n  Attack          : {}".format(weatherPdu.attack.decode('utf-8'))
+                    + "\n  Label           : {}\n".format(weatherPdu.label)
+                    )
+                
+                time.sleep(18)
+
 
 if __name__ == '__main__':
-    weatherSim = WeatherSim(transmission= 'pdu')
+    weatherSim = WeatherSim(transmission= 'kafka_pdu')
     weatherSim.sendWeatherTrain()

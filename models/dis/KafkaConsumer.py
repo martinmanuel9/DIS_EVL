@@ -44,15 +44,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.PduFactory import createPdu
 from opendismodel.opendis.RangeCoordinates import *
+from io import BytesIO
 
-UDP_PORT = 3001
 
-udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-udpSocket.bind(("", UDP_PORT))
 
 class KafkaConsumer:
-    def __init__(self, bootstrap_servers, group_id, topic):
+    def __init__(self, bootstrap_servers, group_id, topic, tranmission):
         self.consumer = Consumer({
             'bootstrap.servers': bootstrap_servers,
             'group.id': group_id,
@@ -60,6 +57,10 @@ class KafkaConsumer:
         })
         self.topic = topic
         self.consumer.subscribe([self.topic])
+        self.transmission = tranmission
+
+        if self.transmission == 'kafka_pdu':
+            self.gps = GPS()
 
     def consume_messages(self):
         try:
@@ -72,9 +73,80 @@ class KafkaConsumer:
                 else:
                     message = msg.value()
                     if isinstance(message, bytes):
-                        try:   
-                            message = message.decode('utf-8')
-                            logging.info(f"Received message: {message}")
+                        try:
+                            # ------- Sending PDUs via Kafka -------#
+                            if self.transmission == 'kafka_pdu':
+                                pdu = createPdu(message)
+                                pduTypeName = pdu.__class__.__name__
+                                memoryStream = BytesIO(message)
+                                data = memoryStream.getvalue()
+                                if pdu.pduType == 1: # PduTypeDecoders.EntityStatePdu:
+                                    loc = (pdu.entityLocation.x,
+                                            pdu.entityLocation.y,
+                                            pdu.entityLocation.z,
+                                            pdu.entityOrientation.psi,
+                                            pdu.entityOrientation.theta,
+                                            pdu.entityOrientation.phi
+                                            )
+                                    
+                                    body = gps.ecef2llarpy(*loc)
+                                    print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
+                                            + " Id          : {}\n".format(pdu.entityID.entityID)
+                                            + " Latitude    : {:.2f} degrees\n".format(rad2deg(body[0]))
+                                            + " Longitude   : {:.2f} degrees\n".format(rad2deg(body[1]))
+                                            + " Altitude    : {:.0f} meters\n".format(body[2])
+                                            + " Yaw         : {:.2f} degrees\n".format(rad2deg(body[3]))
+                                            + " Pitch       : {:.2f} degrees\n".format(rad2deg(body[4]))
+                                            + " Roll        : {:.2f} degrees\n".format(rad2deg(body[5]))
+                                            + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
+                                            + " Label       : {}\n".format(pdu.label)
+                                            )
+                                
+                                elif pdu.pduType == 73: # Light
+                                    print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
+                                        + " Motion Status : {}\n".format(pdu.motion_status)
+                                        + " Light Status  : {}\n".format(pdu.light_status.decode('utf-8'))
+                                        + " Attack        : {}\n".format(pdu.attack.decode('utf-8'))
+                                        + " Label         : {}\n".format(pdu.label)
+                                        )
+                                
+                                elif pdu.pduType == 70:  # environment
+                                    print("Received {}: {} Bytes \n".format(pduTypeName, len(data), flush=True)
+                                            + " Device      : {}\n".format(pdu.device.decode('utf-8'))
+                                            + " Temperature : {}\n".format(pdu.temperature)
+                                            + " Pressure    : {}\n".format(pdu.pressure)
+                                            + " Humidity    : {}\n".format(pdu.humidity)
+                                            + " Condition   : {}\n".format(pdu.condition.decode('utf-8'))
+                                            + " Temp Status : {}\n".format(pdu.temp_status)
+                                            + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
+                                            + " Label       : {}\n".format(pdu.label)  
+                                            )
+                                    
+                                elif pdu.pduType == 71: # modbus
+                                    print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
+                                        + " FC1 Register    : {}\n".format(pdu.fc1)
+                                        + " FC2 Discrete    : {}\n".format(pdu.fc2)
+                                        + " FC3 Register    : {}\n".format(pdu.fc3)
+                                        + " FC4 Read Coil   : {}\n".format(pdu.fc4)
+                                        + " Attack          : {}\n".format(pdu.attack.decode('utf-8'))
+                                        + " Label           : {}\n".format(pdu.label)
+                                        )
+                                
+                                elif pdu.pduType == 72: # garage
+                                    print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
+                                        + " Door State: {}\n".format(pdu.door_state.decode('utf-8'))
+                                        + " SPhone: {}\n".format(pdu.sphone)
+                                        + " Attack: {}\n".format(pdu.attack.decode('utf-8'))
+                                        + " Label : {}\n".format(pdu.label)
+                                        )
+                                else: 
+                                    print("Received not a PDU?? {}, {} bytes".format(pduTypeName, len(data)), flush=True)
+                            
+                            #------ Regular Kafka Messages ------#
+                            else:
+                                message = message.decode('utf-8')
+                                logging.info(f"Received message: {message}")
+
                         except UnicodeDecodeError as e:
                             print("UnicodeDecodeError: ", e)
                     else:
@@ -94,8 +166,9 @@ if __name__ == "__main__":
     bootstrap_servers = 'localhost:9092'
     group_id = 'dis'
     topic = 'dis'
+    transmission = 'kafka_pdu'
 
-    consumer = KafkaConsumer(bootstrap_servers, group_id, topic)
+    consumer = KafkaConsumer(bootstrap_servers, group_id, topic, transmission)
     consumer.consume_messages()
     # consumer.close()
 

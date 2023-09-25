@@ -57,7 +57,7 @@ class ThermostatSim:
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        if self.transmission == 'kafka':
+        if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
             self.KAFKA_TOPIC = 'dis'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
@@ -121,6 +121,33 @@ class ThermostatSim:
                 
                 time.sleep(16)
 
+            elif self.transmission == 'kafka_pdu':
+                thermostatPdu = Environment()
+                device = "Thermostat"
+                thermostatPdu.device = device.encode('utf-8') # device 
+                thermostatPdu.temperature = self.thermoTrain['Data'][0][i][0][3] # temperature
+                thermostatPdu.temp_status = self.thermoTrain['Data'][0][i][0][4] #temp status
+                thermostatPdu.attack = self.thermoTrain['Data'][0][i][0][5].encode('utf-8') # attack
+                thermostatPdu.label = self.thermoTrain['Data'][0][i][0][6]
+            
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                thermostatPdu.serialize(outputStream)
+                data = memoryStream.getvalue() 
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
+                    + "\n Thermostat Data Sent:"
+                    + "\n  Device             : {}".format(thermostatPdu.device.decode('utf-8'))
+                    + "\n  Temperature        : {}".format(thermostatPdu.temperature)
+                    + "\n  Temp Status        : {}".format(thermostatPdu.temp_status)
+                    + "\n  Attack             : {}".format(thermostatPdu.attack.decode('utf-8'))
+                    + "\n  Label              : {}".format(thermostatPdu.label)
+                    )
+                
+                time.sleep(16)
+
     def sendThermostatTest(self ):
         columnNames = self.thermoTest['Dataframe'].columns
         # print(self.thermoTest['Dataframe'].head())
@@ -173,7 +200,34 @@ class ThermostatSim:
                     ) 
                 
                 time.sleep(16)
+            
+            elif self.transmission == 'kafka_pdu':
+                thermostatPdu = Environment()
+                device = "Thermostat"
+                thermostatPdu.device = device.encode('utf-8') # device 
+                thermostatPdu.temperature = self.thermoTest['Data'][0][i][0][3] # temperature
+                thermostatPdu.temp_status = self.thermoTest['Data'][0][i][0][4] #temp status
+                thermostatPdu.attack = self.thermoTest['Data'][0][i][0][5].encode('utf-8') # attack
+                thermostatPdu.label = self.thermoTest['Data'][0][i][0][6]
+            
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                thermostatPdu.serialize(outputStream)
+                data = memoryStream.getvalue() 
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
+                    + "\n Thermostat Data Sent:"
+                    + "\n  Device             : {}".format(thermostatPdu.device.decode('utf-8'))
+                    + "\n  Temperature        : {}".format(thermostatPdu.temperature)
+                    + "\n  Temp Status        : {}".format(thermostatPdu.temp_status)
+                    + "\n  Attack             : {}".format(thermostatPdu.attack.decode('utf-8'))
+                    + "\n  Label              : {}".format(thermostatPdu.label)
+                    )
+                 
+                time.sleep(16)
 
 if __name__ == '__main__':
-    thermostat = ThermostatSim(transmission= 'pdu')
+    thermostat = ThermostatSim(transmission= 'kafka_pdu')
     thermostat.sendThermostatTrain()

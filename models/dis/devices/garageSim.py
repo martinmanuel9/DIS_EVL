@@ -59,7 +59,7 @@ class GarageSim:
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        if self.transmission == 'kafka':
+        if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
             self.KAFKA_TOPIC = 'dis'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
@@ -123,6 +123,31 @@ class GarageSim:
                 
                 time.sleep(8)
 
+            elif self.transmission == 'kafka_pdu':
+                garagePdu = Garage() 
+                garagePdu.door_state = self.garageTrain['Data'][0][i][0][3].encode('utf-8')
+                garagePdu.sphone = self.garageTrain['Data'][0][i][0][4]
+                garagePdu.attack = self.garageTrain['Data'][0][i][0][5].encode('utf-8')
+                garagePdu.label = self.garageTrain['Data'][0][i][0][6]
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                garagePdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(garagePdu.__class__.__name__, len(data)) 
+                    + "\n Garage Data Sent:"
+                    + "\n  Door State     : {}".format(garagePdu.door_state.decode('utf-8'))
+                    + "\n  Sphone         : {}".format(garagePdu.sphone)
+                    + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
+                    + "\n  Label          : {}\n".format(garagePdu.label)
+                    )
+                
+                time.sleep(8)
+
+
     def sendGarageTest(self):
         columnNames = self.garageTest['Dataframe'].columns
         # print(self.garageTest['Dataframe'].head())
@@ -148,6 +173,7 @@ class GarageSim:
                     + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
+                time.sleep(8)
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -166,14 +192,38 @@ class GarageSim:
 
                 print("Sent {} PDU: {} bytes".format("GarageData", len(xml_data))
                     + "\n Garage Data Sent:"
-                    + "\n  Door State     : {}".format(self.garageTrain['Data'][0][i][0][3])
-                    + "\n  Sphone         : {}".format(self.garageTrain['Data'][0][i][0][4])
-                    + "\n  Attack         : {}".format(self.garageTrain['Data'][0][i][0][5])
-                    + "\n  Label          : {}".format(self.garageTrain['Data'][0][i][0][6])
+                    + "\n  Door State     : {}".format(self.garageTest['Data'][0][i][0][3])
+                    + "\n  Sphone         : {}".format(self.garageTest['Data'][0][i][0][4])
+                    + "\n  Attack         : {}".format(self.garageTest['Data'][0][i][0][5])
+                    + "\n  Label          : {}".format(self.garageTest['Data'][0][i][0][6])
                     )
                 
                 time.sleep(8)
+            
+            elif self.transmission == 'kafka_pdu':
+                garagePdu = Garage() 
+                garagePdu.door_state = self.garageTest['Data'][0][i][0][3].encode('utf-8')
+                garagePdu.sphone = self.garageTest['Data'][0][i][0][4]
+                garagePdu.attack = self.garageTest['Data'][0][i][0][5].encode('utf-8')
+                garagePdu.label = self.garageTest['Data'][0][i][0][6]
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                garagePdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(garagePdu.__class__.__name__, len(data)) 
+                    + "\n Garage Data Sent:"
+                    + "\n  Door State     : {}".format(garagePdu.door_state.decode('utf-8'))
+                    + "\n  Sphone         : {}".format(garagePdu.sphone)
+                    + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
+                    + "\n  Label          : {}\n".format(garagePdu.label)
+                    )
+                time.sleep(8)
+
 
 if __name__ == "__main__":
-    GarageSim = GarageSim(transmission='kafka')
+    GarageSim = GarageSim(transmission='kafka_pdu')
     GarageSim.sendGarageTrain()

@@ -58,7 +58,7 @@ class GPSSim:
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        if self.transmission == 'kafka':
+        if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
             self.KAFKA_TOPIC = 'dis'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
@@ -120,7 +120,6 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
 
-
                 time.sleep(10)
 
             if self.transmission == 'kafka':
@@ -148,6 +147,52 @@ class GPSSim:
                     + "\n  Yaw         : 0"
                     + "\n  Attack      : {}".format(self.gpsTrain['Data'][0][i][0][5])
                     + "\n  Label       : {}\n".format(self.gpsTrain['Data'][0][i][0][6])
+                    )
+
+                time.sleep(10)
+            
+            elif self.transmission == 'kafka_pdu':
+                gpsPDU = EntityStatePdu()
+                gpsPDU.entityID.entityID = 42
+                gpsPDU.entityID.siteID = 17
+                gpsPDU.entityID.applicationID = 23
+                gpsPDU.marking.setString('Igor3d')
+
+                gpsLocation = self.gps.llarpy2ecef(np.deg2rad(self.gpsTrain['Data'][0][i][0][3]),   # longitude (radians)   
+                                            np.deg2rad(self.gpsTrain['Data'][0][i][0][4]), # latitude (radians)
+                                            1,               # altitude (meters)
+                                            0,               # roll (radians)
+                                            0,               # pitch (radians)
+                                            0                # yaw (radians)
+                                            )
+                
+                gpsPDU.entityLocation.x = gpsLocation[0]
+                gpsPDU.entityLocation.y = gpsLocation[1]
+                gpsPDU.entityLocation.z = gpsLocation[2]
+                gpsPDU.entityOrientation.psi = gpsLocation[3]
+                gpsPDU.entityOrientation.theta = gpsLocation[4]
+                gpsPDU.entityOrientation.phi = gpsLocation[5]
+
+                gpsPDU.attack = self.gpsTrain['Data'][0][i][0][5].encode()
+                gpsPDU.label = self.gpsTrain['Data'][0][i][0][6] 
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                gpsPDU.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
+                    + "\n GPS Data Sent:"
+                    + "\n  Longitude   : {}".format(gpsLocation[0]) 
+                    + "\n  Latitude    : {}".format(gpsLocation[1])
+                    + "\n  Altitude    : {}".format(gpsLocation[2])
+                    + "\n  Roll        : {}".format(gpsLocation[3])
+                    + "\n  Pitch       : {}".format(gpsLocation[4])
+                    + "\n  Yaw         : {}".format(gpsLocation[5])
+                    + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
+                    + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
 
                 time.sleep(10)
@@ -219,18 +264,64 @@ class GPSSim:
 
                 print( "Sent {} PDU: {} bytes".format("GPSData", len(data))  
                     + "\n GPS Data Sent:"
-                    + "\n  Longitude   : {}".format(self.gpsTrain['Data'][0][i][0][3]) 
-                    + "\n  Latitude    : {}".format(self.gpsTrain['Data'][0][i][0][4])
+                    + "\n  Longitude   : {}".format(self.gpsTest['Data'][0][i][0][3]) 
+                    + "\n  Latitude    : {}".format(self.gpsTest['Data'][0][i][0][4])
                     + "\n  Altitude    : 1"
                     + "\n  Roll        : 0"
                     + "\n  Pitch       : 0"
                     + "\n  Yaw         : 0"
-                    + "\n  Attack      : {}".format(self.gpsTrain['Data'][0][i][0][5])
-                    + "\n  Label       : {}\n".format(self.gpsTrain['Data'][0][i][0][6])
+                    + "\n  Attack      : {}".format(self.gpsTest['Data'][0][i][0][5])
+                    + "\n  Label       : {}\n".format(self.gpsTest['Data'][0][i][0][6])
+                    )
+                
+                time.sleep(10)
+            
+            elif self.transmission == 'kafka_pdu':
+                gpsPDU = EntityStatePdu()
+                gpsPDU.entityID.entityID = 42
+                gpsPDU.entityID.siteID = 17
+                gpsPDU.entityID.applicationID = 23
+                gpsPDU.marking.setString('Igor3d')
+
+                gpsLocation = self.gps.llarpy2ecef(np.deg2rad(self.gpsTest['Data'][0][i][0][3]),   # longitude (radians)   
+                                            np.deg2rad(self.gpsTest['Data'][0][i][0][4]), # latitude (radians)
+                                            1,               # altitude (meters)
+                                            0,               # roll (radians)
+                                            0,               # pitch (radians)
+                                            0                # yaw (radians)
+                                            )
+                
+                gpsPDU.entityLocation.x = gpsLocation[0]
+                gpsPDU.entityLocation.y = gpsLocation[1]
+                gpsPDU.entityLocation.z = gpsLocation[2]
+                gpsPDU.entityOrientation.psi = gpsLocation[3]
+                gpsPDU.entityOrientation.theta = gpsLocation[4]
+                gpsPDU.entityOrientation.phi = gpsLocation[5]
+
+                gpsPDU.attack = self.gpsTest['Data'][0][i][0][5].encode()
+                gpsPDU.label = self.gpsTest['Data'][0][i][0][6] 
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                gpsPDU.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
+                    + "\n GPS Data Sent:"
+                    + "\n  Longitude   : {}".format(gpsLocation[0]) 
+                    + "\n  Latitude    : {}".format(gpsLocation[1])
+                    + "\n  Altitude    : {}".format(gpsLocation[2])
+                    + "\n  Roll        : {}".format(gpsLocation[3])
+                    + "\n  Pitch       : {}".format(gpsLocation[4])
+                    + "\n  Yaw         : {}".format(gpsLocation[5])
+                    + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
+                    + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
                 
                 time.sleep(10)
 
 if __name__ == '__main__':
-    gpsSim = GPSSim(transmission= 'kafka')
+    gpsSim = GPSSim(transmission= 'kafka_pdu')
     gpsSim.sendTestGPS()

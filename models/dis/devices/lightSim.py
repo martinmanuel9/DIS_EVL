@@ -58,7 +58,7 @@ class LightSim:
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        if self.transmission == 'kafka':
+        if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
             self.KAFKA_TOPIC = 'dis'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
@@ -120,6 +120,30 @@ class LightSim:
                 
                 time.sleep(12)
 
+            elif self.transmission == 'kafka_pdu':
+                lightTrainPdu = Light()
+                lightTrainPdu.motion_status = self.lightTrain['Data'][0][i][0][3] # motion status
+                lightTrainPdu.light_status = self.lightTrain['Data'][0][i][0][4].encode() #light status
+                lightTrainPdu.attack = self.lightTrain['Data'][0][i][0][5].encode()
+                lightTrainPdu.label = self.lightTrain['Data'][0][i][0][6]
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                lightTrainPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(lightTrainPdu.__class__.__name__, len(data)) 
+                    + "\n Light Data Sent:"
+                    + "\n  Motion Status : {}".format(lightTrainPdu.motion_status)
+                    + "\n  Light Status  : {}".format(lightTrainPdu.light_status.decode('utf-8'))
+                    + "\n  Attack        : {}".format(lightTrainPdu.attack.decode('utf-8'))
+                    + "\n  Label         : {}\n".format(lightTrainPdu.label)
+                    )
+
+                time.sleep(12)
+
     def sendLightTest(self):
         columnNames = self.lightTest['Dataframe'].columns
         # print(self.lightTest['Dataframe'].head())
@@ -162,15 +186,39 @@ class LightSim:
 
                 print("Sent {} PDU: {} bytes".format("LightData", len(xml_data))
                     + "\n Light Data Sent:"
-                    + "\n  Motion Status : {}".format(self.lightTrain['Data'][0][i][0][3])
-                    + "\n  Light Status  : {}".format(self.lightTrain['Data'][0][i][0][4])
-                    + "\n  Attack        : {}".format(self.lightTrain['Data'][0][i][0][5])
-                    + "\n  Label         : {}\n".format(self.lightTrain['Data'][0][i][0][6])
+                    + "\n  Motion Status : {}".format(self.lightTest['Data'][0][i][0][3])
+                    + "\n  Light Status  : {}".format(self.lightTest['Data'][0][i][0][4])
+                    + "\n  Attack        : {}".format(self.lightTest['Data'][0][i][0][5])
+                    + "\n  Label         : {}\n".format(self.lightTest['Data'][0][i][0][6])
+                    )
+                
+                time.sleep(12)
+
+            elif self.transmission == 'kafka_pdu':
+                lightPdu = Light()
+                lightPdu.motion_status = self.lightTest['Data'][0][i][0][3] # motion status
+                lightPdu.light_status = self.lightTest['Data'][0][i][0][4].encode() #light status
+                lightPdu.attack = self.lightTest['Data'][0][i][0][5].encode()
+                lightPdu.label = self.lightTest['Data'][0][i][0][6]
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                lightPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data) 
+
+                print("Sent {} PDU: {} bytes".format(lightPdu.__class__.__name__, len(data)) 
+                    + "\n Light Data Sent:"
+                    + "\n  Motion Status : {}".format(lightPdu.motion_status)
+                    + "\n  Light Status  : {}".format(lightPdu.light_status.decode('utf-8'))
+                    + "\n  Attack        : {}".format(lightPdu.attack.decode('utf-8'))
+                    + "\n  Label         : {}\n".format(lightPdu.label)
                     )
                 
                 time.sleep(12)
 
 
 if __name__ == '__main__':
-    LightSim = LightSim(transmission= 'pdu')
+    LightSim = LightSim(transmission= 'kafka_pdu')
     LightSim.sendLightTrain()

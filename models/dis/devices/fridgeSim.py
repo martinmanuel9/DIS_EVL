@@ -57,7 +57,7 @@ class FridgeSim:
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        if self.transmission == 'kafka':
+        if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
             self.KAFKA_TOPIC = 'dis'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
@@ -125,6 +125,34 @@ class FridgeSim:
                     )
                 
                 time.sleep(5)
+            
+            elif self.transmission == 'kafka_pdu':
+                # send pdu via kafka
+                fridgeEnvPdu = Environment()
+                device = "Fridge"
+                fridgeEnvPdu.device = device.encode('utf-8')
+                fridgeEnvPdu.temperature = self.fridgeTrain['Data'][0][i][0][3] # fridge 
+                fridgeEnvPdu.condition = self.fridgeTrain['Data'][0][i][0][4].encode('utf-8')
+                fridgeEnvPdu.attack = self.fridgeTrain['Data'][0][i][0][5].encode('utf-8') # attack
+                fridgeEnvPdu.label = int(self.fridgeTrain['Data'][0][i][0][6])  #label
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                fridgeEnvPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
+                    + "\n Fridge Data Sent:"
+                    + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
+                    + "\n  Temperature  : {}".format(fridgeEnvPdu.temperature)
+                    + "\n  Condition    : {}".format(fridgeEnvPdu.condition.decode('utf-8'))
+                    + "\n  Attack       : {}".format(fridgeEnvPdu.attack.decode('utf-8'))
+                    + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
+                )
+                
+                time.sleep(5)
 
     def sendFridgeTest(self):
         columnNames = self.fridgeTest['Dataframe'].columns
@@ -175,15 +203,44 @@ class FridgeSim:
 
                 print("Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
                     + "\n Fridge Data Sent:"
-                    + "\n Temperature     : {}".format(self.fridgeTrain['Data'][0][i][0][3])
-                    + "\n Temp Condition  : {}".format(self.fridgeTrain['Data'][0][i][0][4])
-                    + "\n Attack          : {}".format(self.fridgeTrain['Data'][0][i][0][5])
-                    + "\n Label           : {}\n".format(self.fridgeTrain['Data'][0][i][0][6])
+                    + "\n Temperature     : {}".format(self.fridgeTest['Data'][0][i][0][3])
+                    + "\n Temp Condition  : {}".format(self.fridgeTest['Data'][0][i][0][4])
+                    + "\n Attack          : {}".format(self.fridgeTest['Data'][0][i][0][5])
+                    + "\n Label           : {}\n".format(self.fridgeTest['Data'][0][i][0][6])
                     )
                 
                 time.sleep(5)
 
+            elif self.transmission == 'kafka_pdu':
+                # send pdu via kafka
+                fridgeEnvPdu = Environment()
+                device = "Fridge"
+                fridgeEnvPdu.device = device.encode('utf-8')
+                fridgeEnvPdu.temperature = self.fridgeTest['Data'][0][i][0][3] # fridge 
+                fridgeEnvPdu.condition = self.fridgeTest['Data'][0][i][0][4].encode('utf-8')
+                fridgeEnvPdu.attack = self.fridgeTest['Data'][0][i][0][5].encode('utf-8') # attack
+                fridgeEnvPdu.label = int(self.fridgeTest['Data'][0][i][0][6])  #label
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                fridgeEnvPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
+                    + "\n Fridge Data Sent:"
+                    + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
+                    + "\n  Temperature  : {}".format(fridgeEnvPdu.temperature)
+                    + "\n  Condition    : {}".format(fridgeEnvPdu.condition.decode('utf-8'))
+                    + "\n  Attack       : {}".format(fridgeEnvPdu.attack.decode('utf-8'))
+                    + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
+                )
+                
+                time.sleep(5)
+                
+
 
 if __name__ == "__main__":
-    FridgeSim = FridgeSim(transmission= 'pdu')
+    FridgeSim = FridgeSim(transmission= 'kafka_pdu')
     FridgeSim.sendFridgeTrain()

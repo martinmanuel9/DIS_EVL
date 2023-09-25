@@ -58,7 +58,7 @@ class ModbusSim:
         self.udpSocket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.udpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
 
-        if self.transmission == 'kafka':
+        if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
             self.KAFKA_TOPIC = 'dis'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
@@ -128,6 +128,34 @@ class ModbusSim:
                     
                 time.sleep(14)
 
+            elif self.transmission == 'kafka_pdu':
+                modbusPdu = Modbus() 
+                modbusPdu.fc1 = self.modbusTrain['Data'][0][i][0][3]
+                modbusPdu.fc2 = self.modbusTrain['Data'][0][i][0][4]
+                modbusPdu.fc3 = self.modbusTrain['Data'][0][i][0][5]
+                modbusPdu.fc4 = self.modbusTrain['Data'][0][i][0][6]
+                modbusPdu.attack = self.modbusTrain['Data'][0][i][0][7].encode()
+                modbusPdu.label = self.modbusTrain['Data'][0][i][0][8]
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                modbusPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
+                    + "\n Modbus Data Sent:"
+                    + "\n  FC1            : {}".format(modbusPdu.fc1)
+                    + "\n  FC2            : {}".format(modbusPdu.fc2)
+                    + "\n  FC3            : {}".format(modbusPdu.fc3)
+                    + "\n  FC4            : {}".format(modbusPdu.fc4)
+                    + "\n  Attack         : {}".format(modbusPdu.attack.decode('utf-8'))
+                    + "\n  Label          : {}\n".format(modbusPdu.label)
+                    ) 
+                
+                time.sleep(14)
+
     def sendModbusTest(self ):
         columnNames = self.modbusTest['Dataframe'].columns
         # print(self.modbumodbusTestsTrain['Dataframe'].head())
@@ -177,18 +205,46 @@ class ModbusSim:
 
                 print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
                     + "\n Modbus Data Sent:"
-                    + "\n  FC1            : {}".format(self.modbusTrain['Data'][0][i][0][3])
-                    + "\n  FC2            : {}".format(self.modbusTrain['Data'][0][i][0][4])
-                    + "\n  FC3            : {}".format(self.modbusTrain['Data'][0][i][0][5])
-                    + "\n  FC4            : {}".format(self.modbusTrain['Data'][0][i][0][6])
-                    + "\n  Attack         : {}".format(self.modbusTrain['Data'][0][i][0][7])
-                    + "\n  Label          : {}\n".format(self.modbusTrain['Data'][0][i][0][8])
+                    + "\n  FC1            : {}".format(self.modbusTest['Data'][0][i][0][3])
+                    + "\n  FC2            : {}".format(self.modbusTest['Data'][0][i][0][4])
+                    + "\n  FC3            : {}".format(self.modbusTest['Data'][0][i][0][5])
+                    + "\n  FC4            : {}".format(self.modbusTest['Data'][0][i][0][6])
+                    + "\n  Attack         : {}".format(self.modbusTest['Data'][0][i][0][7])
+                    + "\n  Label          : {}\n".format(self.modbusTest['Data'][0][i][0][8])
                     ) 
                 
                 time.sleep(14)
 
+            elif self.transmission == 'kafka_pdu':
+                modbusPdu = Modbus() 
+                modbusPdu.fc1 = self.modbusTest['Data'][0][i][0][3]
+                modbusPdu.fc2 = self.modbusTest['Data'][0][i][0][4]
+                modbusPdu.fc3 = self.modbusTest['Data'][0][i][0][5]
+                modbusPdu.fc4 = self.modbusTest['Data'][0][i][0][6]
+                modbusPdu.attack = self.modbusTest['Data'][0][i][0][7].encode()
+                modbusPdu.label = self.modbusTest['Data'][0][i][0][8]
+
+                memoryStream = BytesIO()
+                outputStream = DataOutputStream(memoryStream)
+                modbusPdu.serialize(outputStream)
+                data = memoryStream.getvalue()
+
+                self.producer.produce_message(data)
+
+                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
+                    + "\n Modbus Data Sent:"
+                    + "\n  FC1            : {}".format(modbusPdu.fc1)
+                    + "\n  FC2            : {}".format(modbusPdu.fc2)
+                    + "\n  FC3            : {}".format(modbusPdu.fc3)
+                    + "\n  FC4            : {}".format(modbusPdu.fc4)
+                    + "\n  Attack         : {}".format(modbusPdu.attack.decode('utf-8'))
+                    + "\n  Label          : {}\n".format(modbusPdu.label)
+                    )  
+                
+                time.sleep(14)
+
 if __name__ == '__main__':
-    modbusSim = ModbusSim(transmission = 'pdu')
+    modbusSim = ModbusSim(transmission = 'kafka_pdu')
     modbusSim.sendModbusTrain()
     
 
