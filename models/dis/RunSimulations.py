@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 
 """
-Application:        Run Devices 
-File name:          RunDevices.py
+Application:        Run IoT Simulations 
+File name:          RunSimulations.py
 Author:             Martin Manuel Lopez
 Creation:           9/19/2023
 
@@ -32,43 +32,6 @@ College of Engineering
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-# import devices.fridgeSim as fridgeSim
-# import devices.garageSim as garageSim
-# import devices.gpsSim as gpsSim
-# import devices.lightSim as lightSim
-# import devices.modbusSim as modbusSim
-# import devices.weatherSim as weatherSim
-
-# class DeviceTrain():
-#     def __init__(self, transmission):
-#         self.transmission = transmission
-
-#     def runTrainingData(self):
-#         try:
-#             fridgeTrain = fridgeSim.FridgeSim(transmission=self.transmission)
-#             garageTrain = garageSim.GarageSim(transmission=self.transmission)
-#             gpsTrain = gpsSim.GPSSim(transmission=self.transmission)
-#             lightTrain = lightSim.LightSim(transmission=self.transmission)
-#             modbusTrain = modbusSim.ModbusSim(transmission=self.transmission)
-#             weatherTrain = weatherSim.WeatherSim(transmission=self.transmission)
-
-#             fridgeTrain.sendFridgeTrain()
-#             garageTrain.sendGarageTrain()
-#             gpsTrain.sendGPSTrain()
-#             lightTrain.sendLightTrain()
-#             modbusTrain.sendModbusTrain()
-#             weatherTrain.sendWeatherTrain()
-
-
-#         except Exception as e:
-#             print(f"Error: {e}")
-#             print("Error: Could not run training data.")
-#             return False
-        
-# if __name__ == "__main__":
-#     deviceTrain = DeviceTrain(transmission= 'pdu')
-#     deviceTrain.runTrainingData()
 
 import argparse
 import threading
