@@ -108,19 +108,17 @@ class GPSSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "GPS Data Sent:"
-                    + "\n Longitude: {}".format(gpsLocation[0]) 
-                    + "\n Latitude: {}".format(gpsLocation[1])
-                    + "\n Altitude: {}".format(gpsLocation[2])
-                    + "\n Roll: {}".format(gpsLocation[3])
-                    + "\n Pitch: {}".format(gpsLocation[4])
-                    + "\n Yaw: {}".format(gpsLocation[5])
-                    + "\n Attack: {}".format(gpsPDU.attack.decode('utf-8'))
-                    + "\n Label: {}".format(gpsPDU.label)
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
+                    + "\n GPS Data Sent:"
+                    + "\n  Longitude   : {}".format(gpsLocation[0]) 
+                    + "\n  Latitude    : {}".format(gpsLocation[1])
+                    + "\n  Altitude    : {}".format(gpsLocation[2])
+                    + "\n  Roll        : {}".format(gpsLocation[3])
+                    + "\n  Pitch       : {}".format(gpsLocation[4])
+                    + "\n  Yaw         : {}".format(gpsLocation[5])
+                    + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
+                    + "\n  Label       : {}\n".format(gpsPDU.label)
+                    )
 
 
                 time.sleep(10)
@@ -140,19 +138,17 @@ class GPSSim:
                 self.producer.produce_message(xml_data)
 
 
-                print("---------------------------------------|\n"   
-                    + "Sent {} PDU: {} bytes".format("GPSData", len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "GPS Data Sent:"
-                    + "\n Longitude: {}".format(self.gpsTrain['Data'][0][i][0][3]) 
-                    + "\n Latitude: {}".format(self.gpsTrain['Data'][0][i][0][4])
-                    + "\n Altitude: 1"
-                    + "\n Roll: 0"
-                    + "\n Pitch: 0"
-                    + "\n Yaw: 0"
-                    + "\n Attack: {}".format(self.gpsTrain['Data'][0][i][0][5])
-                    + "\n Label: {}".format(self.gpsTrain['Data'][0][i][0][6])
-                    + "\n_______________________________________|")
+                print( "Sent {} PDU: {} bytes".format("GPSData", len(data))  
+                    + "\n GPS Data Sent:"
+                    + "\n  Longitude   : {}".format(self.gpsTrain['Data'][0][i][0][3]) 
+                    + "\n  Latitude    : {}".format(self.gpsTrain['Data'][0][i][0][4])
+                    + "\n  Altitude    : 1"
+                    + "\n  Roll        : 0"
+                    + "\n  Pitch       : 0"
+                    + "\n  Yaw         : 0"
+                    + "\n  Attack      : {}".format(self.gpsTrain['Data'][0][i][0][5])
+                    + "\n  Label       : {}\n".format(self.gpsTrain['Data'][0][i][0][6])
+                    )
 
                 time.sleep(10)
 
@@ -193,19 +189,17 @@ class GPSSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "GPS Data Sent:"
-                    + "\n Longitude: {}".format(gpsLocation[0]) 
-                    + "\n Latitude: {}".format(gpsLocation[1])
-                    + "\n Altitude: {}".format(gpsLocation[2])
-                    + "\n Roll: {}".format(gpsLocation[3])
-                    + "\n Pitch: {}".format(gpsLocation[4])
-                    + "\n Yaw: {}".format(gpsLocation[5])
-                    + "\n Attack: {}".format(gpsPDU.attack.decode('utf-8'))
-                    + "\n Label: {}".format(gpsPDU.label)
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
+                    + "\n GPS Data Sent:"
+                    + "\n  Longitude   : {}".format(gpsLocation[0]) 
+                    + "\n  Latitude    : {}".format(gpsLocation[1])
+                    + "\n  Altitude    : {}".format(gpsLocation[2])
+                    + "\n  Roll        : {}".format(gpsLocation[3])
+                    + "\n  Pitch       : {}".format(gpsLocation[4])
+                    + "\n  Yaw         : {}".format(gpsLocation[5])
+                    + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
+                    + "\n  Label       : {}\n".format(gpsPDU.label)
+                    )
                 
                 time.sleep(10)
 
@@ -223,19 +217,17 @@ class GPSSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n"  
-                    + "Sent {} PDU: {} bytes".format("GPSData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "GPS Data Sent:"
-                    + "\n Longitude: {}".format(self.gpsTrain['Data'][0][i][0][3]) 
-                    + "\n Latitude: {}".format(self.gpsTrain['Data'][0][i][0][4])
-                    + "\n Altitude: 1"
-                    + "\n Roll: 0"
-                    + "\n Pitch: 0"
-                    + "\n Yaw: 0"
-                    + "\n Attack: {}".format(self.gpsTrain['Data'][0][i][0][5])
-                    + "\n Label: {}".format(self.gpsTrain['Data'][0][i][0][6])
-                    + "\n_______________________________________|")
+                print( "Sent {} PDU: {} bytes".format("GPSData", len(data))  
+                    + "\n GPS Data Sent:"
+                    + "\n  Longitude   : {}".format(self.gpsTrain['Data'][0][i][0][3]) 
+                    + "\n  Latitude    : {}".format(self.gpsTrain['Data'][0][i][0][4])
+                    + "\n  Altitude    : 1"
+                    + "\n  Roll        : 0"
+                    + "\n  Pitch       : 0"
+                    + "\n  Yaw         : 0"
+                    + "\n  Attack      : {}".format(self.gpsTrain['Data'][0][i][0][5])
+                    + "\n  Label       : {}\n".format(self.gpsTrain['Data'][0][i][0][6])
+                    )
                 
                 time.sleep(10)
 

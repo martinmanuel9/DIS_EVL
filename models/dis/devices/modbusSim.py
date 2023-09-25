@@ -89,17 +89,15 @@ class ModbusSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Modbus Data Sent:"
-                    + "\n FC1: {}".format(modbusPdu.fc1)
-                    + "\n FC2: {}".format(modbusPdu.fc2)
-                    + "\n FC3: {}".format(modbusPdu.fc3)
-                    + "\n FC4: {}".format(modbusPdu.fc4)
-                    + "\n Attack: {}".format(modbusPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(modbusPdu.label)
-                    + "\n_______________________________________|") 
+                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
+                    + "\n Modbus Data Sent:"
+                    + "\n  FC1            : {}".format(modbusPdu.fc1)
+                    + "\n  FC2            : {}".format(modbusPdu.fc2)
+                    + "\n  FC3            : {}".format(modbusPdu.fc3)
+                    + "\n  FC4            : {}".format(modbusPdu.fc4)
+                    + "\n  Attack         : {}".format(modbusPdu.attack.decode('utf-8'))
+                    + "\n  Label          : {}\n".format(modbusPdu.label)
+                    ) 
                 
                 time.sleep(14)
 
@@ -118,17 +116,15 @@ class ModbusSim:
                 
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Modbus Data Sent:"
-                    + "\n FC1: {}".format(self.modbusTrain['Data'][0][i][0][3])
-                    + "\n FC2: {}".format(self.modbusTrain['Data'][0][i][0][4])
-                    + "\n FC3: {}".format(self.modbusTrain['Data'][0][i][0][5])
-                    + "\n FC4: {}".format(self.modbusTrain['Data'][0][i][0][6])
-                    + "\n Attack: {}".format(self.modbusTrain['Data'][0][i][0][7])
-                    + "\n Label: {}".format(self.modbusTrain['Data'][0][i][0][8])
-                    + "\n_______________________________________|") 
+                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
+                    + "\n Modbus Data Sent:"
+                    + "\n  FC1            : {}".format(self.modbusTrain['Data'][0][i][0][3])
+                    + "\n  FC2            : {}".format(self.modbusTrain['Data'][0][i][0][4])
+                    + "\n  FC3            : {}".format(self.modbusTrain['Data'][0][i][0][5])
+                    + "\n  FC4            : {}".format(self.modbusTrain['Data'][0][i][0][6])
+                    + "\n  Attack         : {}".format(self.modbusTrain['Data'][0][i][0][7])
+                    + "\n  Label          : {}\n".format(self.modbusTrain['Data'][0][i][0][8])
+                    ) 
                     
                 time.sleep(14)
 
@@ -152,17 +148,15 @@ class ModbusSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Modbus Data Sent:"
-                    + "\n FC1: {}".format(modbusPdu.fc1)
-                    + "\n FC2: {}".format(modbusPdu.fc2)
-                    + "\n FC3: {}".format(modbusPdu.fc3)
-                    + "\n FC4: {}".format(modbusPdu.fc4)
-                    + "\n Attack: {}".format(modbusPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(modbusPdu.label)
-                    + "\n_______________________________________|") 
+                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
+                    + "\n Modbus Data Sent:"
+                    + "\n  FC1            : {}".format(modbusPdu.fc1)
+                    + "\n  FC2            : {}".format(modbusPdu.fc2)
+                    + "\n  FC3            : {}".format(modbusPdu.fc3)
+                    + "\n  FC4            : {}".format(modbusPdu.fc4)
+                    + "\n  Attack         : {}".format(modbusPdu.attack.decode('utf-8'))
+                    + "\n  Label          : {}\n".format(modbusPdu.label)
+                    )  
                 
                 time.sleep(14)
 
@@ -181,17 +175,15 @@ class ModbusSim:
                 
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Modbus Data Sent:"
-                    + "\n FC1: {}".format(self.modbusTrain['Data'][0][i][0][3])
-                    + "\n FC2: {}".format(self.modbusTrain['Data'][0][i][0][4])
-                    + "\n FC3: {}".format(self.modbusTrain['Data'][0][i][0][5])
-                    + "\n FC4: {}".format(self.modbusTrain['Data'][0][i][0][6])
-                    + "\n Attack: {}".format(self.modbusTrain['Data'][0][i][0][7])
-                    + "\n Label: {}".format(self.modbusTrain['Data'][0][i][0][8])
-                    + "\n_______________________________________|") 
+                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
+                    + "\n Modbus Data Sent:"
+                    + "\n  FC1            : {}".format(self.modbusTrain['Data'][0][i][0][3])
+                    + "\n  FC2            : {}".format(self.modbusTrain['Data'][0][i][0][4])
+                    + "\n  FC3            : {}".format(self.modbusTrain['Data'][0][i][0][5])
+                    + "\n  FC4            : {}".format(self.modbusTrain['Data'][0][i][0][6])
+                    + "\n  Attack         : {}".format(self.modbusTrain['Data'][0][i][0][7])
+                    + "\n  Label          : {}\n".format(self.modbusTrain['Data'][0][i][0][8])
+                    ) 
                 
                 time.sleep(14)
 

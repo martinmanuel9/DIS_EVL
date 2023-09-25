@@ -90,17 +90,16 @@ class WeatherSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(weatherPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Weather Data Sent:"
-                    + "\n Device: {}".format(weatherPdu.device.decode('utf-8'))
-                    + "\n Temperature: {}".format(weatherPdu.temperature)
-                    + "\n Pressure: {}".format(weatherPdu.pressure)
-                    + "\n Humidity: {}".format(weatherPdu.humidity)
-                    + "\n Attack: {}".format(weatherPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(weatherPdu.label)
-                    + "\n_______________________________________|")
+                
+                print("Sent {} PDU: {} bytes".format(weatherPdu.__class__.__name__, len(data)) 
+                    + "\n Weather Data Sent:"
+                    + "\n  Device          : {}".format(weatherPdu.device.decode('utf-8'))
+                    + "\n  Temperature     : {}".format(weatherPdu.temperature)
+                    + "\n  Pressure        : {}".format(weatherPdu.pressure)
+                    + "\n  Humidity        : {}".format(weatherPdu.humidity)
+                    + "\n  Attack          : {}".format(weatherPdu.attack.decode('utf-8'))
+                    + "\n  Label           : {}\n".format(weatherPdu.label)
+                    )
 
                 time.sleep(20)
 
@@ -119,16 +118,14 @@ class WeatherSim:
                 # Send string to Kafka Producer
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format("WeatherData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "Weather Data Sent:"
-                    + "\n Temperature: {}".format(self.weatherTrain['Data'][0][i][0][3])
-                    + "\n Pressure: {}".format(self.weatherTrain['Data'][0][i][0][4])
-                    + "\n Humidity: {}".format(self.weatherTrain['Data'][0][i][0][5])
-                    + "\n Attack: {}".format(self.weatherTrain['Data'][0][i][0][6])
-                    + "\n Label: {}".format(self.weatherTrain['Data'][0][i][0][7])
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format("WeatherData", len(xml_data))
+                    + "\n Weather Data Sent:"
+                    + "\n  Temperature     : {}".format(self.weatherTrain['Data'][0][i][0][3])
+                    + "\n  Pressure        : {}".format(self.weatherTrain['Data'][0][i][0][4])
+                    + "\n  Humidity        : {}".format(self.weatherTrain['Data'][0][i][0][5])
+                    + "\n  Attack          : {}".format(self.weatherTrain['Data'][0][i][0][6])
+                    + "\n  Label           : {}".format(self.weatherTrain['Data'][0][i][0][7])
+                    )
                   
                 time.sleep(18)
 
@@ -153,17 +150,15 @@ class WeatherSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(weatherPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Weather Data Sent:"
-                    + "\n Device: {}".format(weatherPdu.device.decode('utf-8'))
-                    + "\n Temperature: {}".format(weatherPdu.temperature)
-                    + "\n Pressure: {}".format(weatherPdu.pressure)
-                    + "\n Humidity: {}".format(weatherPdu.humidity)
-                    + "\n Attack: {}".format(weatherPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(weatherPdu.label)
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format(weatherPdu.__class__.__name__, len(data)) 
+                    + "\n Weather Data Sent:"
+                    + "\n  Device          : {}".format(weatherPdu.device.decode('utf-8'))
+                    + "\n  Temperature     : {}".format(weatherPdu.temperature)
+                    + "\n  Pressure        : {}".format(weatherPdu.pressure)
+                    + "\n  Humidity        : {}".format(weatherPdu.humidity)
+                    + "\n  Attack          : {}".format(weatherPdu.attack.decode('utf-8'))
+                    + "\n  Label           : {}\n".format(weatherPdu.label)
+                    )
                 
                 time.sleep(18)
 
@@ -182,16 +177,14 @@ class WeatherSim:
                 # Send string to Kafka Producer
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format("WeatherData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "Weather Data Sent:"
-                    + "\n Temperature: {}".format(self.weatherTrain['Data'][0][i][0][3])
-                    + "\n Pressure: {}".format(self.weatherTrain['Data'][0][i][0][4])
-                    + "\n Humidity: {}".format(self.weatherTrain['Data'][0][i][0][5])
-                    + "\n Attack: {}".format(self.weatherTrain['Data'][0][i][0][6])
-                    + "\n Label: {}".format(self.weatherTrain['Data'][0][i][0][7])
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format("WeatherData", len(xml_data))
+                    + "\n Weather Data Sent:"
+                    + "\n  Temperature     : {}".format(self.weatherTrain['Data'][0][i][0][3])
+                    + "\n  Pressure        : {}".format(self.weatherTrain['Data'][0][i][0][4])
+                    + "\n  Humidity        : {}".format(self.weatherTrain['Data'][0][i][0][5])
+                    + "\n  Attack          : {}".format(self.weatherTrain['Data'][0][i][0][6])
+                    + "\n  Label           : {}".format(self.weatherTrain['Data'][0][i][0][7])
+                    )
                 time.sleep(18)
 
 

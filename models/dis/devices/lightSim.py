@@ -87,15 +87,13 @@ class LightSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(lightTrainPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Light Data Sent:"
-                    + "\n Motion Status: {}".format(lightTrainPdu.motion_status)
-                    + "\n Light Status: {}".format(lightTrainPdu.light_status.decode('utf-8'))
-                    + "\n Attack: {}".format(lightTrainPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(lightTrainPdu.label)
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format(lightTrainPdu.__class__.__name__, len(data)) 
+                    + "\n Light Data Sent:"
+                    + "\n  Motion Status : {}".format(lightTrainPdu.motion_status)
+                    + "\n  Light Status  : {}".format(lightTrainPdu.light_status.decode('utf-8'))
+                    + "\n  Attack        : {}".format(lightTrainPdu.attack.decode('utf-8'))
+                    + "\n  Label         : {}\n".format(lightTrainPdu.label)
+                    )
 
                 time.sleep(12)
             
@@ -112,15 +110,13 @@ class LightSim:
 
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format("LightData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "Light Data Sent:"
-                    + "\n Motion Status: {}".format(self.lightTrain['Data'][0][i][0][3])
-                    + "\n Light Status: {}".format(self.lightTrain['Data'][0][i][0][4])
-                    + "\n Attack: {}".format(self.lightTrain['Data'][0][i][0][5])
-                    + "\n Label: {}".format(self.lightTrain['Data'][0][i][0][6])
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format("LightData", len(xml_data))
+                    + "\n Light Data Sent:"
+                    + "\n  Motion Status : {}".format(self.lightTrain['Data'][0][i][0][3])
+                    + "\n  Light Status  : {}".format(self.lightTrain['Data'][0][i][0][4])
+                    + "\n  Attack        : {}".format(self.lightTrain['Data'][0][i][0][5])
+                    + "\n  Label         : {}\n".format(self.lightTrain['Data'][0][i][0][6])
+                    )
                 
                 time.sleep(12)
 
@@ -141,7 +137,14 @@ class LightSim:
                 data = memoryStream.getvalue()
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
-                print("Sent {}: {} bytes".format(lightPdu.__class__.__name__, len(data)))
+
+                print("Sent {} PDU: {} bytes".format(lightPdu.__class__.__name__, len(data)) 
+                    + "\n Light Data Sent:"
+                    + "\n  Motion Status : {}".format(lightPdu.motion_status)
+                    + "\n  Light Status  : {}".format(lightPdu.light_status.decode('utf-8'))
+                    + "\n  Attack        : {}".format(lightPdu.attack.decode('utf-8'))
+                    + "\n  Label         : {}\n".format(lightPdu.label)
+                    )
                 time.sleep(12)
             
             elif self.transmission == 'kafka':
@@ -157,15 +160,13 @@ class LightSim:
 
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format("LightData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "Light Data Sent:"
-                    + "\n Motion Status: {}".format(self.lightTrain['Data'][0][i][0][3])
-                    + "\n Light Status: {}".format(self.lightTrain['Data'][0][i][0][4])
-                    + "\n Attack: {}".format(self.lightTrain['Data'][0][i][0][5])
-                    + "\n Label: {}".format(self.lightTrain['Data'][0][i][0][6])
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format("LightData", len(xml_data))
+                    + "\n Light Data Sent:"
+                    + "\n  Motion Status : {}".format(self.lightTrain['Data'][0][i][0][3])
+                    + "\n  Light Status  : {}".format(self.lightTrain['Data'][0][i][0][4])
+                    + "\n  Attack        : {}".format(self.lightTrain['Data'][0][i][0][5])
+                    + "\n  Label         : {}\n".format(self.lightTrain['Data'][0][i][0][6])
+                    )
                 
                 time.sleep(12)
 

@@ -88,16 +88,14 @@ class ThermostatSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Thermostat Data Sent:"
-                    + "\n Device: {}".format(thermostatPdu.device.decode('utf-8'))
-                    + "\n Temperature: {}".format(thermostatPdu.temperature)
-                    + "\n Temp Status: {}".format(thermostatPdu.temp_status)
-                    + "\n Attack: {}".format(thermostatPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(thermostatPdu.label)
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
+                    + "\n Thermostat Data Sent:"
+                    + "\n  Device             : {}".format(thermostatPdu.device.decode('utf-8'))
+                    + "\n  Temperature        : {}".format(thermostatPdu.temperature)
+                    + "\n  Temp Status        : {}".format(thermostatPdu.temp_status)
+                    + "\n  Attack             : {}".format(thermostatPdu.attack.decode('utf-8'))
+                    + "\n  Label              : {}".format(thermostatPdu.label)
+                    )
                 
                 time.sleep(16)
 
@@ -113,15 +111,13 @@ class ThermostatSim:
                 xml_data = ET.tostring(root, encoding='utf8')
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format("ThermostatData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "Thermostat Data Sent:"
-                    + "\n Temperature: {}".format(self.thermoTest['Data'][0][i][0][3])
-                    + "\n Temp Status: {}".format(self.thermoTest['Data'][0][i][0][4])
-                    + "\n Attack: {}".format(self.thermoTest['Data'][0][i][0][5])
-                    + "\n Label: {}".format(self.thermoTest['Data'][0][i][0][6])
-                    + "\n_______________________________________|") 
+                print("Sent {} PDU: {} bytes".format("ThermostatData", len(xml_data))
+                    + "\n Thermostat Data Sent:"
+                    + "\n  Temperature        : {}".format(self.thermoTest['Data'][0][i][0][3])
+                    + "\n  Temp Status        : {}".format(self.thermoTest['Data'][0][i][0][4])
+                    + "\n  Attack             : {}".format(self.thermoTest['Data'][0][i][0][5])
+                    + "\n  Label              : {}\n".format(self.thermoTest['Data'][0][i][0][6])
+                    ) 
                 
                 time.sleep(16)
 
@@ -145,16 +141,14 @@ class ThermostatSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Thermostat Data Sent:"
-                    + "\n Device: {}".format(thermostatPdu.device.decode('utf-8'))
-                    + "\n Temperature: {}".format(thermostatPdu.temperature)
-                    + "\n Temp Status: {}".format(thermostatPdu.temp_status)
-                    + "\n Attack: {}".format(thermostatPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(thermostatPdu.label)
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
+                    + "\n Thermostat Data Sent:"
+                    + "\n  Device             : {}".format(thermostatPdu.device.decode('utf-8'))
+                    + "\n  Temperature        : {}".format(thermostatPdu.temperature)
+                    + "\n  Temp Status        : {}".format(thermostatPdu.temp_status)
+                    + "\n  Attack             : {}".format(thermostatPdu.attack.decode('utf-8'))
+                    + "\n  Label              : {}".format(thermostatPdu.label)
+                    )
                  
                 time.sleep(16)
 
@@ -170,15 +164,13 @@ class ThermostatSim:
                 xml_data = ET.tostring(root, encoding='utf8')
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format("ThermostatData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "Thermostat Data Sent:"
-                    + "\n Temperature: {}".format(self.thermoTest['Data'][0][i][0][3])
-                    + "\n Temp Status: {}".format(self.thermoTest['Data'][0][i][0][4])
-                    + "\n Attack: {}".format(self.thermoTest['Data'][0][i][0][5])
-                    + "\n Label: {}".format(self.thermoTest['Data'][0][i][0][6])
-                    + "\n_______________________________________|") 
+                print("Sent {} PDU: {} bytes".format("ThermostatData", len(xml_data))
+                    + "\n Thermostat Data Sent:"
+                    + "\n  Temperature        : {}".format(self.thermoTest['Data'][0][i][0][3])
+                    + "\n  Temp Status        : {}".format(self.thermoTest['Data'][0][i][0][4])
+                    + "\n  Attack             : {}".format(self.thermoTest['Data'][0][i][0][5])
+                    + "\n  Label              : {}\n".format(self.thermoTest['Data'][0][i][0][6])
+                    ) 
                 
                 time.sleep(16)
 

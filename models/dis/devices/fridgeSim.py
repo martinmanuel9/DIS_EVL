@@ -90,21 +90,14 @@ class FridgeSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Fridge Data Sent:"
-                    + "\n Device: {}".format(fridgeEnvPdu.device.decode('utf-8'))
-                    + "\n Temperature: {}".format(fridgeEnvPdu.temperature)
-                    + "\n Temperature Condition: {}".format(fridgeEnvPdu.condition.decode('utf-8'))
-                        # can delete below
-                    + "\n pressure: {}".format(fridgeEnvPdu.pressure)
-                    + "\n humidity: {}".format(fridgeEnvPdu.humidity)
-                    + "\n temp status: {}".format(fridgeEnvPdu.temp_status)
-                        # can delete above
-                    + "\n Attack: {}".format(fridgeEnvPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(fridgeEnvPdu.label)
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
+                    + "\n Fridge Data Sent:"
+                    + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
+                    + "\n  Temperature  : {}".format(fridgeEnvPdu.temperature)
+                    + "\n  Condition    : {}".format(fridgeEnvPdu.condition.decode('utf-8'))
+                    + "\n  Attack       : {}".format(fridgeEnvPdu.attack.decode('utf-8'))
+                    + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
+                )
                 
                 time.sleep(5)
 
@@ -123,15 +116,13 @@ class FridgeSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "Fridge Data Sent:"
-                    + "\n Temperature: {}".format(self.fridgeTrain['Data'][0][i][0][3])
-                    + "\n Temperature Condition: {}".format(self.fridgeTrain['Data'][0][i][0][4])
-                    + "\n Attack: {}".format(self.fridgeTrain['Data'][0][i][0][5])
-                    + "\n Label: {}".format(self.fridgeTrain['Data'][0][i][0][6])
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
+                    + "\n Fridge Data Sent:"
+                    + "\n Temperature     : {}".format(self.fridgeTrain['Data'][0][i][0][3])
+                    + "\n Temp Condition  : {}".format(self.fridgeTrain['Data'][0][i][0][4])
+                    + "\n Attack          : {}".format(self.fridgeTrain['Data'][0][i][0][5])
+                    + "\n Label           : {}\n".format(self.fridgeTrain['Data'][0][i][0][6])
+                    )
                 
                 time.sleep(5)
 
@@ -156,16 +147,14 @@ class FridgeSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Fridge Data Sent:"
-                    + "\n Device: {}".format(fridgeEnvPdu.device.decode('utf-8'))
-                    + "\n Temperature: {}".format(fridgeEnvPdu.temperature)
-                    + "\n Temperature Condition: {}".format(fridgeEnvPdu.condition.decode('utf-8'))
-                    + "\n Attack: {}".format(fridgeEnvPdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(fridgeEnvPdu.label)
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
+                    + "\n Fridge Data Sent:"
+                    + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
+                    + "\n  Temperature  : {}".format(fridgeEnvPdu.temperature)
+                    + "\n  Condition    : {}".format(fridgeEnvPdu.condition.decode('utf-8'))
+                    + "\n  Attack       : {}".format(fridgeEnvPdu.attack.decode('utf-8'))
+                    + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
+                )
                 
                 time.sleep(5)
 
@@ -184,15 +173,13 @@ class FridgeSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "Fridge Data Sent:"
-                    + "\n Temperature: {}".format(self.fridgeTrain['Data'][0][i][0][3])
-                    + "\n Temperature Condition: {}".format(self.fridgeTrain['Data'][0][i][0][4])
-                    + "\n Attack: {}".format(self.fridgeTrain['Data'][0][i][0][5])
-                    + "\n Label: {}".format(self.fridgeTrain['Data'][0][i][0][6])
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
+                    + "\n Fridge Data Sent:"
+                    + "\n Temperature     : {}".format(self.fridgeTrain['Data'][0][i][0][3])
+                    + "\n Temp Condition  : {}".format(self.fridgeTrain['Data'][0][i][0][4])
+                    + "\n Attack          : {}".format(self.fridgeTrain['Data'][0][i][0][5])
+                    + "\n Label           : {}\n".format(self.fridgeTrain['Data'][0][i][0][6])
+                    )
                 
                 time.sleep(5)
 

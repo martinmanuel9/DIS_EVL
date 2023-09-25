@@ -88,15 +88,13 @@ class GarageSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(garagePdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Garage Data Sent:"
-                    + "\n Door State: {}".format(garagePdu.door_state.decode('utf-8'))
-                    + "\n Sphone: {}".format(garagePdu.sphone)
-                    + "\n Attack: {}".format(garagePdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(garagePdu.label)
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format(garagePdu.__class__.__name__, len(data)) 
+                    + "\n Garage Data Sent:"
+                    + "\n  Door State     : {}".format(garagePdu.door_state.decode('utf-8'))
+                    + "\n  Sphone         : {}".format(garagePdu.sphone)
+                    + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
+                    + "\n  Label          : {}\n".format(garagePdu.label)
+                    )
                 
                 time.sleep(8)
 
@@ -115,15 +113,13 @@ class GarageSim:
                 # send xml data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format("GarageData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "Garage Data Sent:"
-                    + "\n Door State: {}".format(self.garageTrain['Data'][0][i][0][3])
-                    + "\n Sphone: {}".format(self.garageTrain['Data'][0][i][0][4])
-                    + "\n Attack: {}".format(self.garageTrain['Data'][0][i][0][5])
-                    + "\n Label: {}".format(self.garageTrain['Data'][0][i][0][6])
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format("GarageData", len(xml_data)) 
+                    + "\n Garage Data Sent:"
+                    + "\n  Door State     : {}".format(self.garageTrain['Data'][0][i][0][3])
+                    + "\n  Sphone         : {}".format(self.garageTrain['Data'][0][i][0][4])
+                    + "\n  Attack         : {}".format(self.garageTrain['Data'][0][i][0][5])
+                    + "\n  Label          : {}\n".format(self.garageTrain['Data'][0][i][0][6])
+                    )
                 
                 time.sleep(8)
 
@@ -145,15 +141,13 @@ class GarageSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format(garagePdu.__class__.__name__, len(data))
-                    + "\n---------------------------------------|\n" 
-                    + "Garage Data Sent:"
-                    + "\n Door State: {}".format(garagePdu.door_state.decode('utf-8'))
-                    + "\n Sphone: {}".format(garagePdu.sphone)
-                    + "\n Attack: {}".format(garagePdu.attack.decode('utf-8'))
-                    + "\n Label: {}".format(garagePdu.label)
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format(garagePdu.__class__.__name__, len(data)) 
+                    + "\n Garage Data Sent:"
+                    + "\n  Door State     : {}".format(garagePdu.door_state.decode('utf-8'))
+                    + "\n  Sphone         : {}".format(garagePdu.sphone)
+                    + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
+                    + "\n  Label          : {}\n".format(garagePdu.label)
+                    )
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -170,15 +164,13 @@ class GarageSim:
                 # send xml data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print("---------------------------------------|\n" 
-                    + "Sent {} PDU: {} bytes".format("GarageData", len(xml_data))
-                    + "\n---------------------------------------|\n" 
-                    + "Garage Data Sent:"
-                    + "\n Door State: {}".format(self.garageTrain['Data'][0][i][0][3])
-                    + "\n Sphone: {}".format(self.garageTrain['Data'][0][i][0][4])
-                    + "\n Attack: {}".format(self.garageTrain['Data'][0][i][0][5])
-                    + "\n Label: {}".format(self.garageTrain['Data'][0][i][0][6])
-                    + "\n_______________________________________|")
+                print("Sent {} PDU: {} bytes".format("GarageData", len(xml_data))
+                    + "\n Garage Data Sent:"
+                    + "\n  Door State     : {}".format(self.garageTrain['Data'][0][i][0][3])
+                    + "\n  Sphone         : {}".format(self.garageTrain['Data'][0][i][0][4])
+                    + "\n  Attack         : {}".format(self.garageTrain['Data'][0][i][0][5])
+                    + "\n  Label          : {}".format(self.garageTrain['Data'][0][i][0][6])
+                    )
                 
                 time.sleep(8)
 
