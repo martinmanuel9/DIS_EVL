@@ -51,7 +51,8 @@ class KafkaProducer:
         try:
             self.producer.produce(self.topic, key=None, value=message)
             self.producer.flush()
-            print(f"Produced message: {message}")
+            # print(f"Produced message: {message}")
+            print(f"Produced message via Kakfa Producer")
         except Exception as e:
             print(f"Error producing message: {e}")
 

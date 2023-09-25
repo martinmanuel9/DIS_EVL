@@ -33,6 +33,7 @@ College of Engineering
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import argparse
 from confluent_kafka import Consumer, KafkaError
 import socket
 import time
@@ -46,8 +47,6 @@ from opendismodel.opendis.PduFactory import createPdu
 from opendismodel.opendis.RangeCoordinates import *
 from io import BytesIO
 
-
-
 class KafkaConsumer:
     def __init__(self, bootstrap_servers, group_id, topic, tranmission):
         self.consumer = Consumer({
@@ -58,8 +57,6 @@ class KafkaConsumer:
         self.topic = topic
         self.consumer.subscribe([self.topic])
         self.transmission = tranmission
-
-        
 
     def consume_messages(self):
         try:
@@ -160,22 +157,25 @@ class KafkaConsumer:
     def close(self):
         self.consumer.close()
 
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    
-    bootstrap_servers = 'localhost:9092'
-    group_id = 'dis'
-    topic = 'dis'
-    transmission = 'kafka_pdu'
-
-    consumer = KafkaConsumer(bootstrap_servers, group_id, topic, transmission)
-    
+def main():
     try:
         while True:
+            logging.basicConfig(level=logging.INFO)
+            parser = argparse.ArgumentParser(description="Kafka Consumer")
+            parser.add_argument("--bootstrap_servers", default="localhost:9092", help="Bootstrap servers")
+            parser.add_argument("--group_id", default="dis", help="Group ID")
+            parser.add_argument("--topic", default="dis", help="Topic")
+            parser.add_argument("--transmission", default="kafka_pdu", help="Transmission option")
+
+            args = parser.parse_args()
+
+            consumer = KafkaConsumer(args.bootstrap_servers, args.group_id, args.topic, args.transmission)
             consumer.consume_messages()
-            time.sleep(120)  # delay of 2 minutes 
+            # time.sleep(1)  # delay of 1 second
+
     except KeyboardInterrupt:
         consumer.close()
 
-    
+if __name__ == "__main__":
+    main()
             

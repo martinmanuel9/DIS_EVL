@@ -116,7 +116,7 @@ class ModbusSim:
                 
                 self.producer.produce_message(xml_data)
 
-                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
+                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(xml_data)) 
                     + "\n Modbus Data Sent:"
                     + "\n  FC1            : {}".format(self.modbusTrain['Data'][0][i][0][3])
                     + "\n  FC2            : {}".format(self.modbusTrain['Data'][0][i][0][4])
@@ -203,7 +203,7 @@ class ModbusSim:
                 
                 self.producer.produce_message(xml_data)
 
-                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
+                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(xml_data)) 
                     + "\n Modbus Data Sent:"
                     + "\n  FC1            : {}".format(self.modbusTest['Data'][0][i][0][3])
                     + "\n  FC2            : {}".format(self.modbusTest['Data'][0][i][0][4])

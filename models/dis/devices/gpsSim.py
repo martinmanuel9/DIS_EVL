@@ -324,4 +324,4 @@ class GPSSim:
 
 # if __name__ == '__main__':
 #     gpsSim = GPSSim(transmission= 'kafka_pdu')
-#     gpsSim.sendTestGPS()
+#     gpsSim.sendGPSTrain()
