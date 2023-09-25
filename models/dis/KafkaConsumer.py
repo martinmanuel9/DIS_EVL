@@ -59,8 +59,7 @@ class KafkaConsumer:
         self.consumer.subscribe([self.topic])
         self.transmission = tranmission
 
-        if self.transmission == 'kafka_pdu':
-            self.gps = GPS()
+        
 
     def consume_messages(self):
         try:
@@ -81,6 +80,7 @@ class KafkaConsumer:
                                 memoryStream = BytesIO(message)
                                 data = memoryStream.getvalue()
                                 if pdu.pduType == 1: # PduTypeDecoders.EntityStatePdu:
+                                    gps = GPS()
                                     loc = (pdu.entityLocation.x,
                                             pdu.entityLocation.y,
                                             pdu.entityLocation.z,
@@ -140,7 +140,7 @@ class KafkaConsumer:
                                         + " Label : {}\n".format(pdu.label)
                                         )
                                 else: 
-                                    print("Received not a PDU?? {}, {} bytes".format(pduTypeName, len(data)), flush=True)
+                                    print("Received PDU {}, {} bytes".format(pduTypeName, len(data)), flush=True)
                             
                             #------ Regular Kafka Messages ------#
                             else:
@@ -169,8 +169,13 @@ if __name__ == "__main__":
     transmission = 'kafka_pdu'
 
     consumer = KafkaConsumer(bootstrap_servers, group_id, topic, transmission)
-    consumer.consume_messages()
-    # consumer.close()
+    
+    try:
+        while True:
+            consumer.consume_messages()
+            time.sleep(120)  # delay of 2 minutes 
+    except KeyboardInterrupt:
+        consumer.close()
 
     
             

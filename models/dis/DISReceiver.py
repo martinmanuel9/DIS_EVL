@@ -118,7 +118,7 @@ def recv():
             )
 
     else: 
-        print("Received not a PDU?? {}, {} bytes".format(pduTypeName, len(data)), flush=True)
+        print("Received PDU {}, {} bytes".format(pduTypeName, len(data)), flush=True)
 
 while True:
     recv()

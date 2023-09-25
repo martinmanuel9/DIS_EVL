@@ -82,3 +82,4 @@ class KafkaServer():
 if __name__ == "__main__":
     kafka = KafkaServer()
     kafka.startKafka()
+    # kafka.stopKafka()
