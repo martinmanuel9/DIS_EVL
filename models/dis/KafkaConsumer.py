@@ -63,7 +63,6 @@ class KafkaConsumer:
             while True:
                 msg = self.consumer.poll(1.0)
                 if msg is None:
-                    print('Message is none will continue')
                     continue
                 if msg.error():
                     logging.error(f"Consumer error: {msg.error()}")
@@ -75,7 +74,6 @@ class KafkaConsumer:
                             if self.transmission == 'kafka_pdu':
                                 pdu = createPdu(message)
                                 pduTypeName = pdu.__class__.__name__
-                                print(pdu)
 
                                 if pdu.pduType == 1: # PduTypeDecoders.EntityStatePdu:
                                     gps = GPS()
@@ -166,13 +164,13 @@ def main():
             parser.add_argument("--bootstrap_servers", default="localhost:9092", help="Bootstrap servers")
             parser.add_argument("--group_id", default="dis", help="Group ID")
             parser.add_argument("--topic", default="dis", help="Topic")
-            parser.add_argument("--transmission", default="kafka_pdu", help="Transmission option")
+            parser.add_argument("--transmission", default="kafka", help="Transmission option")
 
             args = parser.parse_args()
 
             consumer = KafkaConsumer(args.bootstrap_servers, args.group_id, args.topic, args.transmission)
             consumer.consume_messages()
-            # time.sleep(1)  # delay of 1 second
+            time.sleep(1)  # delay of 1 second
 
     except KeyboardInterrupt:
         consumer.close()
