@@ -123,7 +123,7 @@ class GarageSim:
                 
                 time.sleep(8)
 
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 garagePdu = Garage() 
                 garagePdu.door_state = self.garageTrain['Data'][0][i][0][3].encode('utf-8')
                 garagePdu.sphone = self.garageTrain['Data'][0][i][0][4]
@@ -200,7 +200,7 @@ class GarageSim:
                 
                 time.sleep(8)
             
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 garagePdu = Garage() 
                 garagePdu.door_state = self.garageTest['Data'][0][i][0][3].encode('utf-8')
                 garagePdu.sphone = self.garageTest['Data'][0][i][0][4]

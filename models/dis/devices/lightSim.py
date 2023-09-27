@@ -97,7 +97,7 @@ class LightSim:
 
                 time.sleep(12)
             
-            elif self.transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('LightData')
                 ET.SubElement(root, 'MotionStatus').text = str(self.lightTrain['Data'][0][i][0][3])
@@ -120,7 +120,7 @@ class LightSim:
                 
                 time.sleep(12)
 
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 lightTrainPdu = Light()
                 lightTrainPdu.motion_status = self.lightTrain['Data'][0][i][0][3] # motion status
                 lightTrainPdu.light_status = self.lightTrain['Data'][0][i][0][4].encode() #light status
@@ -171,7 +171,7 @@ class LightSim:
                     )
                 time.sleep(12)
             
-            elif self.transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('LightData')
                 ET.SubElement(root, 'MotionStatus').text = str(self.lightTest['Data'][0][i][0][3])
@@ -194,7 +194,7 @@ class LightSim:
                 
                 time.sleep(12)
 
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 lightPdu = Light()
                 lightPdu.motion_status = self.lightTest['Data'][0][i][0][3] # motion status
                 lightPdu.light_status = self.lightTest['Data'][0][i][0][4].encode() #light status

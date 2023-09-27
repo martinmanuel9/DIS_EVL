@@ -126,7 +126,7 @@ class FridgeSim:
                 
                 time.sleep(5)
             
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 # send pdu via kafka
                 fridgeEnvPdu = Environment()
                 device = "Fridge"
@@ -143,6 +143,7 @@ class FridgeSim:
 
                 self.producer.produce_message(data)
 
+                print("Sending message via Kafka_PDU\n")
                 print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
                     + "\n Fridge Data Sent:"
                     + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
@@ -211,7 +212,7 @@ class FridgeSim:
                 
                 time.sleep(5)
 
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 # send pdu via kafka
                 fridgeEnvPdu = Environment()
                 device = "Fridge"
@@ -241,6 +242,6 @@ class FridgeSim:
                 
 
 
-# if __name__ == "__main__":
-#     FridgeSim = FridgeSim(transmission= 'kafka_pdu')
-#     FridgeSim.sendFridgeTrain()
+if __name__ == "__main__":
+    FridgeSim = FridgeSim(transmission= 'kafka_pdu')
+    FridgeSim.sendFridgeTrain()

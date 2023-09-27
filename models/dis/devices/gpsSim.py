@@ -151,7 +151,7 @@ class GPSSim:
 
                 time.sleep(10)
             
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 gpsPDU = EntityStatePdu()
                 gpsPDU.entityID.entityID = 42
                 gpsPDU.entityID.siteID = 17
@@ -276,7 +276,7 @@ class GPSSim:
                 
                 time.sleep(10)
             
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 gpsPDU = EntityStatePdu()
                 gpsPDU.entityID.entityID = 42
                 gpsPDU.entityID.siteID = 17
@@ -322,6 +322,6 @@ class GPSSim:
                 
                 time.sleep(10)
 
-# if __name__ == '__main__':
-#     gpsSim = GPSSim(transmission= 'kafka_pdu')
-#     gpsSim.sendGPSTrain()
+if __name__ == '__main__':
+    gpsSim = GPSSim(transmission= 'kafka_pdu')
+    gpsSim.sendGPSTrain()

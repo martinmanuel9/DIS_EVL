@@ -99,7 +99,7 @@ class ThermostatSim:
                 
                 time.sleep(16)
 
-            elif self.transmission == 'kafka':
+            if self.transmission == 'kafka':
                 #create an xml element for data
                 root = ET.Element('ThermostatData')
                 ET.SubElement(root, 'Temperature').text = str(self.thermoTrain['Data'][0][i][0][3])
@@ -121,7 +121,7 @@ class ThermostatSim:
                 
                 time.sleep(16)
 
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 thermostatPdu = Environment()
                 device = "Thermostat"
                 thermostatPdu.device = device.encode('utf-8') # device 
@@ -179,7 +179,7 @@ class ThermostatSim:
                  
                 time.sleep(16)
 
-            elif self.transmission == 'kafka':
+            if self.transmission == 'kafka':
                 #create an xml element for data
                 root = ET.Element('ThermostatData')
                 ET.SubElement(root, 'Temperature').text = str(self.thermoTest['Data'][0][i][0][3])
@@ -201,7 +201,7 @@ class ThermostatSim:
                 
                 time.sleep(16)
             
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 thermostatPdu = Environment()
                 device = "Thermostat"
                 thermostatPdu.device = device.encode('utf-8') # device 

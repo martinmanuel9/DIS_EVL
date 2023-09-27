@@ -101,7 +101,7 @@ class ModbusSim:
                 
                 time.sleep(14)
 
-            elif self.transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('Modbus')
                 ET.SubElement(root, 'fc1').text = str(self.modbusTrain['Data'][0][i][0][3])
@@ -128,7 +128,7 @@ class ModbusSim:
                     
                 time.sleep(14)
 
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 modbusPdu = Modbus() 
                 modbusPdu.fc1 = self.modbusTrain['Data'][0][i][0][3]
                 modbusPdu.fc2 = self.modbusTrain['Data'][0][i][0][4]
@@ -188,7 +188,7 @@ class ModbusSim:
                 
                 time.sleep(14)
 
-            elif self.transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('Modbus')
                 ET.SubElement(root, 'fc1').text = str(self.modbusTest['Data'][0][i][0][3])
@@ -215,7 +215,7 @@ class ModbusSim:
                 
                 time.sleep(14)
 
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 modbusPdu = Modbus() 
                 modbusPdu.fc1 = self.modbusTest['Data'][0][i][0][3]
                 modbusPdu.fc2 = self.modbusTest['Data'][0][i][0][4]

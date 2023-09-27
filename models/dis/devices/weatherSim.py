@@ -191,7 +191,7 @@ class WeatherSim:
                 
                 time.sleep(18)
 
-            elif self.transmission == 'kafka':
+            if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('WeatherData')
                 ET.SubElement(root, 'Temperature').text = str(self.weatherTest['Data'][0][i][0][3])
@@ -216,7 +216,7 @@ class WeatherSim:
                     )
                 time.sleep(18)
 
-            elif self.transmission == 'kafka_pdu':
+            if self.transmission == 'kafka_pdu':
                 weatherPdu = Environment()
                 device = "Weather"
                 weatherPdu.device = device.encode('utf-8') # device

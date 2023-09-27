@@ -63,6 +63,7 @@ class KafkaConsumer:
             while True:
                 msg = self.consumer.poll(1.0)
                 if msg is None:
+                    print('Message is none will continue')
                     continue
                 if msg.error():
                     logging.error(f"Consumer error: {msg.error()}")
@@ -74,8 +75,8 @@ class KafkaConsumer:
                             if self.transmission == 'kafka_pdu':
                                 pdu = createPdu(message)
                                 pduTypeName = pdu.__class__.__name__
-                                memoryStream = BytesIO(message)
-                                data = memoryStream.getvalue()
+                                print(pdu)
+
                                 if pdu.pduType == 1: # PduTypeDecoders.EntityStatePdu:
                                     gps = GPS()
                                     loc = (pdu.entityLocation.x,
