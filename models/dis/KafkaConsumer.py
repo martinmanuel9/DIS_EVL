@@ -175,7 +175,7 @@ def main():
             parser.add_argument("--bootstrap_servers", default="localhost:9092", help="Bootstrap servers")
             parser.add_argument("--group_id", default="dis", help="Group ID")
             parser.add_argument("--topic", default="dis", help="Topic")
-            parser.add_argument("--transmission", default="kafka", help="Transmission option")
+            parser.add_argument("--transmission", default="kafka_pdu", help="Transmission option")
 
             args = parser.parse_args()
 
