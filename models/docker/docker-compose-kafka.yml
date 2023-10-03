@@ -31,6 +31,7 @@ version: '3'
 services:
   kafka:
     image: wurstmeister/kafka
+    container_name: kafka
     ports:
       - "9092:9092"
     environment:
@@ -43,6 +44,7 @@ services:
 
   zookeeper:
     image: wurstmeister/zookeeper
+    container_name: zookeeper
     ports:
       - "2181:2181"
 

@@ -33,35 +33,49 @@ College of Engineering
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyspark import SparkContext
+from pyspark.sql import SparkSession
 from pyspark.streaming import StreamingContext
-from pyspark.streaming.kafka import KafkaUtils
-from pyspark_cassandra import streaming
+from pyspark.sql.functions import from_json
+from pyspark.sql.types import StructType, StructField, StringType, TimestampType, DoubleType, IntegerType
 import json
 
+# Define the Kafka broker(s) and topic
+kafka_bootstrap_servers = "localhost:9092"
+kafka_brokers = "kafka-broker1:9092,kafka-broker2:9092"
+kafka_topic = "fridge"
+
 # Initialize SparkContext
-sc = SparkContext(appName="KafkaToCassandraStreaming")
+spark = SparkSession.builder \
+    .appName("KafkaStructuredStreaming") \
+    .getOrCreate()
 
-# Initialize StreamingContext
-ssc = StreamingContext(sc, batchDuration=5)  # Adjust batchDuration as needed
+# Define your Kafka input source configuration
+kafka_source = spark.readStream \
+    .format("kafka") \
+    .option(kafka_bootstrap_servers, kafka_brokers) \
+    .option("subscribe", kafka_topic) \
+    .load()
 
-# Connect to Kafka (replace kafka_bootstrap_servers and kafka_topic)
-kafka_stream = KafkaUtils.createStream(
-    ssc,
-    "localhost:9092", # Specify the Kafka bootstrap servers
-    "dis", # Specify a consumer group
-    {"fridge": 1}  # Specify the Kafka topic and the number of threads
-)
+schema = StructType([StructField("timestamp", TimestampType(), True),
+                     StructField("temperature", DoubleType(), True),
+                     StructField("temp_condition", StringType(), True),
+                     StructField("attack", StringType(), True),
+                     StructField("label", IntegerType(),True)])
 
-# Define a function to process each RDD (batch) of messages
-def process_message(rdd):
-    # Example: Deserialize JSON messages and save to Cassandra
-    rdd.map(lambda x: json.loads(x[1])) \
-       .foreachRDD(lambda rdd: rdd.saveToCassandra("my_keyspace", "fridgedata"))
+# Parse the Kafka message value as JSON
+parsed_data = kafka_source.selectExpr("CAST(value AS STRING) as json_value") \
+    .select(from_json("json_value", schema).alias("data"))
 
-# Process and save messages
-kafka_stream.foreachRDD(process_message)
+def write_to_cassandra(batchDF, batchId):
+    batchDF.write \
+        .format("org.apache.spark.sql.cassandra") \
+        .option("keyspace", "my_keyspace") \
+        .option("table", "fridgedata") \
+        .mode("append") \
+        .save()
 
-# Start the streaming context
-ssc.start()
-ssc.awaitTermination()
+query = parsed_data.writeStream \
+    .foreachBatch(write_to_cassandra) \
+    .start()
+
+query.awaitTermination()

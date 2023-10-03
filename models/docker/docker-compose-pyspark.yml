@@ -29,8 +29,9 @@
 
 version: '3'
 services:
-  master:
+  spark_master:
     image: bitnami/spark:latest
+    container_name: spark_master
     environment:
       - SPARK_MODE=master
       - SPARK_RPC_AUTHENTICATION_ENABLED=no
@@ -39,18 +40,29 @@ services:
     ports:
       - '8080:8080'
       - '7077:7077'
-  worker:
+    networks:
+      - disnet
+    command: >
+        /bin/bash -c "
+        exec /opt/bitnami/spark/bin/spark-shell"
+        
+  spark_worker:
     image: bitnami/spark:latest
+    container_name: spark_worker
     environment:
       - SPARK_MODE=worker
       - SPARK_MASTER_URL=spark://master:7077
       - SPARK_WORKER_CORES=1
       - SPARK_WORKER_MEMORY=2g
       - SPARK_WORKER_PORT=8888
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_AUTHENTICATION_ENABLED=nod
       - SPARK_RPC_ENCRYPTION_ENABLED=no
       - SPARK_LOCAL_IP=127.0.0.1
+    networks:
+      - disnet
     depends_on:
-      - master
+      - spark_master
 
-
+networks:
+  disnet:
+    driver: bridge

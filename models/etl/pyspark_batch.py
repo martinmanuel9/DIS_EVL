@@ -84,6 +84,3 @@ query = kafka_stream.writeStream \
 # Wait for the streaming query to terminate
 query.awaitTermination()
 
-
-
-
