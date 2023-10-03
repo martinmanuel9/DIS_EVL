@@ -82,7 +82,7 @@ query = kafka_stream.writeStream \
     .start()
 
 # Wait for the streaming query to terminate
-# query.awaitTermination()
+query.awaitTermination()
 
 
 

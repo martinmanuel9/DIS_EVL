@@ -61,7 +61,7 @@ class GarageSim:
 
         if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
-            self.KAFKA_TOPIC = 'dis'
+            self.KAFKA_TOPIC = 'garage'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
         
 
@@ -224,6 +224,6 @@ class GarageSim:
                 time.sleep(8)
 
 
-# if __name__ == "__main__":
-#     GarageSim = GarageSim(transmission='kafka_pdu')
-#     GarageSim.sendGarageTrain()
+if __name__ == "__main__":
+    GarageSim = GarageSim(transmission='kafka_pdu')
+    GarageSim.sendGarageTrain()

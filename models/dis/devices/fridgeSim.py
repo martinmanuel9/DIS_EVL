@@ -59,7 +59,7 @@ class FridgeSim:
 
         if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
-            self.KAFKA_TOPIC = 'dis'
+            self.KAFKA_TOPIC = 'fridge'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
         
 
@@ -243,5 +243,5 @@ class FridgeSim:
 
 
 if __name__ == "__main__":
-    FridgeSim = FridgeSim(transmission= 'kafka')
+    FridgeSim = FridgeSim(transmission= 'kafka_pdu')
     FridgeSim.sendFridgeTrain()
