@@ -112,7 +112,7 @@ class DeviceTrain():
         
 def main():
     parser = argparse.ArgumentParser(description="Run Devices")
-    parser.add_argument("--transmission", default="kafka", help="Transmission option")
+    parser.add_argument("--transmission", choices=["pdu", "kafka", "kafka_pdu"], default="pdu", help="Transmission option")
     parser.add_argument("--mode", choices=["train", "test"], default="train", help="Mode: train or test")
 
     args = parser.parse_args()

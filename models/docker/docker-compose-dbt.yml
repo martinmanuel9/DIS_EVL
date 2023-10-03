@@ -1,7 +1,0 @@
-version: '3'
-services:
-  dbt:
-    image: python:3.9.16
-    volumes:
-      - ./dbt_project:/dbt_project
-    command: ["pip", "install", "dbt", "&&", "dbt", "run"]
