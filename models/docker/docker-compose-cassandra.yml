@@ -34,7 +34,7 @@ services:
     ports:
       - "9042:9042"  # Cassandra CQL port
     networks:
-      - my_network
+      - disnet
 
 networks:
-  my_network:
+  disnet:

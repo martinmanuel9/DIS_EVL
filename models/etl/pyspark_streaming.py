@@ -33,11 +33,12 @@ College of Engineering
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+
+
 from pyspark.sql import SparkSession
 from pyspark.streaming import StreamingContext
 from pyspark.sql.functions import from_json
 from pyspark.sql.types import StructType, StructField, StringType, TimestampType, DoubleType, IntegerType
-import json
 
 # Define the Kafka broker(s) and topic
 kafka_bootstrap_servers = "localhost:9092"
@@ -69,8 +70,8 @@ parsed_data = kafka_source.selectExpr("CAST(value AS STRING) as json_value") \
 def write_to_cassandra(batchDF, batchId):
     batchDF.write \
         .format("org.apache.spark.sql.cassandra") \
-        .option("keyspace", "my_keyspace") \
-        .option("table", "fridgedata") \
+        .option("keyspace", "fridge_sim") \
+        .option("table", "fridge_data") \
         .mode("append") \
         .save()
 
