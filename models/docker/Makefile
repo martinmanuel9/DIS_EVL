@@ -14,11 +14,9 @@ help:
 	@echo "  kafka	  		- Start Kafka Service"
 	@echo "  pyspark  		- Start Pyspark Service"
 	@echo "  cassandra		- Start Cassandra Service"
-	@echo "  dbt			- Start dbt Service"
 	@echo "  kafka-down		- Stop Kafka Service"
 	@echo "  pyspark-down	- Stop Pyspark Service"
 	@echo "  cassandra-down	- Stop Cassandra Service"
-	@echo "  dbt-down     	- Stop this dbt Service"
 	@echo "  help     		- Show this help message"
 
 
@@ -31,7 +29,7 @@ up:
 down:
 	@for file in $(COMPOSE_FILES); do \
 		echo "Stopping and removing containers in $$file"; \
-		docker-compose -f $$file down; \
+		docker-compose -f $$file down --remove-orphans; \
 	done
 
 logs:
@@ -41,47 +39,37 @@ logs:
 	done
 
 status:
-	@for file in $(COMPOSE_FILES); do \
-		echo "Container status in $$file"; \
-		docker-compose -f $$file ps; \
+	@echo "-----------------------------------------------------------------------------------------------------------------------------------------"
+	@docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}\t{{.Ports}}"
+	@echo "-----------------------------------------------------------------------------------------------------------------------------------------"
 	done
 
 kafka:
 	echo "Starting Kafka Service"
-	docker-compose -f docker-compose-kafka.yml up -d
+	docker-compose -f docker-compose-kafka.yml up -d;
 	done
 
 pyspark:
 	echo "Starting Pyspark Service"; \
-	docker-compose -f docker-compose-pyspark.yml up -d
+	docker-compose -f docker-compose-pyspark.yml up -d;
 	done
 
 cassandra:
 	echo "Starting Cassandra Service"; \
-	docker-compose -f docker-compose-cassandra.yml up -d
-	done
-
-dbt:
-	echo "Starting dbt Service"; \
-	docker-compose -f docker-compose-dbt.yml up -d
+	docker-compose -f docker-compose-cassandra.yml up -d;
 	done
 
 kafka-down:
 	echo "Stopping Kafka Service"; \
-	docker-compose -f docker-compose-kafka.yml down
+	docker-compose -f docker-compose-kafka.yml down --remove-orphans;
 	done
 
 pyspark-down:
 	echo "Stopping Pyspark Service"; \
-	docker-compose -f docker-compose-pyspark.yml down
+	docker-compose -f docker-compose-pyspark.yml down --remove-orphans;
 	done
 
 cassandra-down:
 	echo "Stopping Cassandra Service"; \
-	docker-compose -f docker-compose-cassandra.yml down
-	done
-
-dbt-down:
-	echo "Stopping dbt Service"; \
-	docker-compose -f docker-compose-dbt.yml down
+	docker-compose -f docker-compose-cassandra.yml down --remove-orphans;
 	done
