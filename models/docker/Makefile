@@ -7,30 +7,30 @@ COMPOSE_FILES := $(wildcard *.yml)
 # Define targets and their actions
 help:
 	@echo "Available targets:"
-	@echo "  up       		- Start all services"
-	@echo "  down     		- Stop and remove all containers"
+	@echo "  env-up      		- Start all services"
+	@echo "  env-down     		- Stop and remove all containers"
 	@echo "  logs     		- View container logs"
 	@echo "  status   		- Show container status"
 	@echo "  kafka	  		- Start Kafka Service"
 	@echo "  pyspark  		- Start Pyspark Service"
 	@echo "  cassandra		- Start Cassandra Service"
 	@echo "  kafka-down		- Stop Kafka Service"
-	@echo "  pyspark-down	- Stop Pyspark Service"
+	@echo "  pyspark-down		- Stop Pyspark Service"
 	@echo "  cassandra-down	- Stop Cassandra Service"
 	@echo "  help     		- Show this help message"
 
 
-up:
+env-up:
 	@for file in $(COMPOSE_FILES); do \
 		echo "Starting services in $$file"; \
-		docker-compose -f $$file up -d; \
-	done
+		docker-compose -f $$file up -d;
+	@make status
 
-down:
+env-down:
 	@for file in $(COMPOSE_FILES); do \
 		echo "Stopping and removing containers in $$file"; \
-		docker-compose -f $$file down --remove-orphans; \
-	done
+		docker-compose -f $$file down --remove-orphans; 
+	@make status
 
 logs:
 	@for file in $(COMPOSE_FILES); do \
@@ -40,36 +40,38 @@ logs:
 
 status:
 	@echo "-----------------------------------------------------------------------------------------------------------------------------------------"
-	@docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}\t{{.Ports}}"
-	@echo "-----------------------------------------------------------------------------------------------------------------------------------------"
+	@docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Image}}\t{{.Ports}}"; 
+	@echo "-----------------------------------------------------------------------------------------------------------------------------------------"\
 	done
 
 kafka:
-	echo "Starting Kafka Service"
-	docker-compose -f docker-compose-kafka.yml up -d;
-	done
-
+	@echo "Starting Kafka Service"
+	@docker-compose -f docker-compose-kafka.yml up -d;
+	@make status 
+	 
 pyspark:
-	echo "Starting Pyspark Service"; \
-	docker-compose -f docker-compose-pyspark.yml up -d;
-	done
+	@echo "Starting Pyspark Service"; 
+	@docker-compose -f docker-compose-pyspark.yml up -d;
+	@make status
 
 cassandra:
-	echo "Starting Cassandra Service"; \
-	docker-compose -f docker-compose-cassandra.yml up -d;
+	@echo "Starting Cassandra Service"; 
+	@docker-compose -f docker-compose-cassandra.yml up -d;
+	@make status \
 	done
 
 kafka-down:
-	echo "Stopping Kafka Service"; \
-	docker-compose -f docker-compose-kafka.yml down --remove-orphans;
-	done
+	@echo "Stopping Kafka Service"; 
+	@docker-compose -f docker-compose-kafka.yml down --remove-orphans;
+	@make status 
 
 pyspark-down:
-	echo "Stopping Pyspark Service"; \
-	docker-compose -f docker-compose-pyspark.yml down --remove-orphans;
-	done
+	@echo "Stopping Pyspark Service";
+	@docker-compose -f docker-compose-pyspark.yml down --remove-orphans;
+	@make status 
 
 cassandra-down:
-	echo "Stopping Cassandra Service"; \
-	docker-compose -f docker-compose-cassandra.yml down --remove-orphans;
-	done
+	@echo "Stopping Cassandra Service"; 
+	@docker-compose -f docker-compose-cassandra.yml down --remove-orphans;
+	@make status 
+	
