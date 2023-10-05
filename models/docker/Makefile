@@ -23,13 +23,15 @@ help:
 env-up:
 	@for file in $(COMPOSE_FILES); do \
 		echo "Starting services in $$file"; \
-		docker-compose -f $$file up -d;
+		docker-compose -f $$file up -d; \
+	done
 	@make status
 
 env-down:
 	@for file in $(COMPOSE_FILES); do \
 		echo "Stopping and removing containers in $$file"; \
-		docker-compose -f $$file down --remove-orphans; 
+		docker-compose -f $$file down --remove-orphans; \
+	done
 	@make status
 
 logs:
