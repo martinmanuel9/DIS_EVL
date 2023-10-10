@@ -35,75 +35,124 @@ College of Engineering
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField, TimestampType, DoubleType, StringType, IntegerType
+import uuid
 
 # Define the Kafka broker(s) and topic
 KAFKA_BOOTSTRAP_SERVERS = "localhost:9092"
 KAFKA_TOPIC = "fridge"
 CHECKPOINT_LOCATION = "/home/martinmlopez/DIS_EVL/models/etl"
 
-if __name__ == "__main__":
 
-    # Initialize SparkSession
-    spark = (
-        SparkSession.builder
-        .appName("KafkaStructuredStreaming")
-        .master("local[*]")
-        .config("spark.driver.memory", "1g")
-        .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0")
-        .getOrCreate()
-    )
-    spark.sparkContext.setLogLevel("ERROR")
+def save_to_cassandra(writeDF, epoch_id):
+    print("Printing epoch_id: ")
+    print(epoch_id)
 
-    # Define Kafka source options
-    kafka_source_options = {
-        "kafka.bootstrap.servers": KAFKA_BOOTSTRAP_SERVERS,
-        "subscribe": KAFKA_TOPIC,
-        "startingOffsets": "earliest"
+    writeDF.write \
+        .format("org.apache.spark.sql.cassandra")\
+        .mode('append')\
+        .options(table="fridge_table", keyspace="dis")\
+        .save()
+
+    print(epoch_id, "saved to Cassandra")
+
+
+def save_to_mysql(writeDF, epoch_id):
+    db_credentials = {
+        "user": "root",
+        "password": "secret",
+        "driver": "com.mysql.jdbc.Driver"
     }
 
-    # Read data from Kafka
-    kafka_source = (
-        spark.readStream.format("kafka")
-        .option("kafka.bootstrap.servers", KAFKA_BOOTSTRAP_SERVERS)
-        .option("subscribe", KAFKA_TOPIC)
-        .option("startingOffsets", "latest")
-        .load()
-    )
+    print("Printing epoch_id: ")
+    print(epoch_id)
 
-    base_df = kafka_source.selectExpr("CAST(value as STRING)", "timestamp")
-    base_df.printSchema()
+    writeDF.write \
+        .jdbc(
+            url="jdbc:mysql://172.18.0.8:3306/sales_db",
+            table="fridge",
+            mode="append",
+            properties=db_credentials
+        )
 
-    schema = StructType([
-        StructField("timestamp", TimestampType(), True),
-        StructField("temperature", DoubleType(), True),
-        StructField("temp_condition", StringType(), True),
-        StructField("attack", StringType(), True),
-        StructField("label", IntegerType(), True)
-    ])
+    print(epoch_id, "saved to mysql")
 
-    info_dataframe = base_df.select(
-        from_json(col("value"), schema).alias("info"), "timestamp"
-    )
 
-    info_dataframe.printSchema()
-    info_df_fin = info_dataframe.select("info.*", "timestamp")
-    info_df_fin.printSchema()
+schema = StructType([
+    StructField("timestamp", TimestampType(), True),
+    StructField("temperature", DoubleType(), True),
+    StructField("temp_condition", StringType(), True),
+    StructField("attack", StringType(), True),
+    StructField("label", IntegerType(), True)
+])
 
-    # Define the output Kafka sink options
-    kafka_sink_options = {
-        "topic": KAFKA_TOPIC,
-        "kafka.bootstrap.servers": KAFKA_BOOTSTRAP_SERVERS,
-        "checkpointLocation": CHECKPOINT_LOCATION
-    }
+spark = SparkSession \
+    .builder \
+    .appName("Spark Kafka Streaming Data Pipeline") \
+    .master("local[*]") \
+    .config("spark.cassandra.connection.host", "172.18.0.5") \
+    .config("spark.cassandra.connection.port", "9042") \
+    .config("spark.cassandra.auth.username", "cassandra") \
+    .config("spark.cassandra.auth.password", "cassandra") \
+    .config("spark.driver.host", "localhost")\
+    .getOrCreate()
+spark.sparkContext.setLogLevel("ERROR")
 
-    # Write the processed data to Kafka
-    query = (
-        info_df_fin.writeStream
-        .trigger(processingTime="10 seconds")
-        .outputMode("append")
-        .format("kafka")
-        .options(**kafka_sink_options)
-        .start()
-    )
+input_df = spark \
+    .readStream \
+    .format("kafka") \
+    .option("kafka.bootstrap.servers", "172.18.0.4:9092") \
+    .option("subscribe", "Order") \
+    .option("startingOffsets", "earliest") \
+    .load()
 
-    query.awaitTermination()
+input_df.printSchema()
+
+expanded_df = input_df \
+    .selectExpr("CAST(value AS STRING)") \
+    .select(from_json(col("value"), schema).alias("order")) \
+    .select("order.*")
+
+uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+expanded_df = expanded_df.withColumn("uuid", uuid_udf())
+expanded_df.printSchema()
+
+# Output to Console
+# expanded_df.writeStream \
+#   .outputMode("append") \
+#   .format("console") \
+#   .option("truncate", False) \
+#   .start() \
+#   .awaitTermination()
+
+query1 = expanded_df.writeStream \
+    .trigger(processingTime="15 seconds") \
+    .foreachBatch(save_to_cassandra) \
+    .outputMode("update") \
+    .start()
+
+customers_df = spark.read.csv("customers.csv", header=True, inferSchema=True)
+customers_df.printSchema()
+
+sales_df = expanded_df.join(
+    customers_df, expanded_df.customer_id == customers_df.customer_id, how="inner")
+sales_df.printSchema()
+
+final_df = sales_df.groupBy("source", "state") \
+    .agg({"total": "sum"}).select("source", "state", col("sum(total)").alias("total_sum_amount"))
+final_df.printSchema()
+
+# Output to Console
+# final_df.writeStream \
+#   .trigger(processingTime="15 seconds") \
+#   .outputMode("update") \
+#   .format("console") \
+#   .option("truncate", False) \
+#   .start()
+
+query2 = final_df.writeStream \
+    .trigger(processingTime="15 seconds") \
+    .outputMode("complete") \
+    .foreachBatch(save_to_mysql) \
+    .start()
+
+query2.awaitTermination()

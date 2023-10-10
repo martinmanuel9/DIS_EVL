@@ -18,4 +18,4 @@ wait_for_cassandra
 # Create keyspace and table
 echo "Creating keyspace and table..."
 cqlsh "$CASSANDRA_HOST" -u cassandra -p cassandra -e "CREATE KEYSPACE IF NOT EXISTS dis WITH replication = {'class': 'disclass', 'replication_factor': 1};"
-cqlsh "$CASSANDRA_HOST" -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.fridge_table(uuid uuid primary key, timestamp timestamp, temperature text, condition text, attack text, label int);"
+cqlsh "$CASSANDRA_HOST" -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.fridge_table(uuid uuid primary key, timestamp timestamp, temperature double, condition text, attack text, label int);"

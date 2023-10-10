@@ -108,7 +108,7 @@ services:
         condition: service_started
     volumes:
       - type: bind
-        source: ./kafka/kafka-setup.sh
+        source: /home/martinmlopez/DIS_EVL/models/kafka/kafka-setup.sh
         target: /kafka-setup.sh
 
   cassandra-create-ks-topic:
@@ -158,6 +158,6 @@ services:
         condition: service_started
     volumes:
       - type: bind
-        source: ./spark-streaming/spark-setup.sh
+        source: /home/martinmlopez/DIS_EVL/models/spark-streaming/spark-setup.sh
         target: /spark-setup.sh
       - ./spark-streaming/scripts:/home/scripts
