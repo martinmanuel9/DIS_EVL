@@ -1,0 +1,163 @@
+# Application:        Docker Set up for cassandra
+# File name:          docker-env-evl-dis.yml
+# Author:             Martin Manuel Lopez
+# Creation:           9/28/2023
+
+# MIT License
+#
+# Copyright (c) 2023
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+version: "3"
+
+networks:
+  datapipeline:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.18.0.0/16"
+
+services:
+  spark:
+    image: docker.io/bitnami/spark:latest
+    container_name: spark_master
+    hostname: spark_master
+    user: root
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - "8080:8080"
+    networks:
+      datapipeline:
+        ipv4_address: 172.18.0.2
+
+  zookeeper:
+    image: "bitnami/zookeeper:latest"
+    container_name: zookeeper
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    networks:
+      datapipeline:
+        ipv4_address: 172.18.0.3
+
+  kafka:
+    image: "bitnami/kafka:latest"
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://172.18.0.4:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      zookeeper:
+        condition: service_started
+    networks:
+      datapipeline:
+        ipv4_address: 172.18.0.4
+
+  cassandra:
+    image: cassandra:latest
+    container_name: cassandra
+    hostname: cassandra
+    ports:
+      - "9042:9042"
+    networks:
+      datapipeline:
+        ipv4_address: 172.18.0.5
+
+  kafka-create-topic:
+    image: bitnami/kafka:latest
+    container_name: kafka-create-topic
+    networks:
+      datapipeline:
+        ipv4_address: 172.18.0.6
+    command: ["/bin/bash", "-c", "/kafka-setup.sh"]
+    environment:
+      - TOPIC_NAME=fridge
+    depends_on:
+      kafka:
+        condition: service_started
+    volumes:
+      - type: bind
+        source: ./kafka/kafka-setup.sh
+        target: /kafka-setup.sh
+
+  cassandra-create-ks-topic:
+    image: cassandra:latest
+    container_name: cassandra-create-ks-topic
+    networks:
+      datapipeline:
+        ipv4_address: 172.18.0.7
+    depends_on:
+      cassandra:
+        condition: service_started
+    restart: "no"
+    entrypoint: ["/cassandra-init.sh"]
+    volumes:
+      - ./cassandra/cassandra-init.sh:/cassandra-init.sh
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    command: --init-file /data/application/init.sql
+    volumes:
+      - ./mysql/init.sql:/data/application/init.sql
+    environment:
+      MYSQL_ROOT_USER: root
+      MYSQL_ROOT_PASSWORD: secret
+    networks:
+      datapipeline:
+        ipv4_address: 172.18.0.8
+
+  spark-consumer:
+    image: docker.io/bitnami/spark:latest
+    container_name: spark-consumer
+    networks:
+      datapipeline:
+        ipv4_address: 172.18.0.9
+    command: ["/bin/bash", "-c", "/spark-setup.sh"]
+    depends_on:
+      spark:
+        condition: service_started
+      kafka-create-topic:
+        condition: service_completed_successfully
+      cassandra-create-ks-topic:
+        condition: service_completed_successfully
+      mysql:
+        condition: service_started
+    volumes:
+      - type: bind
+        source: ./spark-streaming/spark-setup.sh
+        target: /spark-setup.sh
+      - ./spark-streaming/scripts:/home/scripts

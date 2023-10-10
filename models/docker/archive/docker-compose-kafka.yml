@@ -1,0 +1,58 @@
+# Application:        Docker Set up for Kafka
+# File name:          docker-compose-kafka.yml
+# Author:             Martin Manuel Lopez
+# Creation:           9/28/2023
+
+
+# MIT License
+#
+# Copyright (c) 2023
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+version: '3'
+services:
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka-container
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka-container  # Use the container name as the advertised host
+      KAFKA_PORT: 9092
+      KAFKA_CREATE_TOPICS: "dis:1:1"
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper-container:2181  # Reference the Zookeeper container
+    networks:
+      - disnet  # Attach Kafka to the same network as other services
+    depends_on:
+      - zookeeper-container  # Make sure Kafka starts after Zookeeper
+
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper-container
+    ports:
+      - "2181:2181"
+    networks:
+      - disnet  # Attach Zookeeper to the same network as other services
+
+networks:
+  disnet:
+
+
