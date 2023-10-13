@@ -32,18 +32,26 @@ College of Engineering
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from io import BytesIO
+from opendismodel.opendis.RangeCoordinates import *
+from opendismodel.opendis.PduFactory import createPdu
+from opendismodel.opendis.dis7 import *
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField, TimestampType, DoubleType, StringType, IntegerType
 import uuid
+from confluent_kafka import Consumer, KafkaError
+import time
+import sys
+import os
+import logging
 
-# Define the Kafka broker(s) and topic
-KAFKA_BOOTSTRAP_SERVERS = "localhost:9092"
-KAFKA_TOPIC = "fridge"
-CHECKPOINT_LOCATION = "/home/martinmlopez/DIS_EVL/models/etl"
+
+BOOTSTRAP_SERVERS = "localhost:9092"
+GROUP_ID = "dis"
 
 
-def save_to_cassandra(writeDF, epoch_id):
+def save_to_cassandra(self, writeDF, epoch_id):
     print("Printing epoch_id: ")
     print(epoch_id)
 
@@ -56,7 +64,7 @@ def save_to_cassandra(writeDF, epoch_id):
     print(epoch_id, "saved to Cassandra")
 
 
-def save_to_mysql(writeDF, epoch_id):
+def save_to_mysql(self, writeDF, epoch_id):
     db_credentials = {
         "user": "root",
         "password": "secret",
@@ -77,7 +85,150 @@ def save_to_mysql(writeDF, epoch_id):
     print(epoch_id, "saved to mysql")
 
 
-schema = StructType([
+def kafka_pdu_consumer(self, topic, group_id, transmission, spark_df):
+    consumer = Consumer({
+        'bootstrap.servers': BOOTSTRAP_SERVERS,
+        'group.id': GROUP_ID,
+        'auto.offset.reset': 'earliest',
+        'enable.auto.commit': False,  # Disable auto-commit of offsets
+        'enable.auto.offset.store': False,  # Disable automatic offset storage
+        'enable.partition.eof': False  # Disable automatic partition EOF event
+    })
+
+    consumer.subscribe([topic])
+    while True:
+        msg = consumer.poll(timeout=1.0)
+        if msg is None:
+            continue
+        if msg.error():
+            logging.error(f"Consumer error: {msg.error()}")
+        else:
+            message = msg.value()
+            if isinstance(message, bytes):
+                try:
+                    # ------- Sending PDUs via Kafka -------#
+                    if transmission == 'kafka_pdu':
+                        pdu = createPdu(message)
+                        pduTypeName = pdu.__class__.__name__
+
+                        if pdu.pduType == 1:  # PduTypeDecoders.EntityStatePdu:
+                            gps = GPS()
+                            loc = (pdu.entityLocation.x,
+                                   pdu.entityLocation.y,
+                                   pdu.entityLocation.z,
+                                   pdu.entityOrientation.psi,
+                                   pdu.entityOrientation.theta,
+                                   pdu.entityOrientation.phi)
+                            gps.update(loc)
+                            body = gps.ecef2llarpy(*loc)
+                            spark_df.append((
+                                pdu.entityID.entityID,
+                                body[0],
+                                body[1],
+                                body[2],
+                                body[3],
+                                body[4],
+                                body[5],
+                                pdu.attack.decode('utf-8'),
+                                pdu.label
+                            ))
+                            print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
+                                  + " Id          : {}\n".format(pdu.entityID.entityID)
+                                    + " Latitude    : {:.2f} degrees\n".format(rad2deg(body[0]))
+                                    + " Longitude   : {:.2f} degrees\n".format(rad2deg(body[1]))
+                                    + " Altitude    : {:.0f} meters\n".format(body[2])
+                                    + " Yaw         : {:.2f} degrees\n".format(rad2deg(body[3]))
+                                    + " Pitch       : {:.2f} degrees\n".format(rad2deg(body[4]))
+                                    + " Roll        : {:.2f} degrees\n".format(rad2deg(body[5]))
+                                    + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
+                                    + " Label       : {}\n".format(pdu.label))
+
+                        elif pdu.pduType == 73:  # Light
+                            spark_df.append((
+                                pdu.motion_status,
+                                pdu.light_state.decode('utf-8'),
+                                pdu.attack.decode('utf-8'),
+                                pdu.label
+                            ))
+                            print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
+                                  + " Motion Status : {}\n".format(pdu.motion_status)
+                                    + " Light Status  : {}\n".format(pdu.light_status.decode('utf-8'))
+                                    + " Attack        : {}\n".format(pdu.attack.decode('utf-8'))
+                                    + " Label         : {}\n".format(pdu.label))
+
+                        elif pdu.pduType == 70:  # environment
+                            spark_df.append((
+                                pdu.device.decode('utf-8'),
+                                pdu.temperature,
+                                pdu.pressure,
+                                pdu.humidity,
+                                pdu.condition.decode('utf-8'),
+                                pdu.temp_status,
+                                pdu.attack.decode('utf-8'),
+                                pdu.label
+                            ))
+                            print("Received {}: {} Bytes \n".format(pduTypeName, len(message), flush=True)
+                                  + " Device      : {}\n".format(pdu.device.decode('utf-8'))
+                                    + " Temperature : {}\n".format(pdu.temperature)
+                                    + " Pressure    : {}\n".format(pdu.pressure)
+                                    + " Humidity    : {}\n".format(pdu.humidity)
+                                    + " Condition   : {}\n".format(pdu.condition.decode('utf-8'))
+                                    + " Temp Status : {}\n".format(pdu.temp_status)
+                                    + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
+                                    + " Label       : {}\n".format(pdu.label))
+
+                        elif pdu.pduType == 71:  # modbus
+                            spark_df.append((
+                                pdu.fc1,
+                                pdu.fc2,
+                                pdu.fc3,
+                                pdu.fc4,
+                                pdu.attack.decode('utf-8'),
+                                pdu.label
+                            ))
+                            print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
+                                  + " FC1 Register    : {}\n".format(pdu.fc1)
+                                    + " FC2 Discrete    : {}\n".format(pdu.fc2)
+                                    + " FC3 Register    : {}\n".format(pdu.fc3)
+                                    + " FC4 Read Coil   : {}\n".format(pdu.fc4)
+                                    + " Attack          : {}\n".format(pdu.attack.decode('utf-8'))
+                                    + " Label           : {}\n".format(pdu.label))
+
+                        elif pdu.pduType == 72:  # garage
+                            spark_df.append((
+                                pdu.door_state.decode('utf-8'),
+                                pdu.sphone,
+                                pdu.attack.decode('utf-8'),
+                                pdu.label
+                            ))
+                            print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
+                                  + " Door State: {}\n".format(pdu.door_state.decode('utf-8'))
+                                    + " SPhone: {}\n".format(pdu.sphone)
+                                    + " Attack: {}\n".format(pdu.attack.decode('utf-8'))
+                                    + " Label : {}\n".format(pdu.label))
+
+                        else:
+                            print("Received PDU {}, {} bytes".format(
+                                pduTypeName, len(message)), flush=True)
+
+                    # ------ Regular Kafka Messages ------#
+                    else:
+                        message = message.decode('utf-8')
+                        spark_df.append((
+                            message.decode('utf-8'),
+                        ))
+                        logging.info(f"Received message: {message}")
+
+                    # --- Commit the offset manually --- #
+                    self.consumer.commit(msg)
+
+                except UnicodeDecodeError as e:
+                    print("UnicodeDecodeError: ", e)
+            else:
+                logging.error("Received message is not a byte-like object.")
+
+
+fridgeSchema = StructType([
     StructField("timestamp", TimestampType(), True),
     StructField("temperature", DoubleType(), True),
     StructField("temp_condition", StringType(), True),
@@ -97,11 +248,16 @@ spark = SparkSession \
     .getOrCreate()
 spark.sparkContext.setLogLevel("ERROR")
 
+fridge_pdu_data = []
+while True:
+    kafka_pdu_consumer(topic="fridge", group_id="dis",
+                       transmission="kafka_pdu")
+
 input_df = spark \
     .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", "172.18.0.4:9092") \
-    .option("subscribe", "Order") \
+    .option("subscribe", "fridge") \
     .option("startingOffsets", "earliest") \
     .load()
 
@@ -109,7 +265,7 @@ input_df.printSchema()
 
 expanded_df = input_df \
     .selectExpr("CAST(value AS STRING)") \
-    .select(from_json(col("value"), schema).alias("order")) \
+    .select(from_json(col("value"), fridgeSchema).alias("order")) \
     .select("order.*")
 
 uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
@@ -117,12 +273,12 @@ expanded_df = expanded_df.withColumn("uuid", uuid_udf())
 expanded_df.printSchema()
 
 # Output to Console
-# expanded_df.writeStream \
-#   .outputMode("append") \
-#   .format("console") \
-#   .option("truncate", False) \
-#   .start() \
-#   .awaitTermination()
+expanded_df.writeStream \
+    .outputMode("append") \
+    .format("console") \
+    .option("truncate", False) \
+    .start() \
+    .awaitTermination()
 
 query1 = expanded_df.writeStream \
     .trigger(processingTime="15 seconds") \
@@ -130,29 +286,10 @@ query1 = expanded_df.writeStream \
     .outputMode("update") \
     .start()
 
-customers_df = spark.read.csv("customers.csv", header=True, inferSchema=True)
-customers_df.printSchema()
-
-sales_df = expanded_df.join(
-    customers_df, expanded_df.customer_id == customers_df.customer_id, how="inner")
-sales_df.printSchema()
-
-final_df = sales_df.groupBy("source", "state") \
-    .agg({"total": "sum"}).select("source", "state", col("sum(total)").alias("total_sum_amount"))
-final_df.printSchema()
-
-# Output to Console
-# final_df.writeStream \
-#   .trigger(processingTime="15 seconds") \
-#   .outputMode("update") \
-#   .format("console") \
-#   .option("truncate", False) \
-#   .start()
-
-query2 = final_df.writeStream \
+query2 = expanded_df.writeStream \
     .trigger(processingTime="15 seconds") \
     .outputMode("complete") \
     .foreachBatch(save_to_mysql) \
     .start()
 
-query2.awaitTermination()
+# query2.awaitTermination()
