@@ -33,9 +33,6 @@ College of Engineering
 # SOFTWARE.
 
 from io import BytesIO
-from opendismodel.opendis.RangeCoordinates import *
-from opendismodel.opendis.PduFactory import createPdu
-from opendismodel.opendis.dis7 import *
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField, TimestampType, DoubleType, StringType, IntegerType
@@ -45,13 +42,19 @@ import time
 import sys
 import os
 import logging
+import os
+# Change the current working directory to the directory where opendismodels is located
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')))
+from opendismodel.opendis.RangeCoordinates import * 
+from opendismodel.opendis.PduFactory import createPdu
+from opendismodel.opendis.dis7 import *
 
 
 BOOTSTRAP_SERVERS = "localhost:9092"
 GROUP_ID = "dis"
 
 
-def save_to_cassandra(self, writeDF, epoch_id):
+def save_to_cassandra( writeDF, epoch_id):
     print("Printing epoch_id: ")
     print(epoch_id)
 
@@ -64,7 +67,7 @@ def save_to_cassandra(self, writeDF, epoch_id):
     print(epoch_id, "saved to Cassandra")
 
 
-def save_to_mysql(self, writeDF, epoch_id):
+def save_to_mysql( writeDF, epoch_id):
     db_credentials = {
         "user": "root",
         "password": "secret",
@@ -85,7 +88,7 @@ def save_to_mysql(self, writeDF, epoch_id):
     print(epoch_id, "saved to mysql")
 
 
-def kafka_pdu_consumer(self, topic, group_id, transmission, spark_df):
+def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
     consumer = Consumer({
         'bootstrap.servers': BOOTSTRAP_SERVERS,
         'group.id': GROUP_ID,
@@ -220,7 +223,7 @@ def kafka_pdu_consumer(self, topic, group_id, transmission, spark_df):
                         logging.info(f"Received message: {message}")
 
                     # --- Commit the offset manually --- #
-                    self.consumer.commit(msg)
+                    consumer.commit(msg)
 
                 except UnicodeDecodeError as e:
                     print("UnicodeDecodeError: ", e)
@@ -249,9 +252,12 @@ spark = SparkSession \
 spark.sparkContext.setLogLevel("ERROR")
 
 fridge_pdu_data = []
-while True:
-    kafka_pdu_consumer(topic="fridge", group_id="dis",
-                       transmission="kafka_pdu")
+
+kafka_pdu_consumer(topic="fridge", group_id="dis",
+                    transmission="kafka_pdu", spark_df=fridge_pdu_data)
+
+spark_fridge_df = spark.createDataFrame(fridge_pdu_data, fridgeSchema)
+spark_fridge_df.show()
 
 input_df = spark \
     .readStream \
@@ -268,7 +274,8 @@ expanded_df = input_df \
     .select(from_json(col("value"), fridgeSchema).alias("order")) \
     .select("order.*")
 
-uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+uuid_udf = udf(lambda: str(uuid.uuid4()),
+                StringType()).asNondeterministic()
 expanded_df = expanded_df.withColumn("uuid", uuid_udf())
 expanded_df.printSchema()
 
@@ -292,4 +299,4 @@ query2 = expanded_df.writeStream \
     .foreachBatch(save_to_mysql) \
     .start()
 
-# query2.awaitTermination()
+query2.awaitTermination()

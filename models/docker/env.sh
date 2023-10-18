@@ -32,10 +32,4 @@ else
 fi
 
 
-
-# # Change the directory to the script location
-# cd /home/martinmlopez/DIS_EVL/models/spark-streaming/scripts
-
-
-# # Submit the Spark job
-# spark-submit --jars jars/kafka-clients-3.4.0.jar,jars/spark-sql-kafka-0-10_2.12-3.3.0.jar,jars/spark-streaming-kafka-0-10-assembly_2.12-3.3.0.jar,jars/commons-pool2-2.11.1.jar,jars/spark-cassandra-connector_2.12-3.3.0.jar,jars/jsr166e-1.1.0.jar,jars/spark-cassandra-connector-assembly_2.12-3.3.0.jar,jars/mysql-connector-java-8.0.28.jar pyspark_streaming.py
+docker cp /home/martinmlopez/DIS_EVL/models spark_master:/opt/bitnami/spark/tmp
