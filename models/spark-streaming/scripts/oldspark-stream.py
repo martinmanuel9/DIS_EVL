@@ -1,21 +1,58 @@
+#!/usr/bin/env python
+"""
+Application:        Apache Spark Application 
+File name:          pyspark_streaming.py
+Author:             Martin Manuel Lopez
+Creation:           9/27/2023
+
+The University of Arizona
+Department of Electrical and Computer Engineering
+College of Engineering
+"""
+
+# MIT License
+#
+# Copyright (c) 2023
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import *
 from pyspark.sql.types import StructType, StructField, TimestampType, DoubleType, StringType, IntegerType
 import uuid
-import os
 from confluent_kafka import Consumer, KafkaError
+import sys
+import os
 import logging
-import signal
-import time
+import os
+# Change the current working directory to the directory where opendismodels is located
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')))
 from opendismodel.opendis.RangeCoordinates import * 
 from opendismodel.opendis.PduFactory import createPdu
 from opendismodel.opendis.dis7 import *
 
+
 BOOTSTRAP_SERVERS = "localhost:9092"
 GROUP_ID = "dis"
 
-def save_to_cassandra(writeDF, epoch_id):
+
+def save_to_cassandra( writeDF, epoch_id):
     print("Printing epoch_id: ")
     print(epoch_id)
 
@@ -27,7 +64,8 @@ def save_to_cassandra(writeDF, epoch_id):
 
     print(epoch_id, "saved to Cassandra")
 
-def save_to_mysql(writeDF, epoch_id):
+
+def save_to_mysql( writeDF, epoch_id):
     db_credentials = {
         "user": "root",
         "password": "secret",
@@ -45,29 +83,24 @@ def save_to_mysql(writeDF, epoch_id):
             properties=db_credentials
         )
 
-    print(epoch_id, "saved to MySQL")
+    print(epoch_id, "saved to mysql")
 
 
 def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
-    
     consumer = Consumer({
         'bootstrap.servers': BOOTSTRAP_SERVERS,
-        'group.id': group_id,
+        'group.id': GROUP_ID,
         'auto.offset.reset': 'earliest',
-        'enable.auto.commit': False,
-        'enable.auto.offset.store': False,
-        'enable.partition.eof': False
+        'enable.auto.commit': False,  # Disable auto-commit of offsets
+        'enable.auto.offset.store': False,  # Disable automatic offset storage
+        'enable.partition.eof': False  # Disable automatic partition EOF event
     })
 
     consumer.subscribe([topic])
-    
-    
     while True:
-        msg = consumer.poll(timeout=60.0) 
-        
+        msg = consumer.poll(timeout=1.0)
         if msg is None:
-            print("Exiting due to timeout. No messages received within 60 seconds.")
-            break
+            continue
         if msg.error():
             logging.error(f"Consumer error: {msg.error()}")
         else:
@@ -90,7 +123,6 @@ def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
                             gps.update(loc)
                             body = gps.ecef2llarpy(*loc)
                             spark_df.append((
-                                msg.timestamp()[1] // 1000.0,
                                 pdu.entityID.entityID,
                                 body[0],
                                 body[1],
@@ -102,8 +134,7 @@ def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
                                 pdu.label
                             ))
                             print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
-                                    + "Timestamp  : {}\n".format(msg.timestamp()[1] // 1000)
-                                    + " Id          : {}\n".format(pdu.entityID.entityID)
+                                  + " Id          : {}\n".format(pdu.entityID.entityID)
                                     + " Latitude    : {:.2f} degrees\n".format(rad2deg(body[0]))
                                     + " Longitude   : {:.2f} degrees\n".format(rad2deg(body[1]))
                                     + " Altitude    : {:.0f} meters\n".format(body[2])
@@ -115,22 +146,19 @@ def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
 
                         elif pdu.pduType == 73:  # Light
                             spark_df.append((
-                                msg.timestamp()[1] // 1000.0,
                                 pdu.motion_status,
                                 pdu.light_state.decode('utf-8'),
                                 pdu.attack.decode('utf-8'),
                                 pdu.label
                             ))
                             print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
-                                    + "Timestamp  : {}\n".format(msg.timestamp()[1] // 1000)
-                                    + " Motion Status : {}\n".format(pdu.motion_status)
+                                  + " Motion Status : {}\n".format(pdu.motion_status)
                                     + " Light Status  : {}\n".format(pdu.light_status.decode('utf-8'))
                                     + " Attack        : {}\n".format(pdu.attack.decode('utf-8'))
                                     + " Label         : {}\n".format(pdu.label))
 
                         elif pdu.pduType == 70:  # environment
                             spark_df.append((
-                                msg.timestamp()[1] // 1000.0,
                                 pdu.device.decode('utf-8'),
                                 pdu.temperature,
                                 pdu.pressure,
@@ -141,8 +169,7 @@ def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
                                 pdu.label
                             ))
                             print("Received {}: {} Bytes \n".format(pduTypeName, len(message), flush=True)
-                                    + "Timestamp  : {}\n".format(msg.timestamp()[1] // 1000.0)
-                                    + " Device      : {}\n".format(pdu.device.decode('utf-8'))
+                                  + " Device      : {}\n".format(pdu.device.decode('utf-8'))
                                     + " Temperature : {}\n".format(pdu.temperature)
                                     + " Pressure    : {}\n".format(pdu.pressure)
                                     + " Humidity    : {}\n".format(pdu.humidity)
@@ -153,7 +180,6 @@ def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
 
                         elif pdu.pduType == 71:  # modbus
                             spark_df.append((
-                                msg.timestamp()[1] // 1000.0,
                                 pdu.fc1,
                                 pdu.fc2,
                                 pdu.fc3,
@@ -162,8 +188,7 @@ def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
                                 pdu.label
                             ))
                             print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
-                                    + "Timestamp  : {}\n".format(msg.timestamp()[1] // 1000.0)
-                                    + " FC1 Register    : {}\n".format(pdu.fc1)
+                                  + " FC1 Register    : {}\n".format(pdu.fc1)
                                     + " FC2 Discrete    : {}\n".format(pdu.fc2)
                                     + " FC3 Register    : {}\n".format(pdu.fc3)
                                     + " FC4 Read Coil   : {}\n".format(pdu.fc4)
@@ -172,15 +197,13 @@ def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
 
                         elif pdu.pduType == 72:  # garage
                             spark_df.append((
-                                msg.timestamp()[1] // 1000.0,
                                 pdu.door_state.decode('utf-8'),
                                 pdu.sphone,
                                 pdu.attack.decode('utf-8'),
                                 pdu.label
                             ))
                             print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
-                                    + "Timestamp  : {}\n".format(msg.timestamp()[1] // 1000.0)
-                                    + " Door State: {}\n".format(pdu.door_state.decode('utf-8'))
+                                  + " Door State: {}\n".format(pdu.door_state.decode('utf-8'))
                                     + " SPhone: {}\n".format(pdu.sphone)
                                     + " Attack: {}\n".format(pdu.attack.decode('utf-8'))
                                     + " Label : {}\n".format(pdu.label))
@@ -202,90 +225,76 @@ def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
 
                 except UnicodeDecodeError as e:
                     print("UnicodeDecodeError: ", e)
-                except Exception as e:
-                    logging.error(f"Error processing message: {str(e)}")
             else:
                 logging.error("Received message is not a byte-like object.")
-            
 
-# Create a Spark session
-spark = SparkSession.builder \
+
+fridgeSchema = StructType([
+    StructField("timestamp", TimestampType(), True),
+    StructField("temperature", DoubleType(), True),
+    StructField("temp_condition", StringType(), True),
+    StructField("attack", StringType(), True),
+    StructField("label", IntegerType(), True)
+])
+
+spark = SparkSession \
+    .builder \
     .appName("Spark Kafka Streaming Data Pipeline") \
+    .master("local[*]") \
     .config("spark.cassandra.connection.host", "172.18.0.5") \
     .config("spark.cassandra.connection.port", "9042") \
     .config("spark.cassandra.auth.username", "cassandra") \
     .config("spark.cassandra.auth.password", "cassandra") \
-    .config("spark.driver.host", "localhost") \
+    .config("spark.driver.host", "localhost")\
     .getOrCreate()
-
 spark.sparkContext.setLogLevel("ERROR")
 
-# create a function that constantly checks if we have a new kafka message
+fridge_pdu_data = []
 
+kafka_pdu_consumer(topic="fridge", group_id="dis",
+                    transmission="kafka_pdu", spark_df=fridge_pdu_data)
 
+spark_fridge_df = spark.createDataFrame(fridge_pdu_data, fridgeSchema)
+spark_fridge_df.show()
 
-# Define the schema for the Kafka message
-fridgeSchema = StructType([
-    StructField("timestamp", StringType(), True),
-    StructField("temperature", StringType(), True),
-    StructField("temp_condition", StringType(), True),
-    StructField("attack", StringType(), True),
-    StructField("label", StringType(), True)
-])
-
-# create spark_df 
-spark_df = []
-# Go through the PDU kafka messages
-kafka_pdu_consumer(topic='fridge', group_id=GROUP_ID, 
-                   transmission='kafka_pdu', spark_df=spark_df)
-
-print('spark_df: ', spark_df)
-
-# Create a Kafka DataFrame for streaming
-input_df = spark.readStream \
+input_df = spark \
+    .readStream \
     .format("kafka") \
     .option("kafka.bootstrap.servers", "172.18.0.4:9092") \
     .option("subscribe", "fridge") \
     .option("startingOffsets", "earliest") \
     .load()
 
-# Extract and parse the message value
+input_df.printSchema()
+
 expanded_df = input_df \
     .selectExpr("CAST(value AS STRING)") \
-    .select(from_json(col("value"), fridgeSchema).alias("fridge")) \
-    .select("fridge.*")
+    .select(from_json(col("value"), fridgeSchema).alias("order")) \
+    .select("order.*")
 
-# Generate a UUID column
-uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+uuid_udf = udf(lambda: str(uuid.uuid4()),
+                StringType()).asNondeterministic()
 expanded_df = expanded_df.withColumn("uuid", uuid_udf())
+expanded_df.printSchema()
 
 # Output to Console
-console_query = expanded_df.writeStream \
+expanded_df.writeStream \
     .outputMode("append") \
     .format("console") \
     .option("truncate", False) \
-    .start()
+    .start() \
+    .awaitTermination()
 
-# Define a checkpoint location for the streaming query
-checkpoint_location = os.getcwd()
-
-# Output to Cassandra
-cassandra_query = expanded_df.writeStream \
+query1 = expanded_df.writeStream \
     .trigger(processingTime="15 seconds") \
-    .outputMode("append") \
-    .option("checkpointLocation", checkpoint_location) \
     .foreachBatch(save_to_cassandra) \
+    .outputMode("update") \
     .start()
 
-# Output to MySQL
-mysql_query = expanded_df.writeStream \
+query2 = expanded_df.writeStream \
     .trigger(processingTime="15 seconds") \
-    .outputMode("append") \
-    .option("checkpointLocation", checkpoint_location) \
+    .outputMode("complete") \
     .foreachBatch(save_to_mysql) \
     .start()
 
-# Wait for the streaming queries to terminate
-console_query.awaitTermination()
-cassandra_query.awaitTermination()
-mysql_query.awaitTermination()
+query2.awaitTermination()
