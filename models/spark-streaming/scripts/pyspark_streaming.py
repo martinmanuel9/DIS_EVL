@@ -1,12 +1,12 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import *
-from pyspark.sql.types import StructType, StructField, TimestampType, DoubleType, StringType, IntegerType
+from pyspark.sql.types import *
 import uuid
 import os
 from confluent_kafka import Consumer, KafkaError
 import logging
-import signal
-import time
+import json
+from pyspark.sql.functions import *
+from datetime import datetime
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')))
 from opendismodel.opendis.RangeCoordinates import * 
 from opendismodel.opendis.PduFactory import createPdu
@@ -48,7 +48,7 @@ def save_to_mysql(writeDF, epoch_id):
     print(epoch_id, "saved to MySQL")
 
 
-def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
+def kafa_read_dis_stream(topic, group_id, transmission):
     
     consumer = Consumer({
         'bootstrap.servers': BOOTSTRAP_SERVERS,
@@ -60,8 +60,110 @@ def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
     })
 
     consumer.subscribe([topic])
+
+    # set up schema here 
+    # Define the schema for the Kafka message
+    fridgeSchema = StructType([ 
+        StructField("device", StringType(), True),
+        StructField("temperature", DoubleType(), True),
+        StructField("temp_condition", StringType(), True),
+        StructField("attack", StringType(), True),
+        StructField("label", StringType(), True),
+        StructField("uuid", StringType(), True)
+    ])
+
+    # sparkFridgeDF = spark.createDataFrame([], fridgeSchema)
+    # # Create a Kafka DataFrame for streaming
+    # sparkFridgeDF = spark.readStream \
+    #     .format("kafka") \
+    #     .option("kafka.bootstrap.servers", "172.18.0.4:9092") \
+    #     .option("subscribe", "fridge") \
+    #     .option("startingOffsets", "earliest") \
+    #     .load()
     
+    # expandedFridgeDF = sparkFridgeDF \
+    #     .selectExpr("CAST(value AS STRING)") \
+    #     .select(from_json(col("value"), fridgeSchema, options={'mode': 'PERMISSIVE'}).alias("fridge")) \
+    #     .select("fridge.*")
+            
+    # # Generate a UUID column
+    # uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+    # expandedFridgeDF = expandedFridgeDF.withColumn("uuid", uuid_udf())
+
+    # # Start the streaming query
+    # fridgeQuery = expandedFridgeDF.writeStream \
+    #     .outputMode("append") \
+    #     .format("console") \
+    #     .option("truncate", False) \
+    #     .start() \
+    #     .awaitTermination()
     
+
+    garageSchema = StructType([
+        StructField("timestamp", TimestampType(), True),
+        StructField("door_state", StringType(), True),
+        StructField("sphone", IntegerType(), True),
+        StructField("attack", StringType(), True),
+        StructField("label", IntegerType(), True)
+    ])
+    sparkGarageDF = spark.createDataFrame([], garageSchema)
+
+    gpsSchema = StructType([
+        StructField("timestamp", TimestampType(), True), 
+        StructField("latitude", DoubleType(), True),
+        StructField("longitude", DoubleType(), True),
+        StructField("altitude", DoubleType(), True),
+        StructField("roll", DoubleType(), True),
+        StructField("pitch", DoubleType(), True),
+        StructField("yaw", DoubleType(), True),
+        StructField("attack", StringType(), True),
+        StructField("label", IntegerType(), True)
+    ])
+    sparkGPSDF = spark.createDataFrame([], gpsSchema)
+
+    lightSchema = StructType([
+        StructField("timestamp", TimestampType(), True),
+        StructField("motion_status", IntegerType(), True),
+        StructField("light_status", StringType(), True),
+        StructField("attack", StringType(), True),
+        StructField("label", IntegerType(), True)
+    ])
+    sparkLightDF = spark.createDataFrame([], lightSchema)
+
+    modbusSchema = StructType([
+        StructField("timestamp", TimestampType(), True),
+        StructField("fc1", DoubleType(), True),
+        StructField("fc2", DoubleType(), True),
+        StructField("fc3", DoubleType(), True),
+        StructField("fc4", DoubleType(), True),
+        StructField("attack", StringType(), True),
+        StructField("label", IntegerType(), True)
+    ])
+    sparkModbusDF = spark.createDataFrame([], modbusSchema)
+
+    thermostatSchema = StructType([
+        StructField("timestamp", TimestampType(), True),
+        StructField("temperature", DoubleType(), True),
+        StructField("temp_status", IntegerType(), True),
+        StructField("attack", StringType(), True),
+        StructField("label", IntegerType(), True)
+    ])
+    sparkThermostatDF = spark.createDataFrame([], thermostatSchema)
+
+    weatherSchema = StructType([
+        StructField("timestamp", TimestampType(), True),
+        StructField("temperature", DoubleType(), True),
+        StructField("pressure", DoubleType(), True),
+        StructField("humidity", DoubleType(), True),
+        StructField("attack", StringType(), True),
+        StructField("label", IntegerType(), True)
+    ])
+    sparkWeatherDF = spark.createDataFrame([], weatherSchema)
+
+    # Create a Spark DataFrame for streaming
+    spark_df = spark.createDataFrame([], StringType())
+
+ 
     while True:
         msg = consumer.poll(timeout=60.0) 
         
@@ -89,101 +191,168 @@ def kafka_pdu_consumer(topic, group_id, transmission, spark_df):
                                    pdu.entityOrientation.phi)
                             gps.update(loc)
                             body = gps.ecef2llarpy(*loc)
-                            spark_df.append((
-                                msg.timestamp()[1] // 1000.0,
-                                pdu.entityID.entityID,
-                                body[0],
-                                body[1],
-                                body[2],
-                                body[3],
-                                body[4],
-                                body[5],
-                                pdu.attack.decode('utf-8'),
-                                pdu.label
-                            ))
-                            print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
-                                    + "Timestamp  : {}\n".format(msg.timestamp()[1] // 1000)
-                                    + " Id          : {}\n".format(pdu.entityID.entityID)
-                                    + " Latitude    : {:.2f} degrees\n".format(rad2deg(body[0]))
-                                    + " Longitude   : {:.2f} degrees\n".format(rad2deg(body[1]))
-                                    + " Altitude    : {:.0f} meters\n".format(body[2])
-                                    + " Yaw         : {:.2f} degrees\n".format(rad2deg(body[3]))
-                                    + " Pitch       : {:.2f} degrees\n".format(rad2deg(body[4]))
-                                    + " Roll        : {:.2f} degrees\n".format(rad2deg(body[5]))
-                                    + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
-                                    + " Label       : {}\n".format(pdu.label))
+
+                            # create a spark dataframe
+                            timestamp = msg.timestamp()[1] // 1000.0
+                            # convert timestamp to datetime
+                            date_time = datetime.fromtimestamp(timestamp)
+                        
+                            new_row = Row(
+                                timestamp= date_time,
+                                latitude= body[0],
+                                longitude= body[1],
+                                altitude= body[2],
+                                yaw= body[3],
+                                pitch= body[4],
+                                roll= body[5],
+                                attack= pdu.attack.decode('utf-8'),
+                                label= pdu.label)
+                            
+                            # Append the new Row to the DataFrame
+                            appended_df = sparkGPSDF.union(spark.createDataFrame([new_row], gpsSchema))
+ 
 
                         elif pdu.pduType == 73:  # Light
-                            spark_df.append((
+
+                            sparkLightDF.append((
                                 msg.timestamp()[1] // 1000.0,
                                 pdu.motion_status,
                                 pdu.light_state.decode('utf-8'),
                                 pdu.attack.decode('utf-8'),
                                 pdu.label
                             ))
-                            print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
-                                    + "Timestamp  : {}\n".format(msg.timestamp()[1] // 1000)
-                                    + " Motion Status : {}\n".format(pdu.motion_status)
-                                    + " Light Status  : {}\n".format(pdu.light_status.decode('utf-8'))
-                                    + " Attack        : {}\n".format(pdu.attack.decode('utf-8'))
-                                    + " Label         : {}\n".format(pdu.label))
+                        
 
                         elif pdu.pduType == 70:  # environment
-                            spark_df.append((
-                                msg.timestamp()[1] // 1000.0,
-                                pdu.device.decode('utf-8'),
-                                pdu.temperature,
-                                pdu.pressure,
-                                pdu.humidity,
-                                pdu.condition.decode('utf-8'),
-                                pdu.temp_status,
-                                pdu.attack.decode('utf-8'),
-                                pdu.label
-                            ))
-                            print("Received {}: {} Bytes \n".format(pduTypeName, len(message), flush=True)
-                                    + "Timestamp  : {}\n".format(msg.timestamp()[1] // 1000.0)
-                                    + " Device      : {}\n".format(pdu.device.decode('utf-8'))
-                                    + " Temperature : {}\n".format(pdu.temperature)
-                                    + " Pressure    : {}\n".format(pdu.pressure)
-                                    + " Humidity    : {}\n".format(pdu.humidity)
-                                    + " Condition   : {}\n".format(pdu.condition.decode('utf-8'))
-                                    + " Temp Status : {}\n".format(pdu.temp_status)
-                                    + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
-                                    + " Label       : {}\n".format(pdu.label))
+                            if pdu.device.decode('utf-8') == 'Fridge':
+                                # Define a UDF to apply the createPdu function to the Kafka messages
+                                createPduUDF = udf(createPdu, StringType())
+
+                                sparkFridgeDF = spark.readStream \
+                                    .format("kafka") \
+                                    .option("kafka.bootstrap.servers", "172.18.0.4:9092") \
+                                    .option("subscribe", "fridge") \
+                                    .option("startingOffsets", "earliest") \
+                                    .load()
+                                 
+
+                                # # Assign the `value` column to another variable
+                                # messageDF = sparkFridgeDF.select("value")
+                                # fridgePDU = createPdu(messageDF.first()[0])
+
+                                # # creates uuid
+                                # uuid_udf = str(uuid.uuid4())
+                                # # Create a Row
+                                # new_row = Row(
+                                #     device=fridgePDU.device.decode('utf-8'),
+                                #     temperature=fridgePDU.temperature,
+                                #     temp_condition=fridgePDU.condition.decode('utf-8'),
+                                #     attack=fridgePDU.attack.decode('utf-8'),
+                                #     label=fridgePDU.label,
+                                #     uuid=uuid_udf)
+                                
+                                # # Create a DataFrame using the schema and the data
+                                # fridge_row_DF = spark.createDataFrame([new_row], fridgeSchema)
+
+                                messageDF = sparkFridgeDF.select(createPduUDF(sparkFridgeDF["value"]).alias("fridgePDU"))
+                                # messageDF.show()
+
+                                # # Generate a UUID column
+                                uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+                                expandedFridgeDF = messageDF.withColumn("uuid", uuid_udf())
+                                
+                                # expandedFridgeDF.show()
+                                
+
+                                # Define a query to print the first message
+                                query = expandedFridgeDF.writeStream \
+                                    .outputMode("append") \
+                                    .format("console") \
+                                    .option("truncate", False) \
+                                    .start()
+                                
+                                # Start the streaming query
+                                query.awaitTermination()
+
+                                          
+
+                            if pdu.device.decode('utf-8') == 'Thermostat':
+                                timestamp = msg.timestamp()[1] // 1000.0
+                                # convert timestamp to datetime
+                                date_time = datetime.fromtimestamp(timestamp)
+
+                                new_row = Row(
+                                    timestamp= date_time,
+                                    temperature=pdu.temperature,
+                                    temp_status=pdu.temp_status,
+                                    attack=pdu.attack.decode('utf-8'),
+                                    label=pdu.label)
+                                
+                                # Append the new Row to the DataFrame
+                                appended_df = sparkThermostatDF.union(spark.createDataFrame([new_row], thermostatSchema))
+
+                                # Show the result
+                                appended_df.show()
+                            
+                            if pdu.device.decode('utf-8') == 'Weather':
+                                timestamp = msg.timestamp()[1] // 1000.0
+                                # convert timestamp to datetime
+                                date_time = datetime.fromtimestamp(timestamp)
+
+                                new_row = Row(
+                                    timestamp= date_time,
+                                    temperature=pdu.temperature,
+                                    pressure=pdu.pressure,
+                                    humidity=pdu.humidity,
+                                    attack=pdu.attack.decode('utf-8'),
+                                    label=pdu.label)
+                                
+                                # Append the new Row to the DataFrame
+                                appended_df = sparkWeatherDF.union(spark.createDataFrame([new_row], weatherSchema))
+
+                                # Show the result
+                                appended_df.show()
+                            
 
                         elif pdu.pduType == 71:  # modbus
-                            spark_df.append((
-                                msg.timestamp()[1] // 1000.0,
-                                pdu.fc1,
-                                pdu.fc2,
-                                pdu.fc3,
-                                pdu.fc4,
-                                pdu.attack.decode('utf-8'),
-                                pdu.label
-                            ))
-                            print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
-                                    + "Timestamp  : {}\n".format(msg.timestamp()[1] // 1000.0)
-                                    + " FC1 Register    : {}\n".format(pdu.fc1)
-                                    + " FC2 Discrete    : {}\n".format(pdu.fc2)
-                                    + " FC3 Register    : {}\n".format(pdu.fc3)
-                                    + " FC4 Read Coil   : {}\n".format(pdu.fc4)
-                                    + " Attack          : {}\n".format(pdu.attack.decode('utf-8'))
-                                    + " Label           : {}\n".format(pdu.label))
+                            timestamp = msg.timestamp()[1] // 1000.0
+                            # convert timestamp to datetime
+                            date_time = datetime.fromtimestamp(timestamp)
+
+                            new_row = Row(
+                                timestamp= date_time,
+                                fc1=pdu.fc1,
+                                fc2=pdu.fc2,
+                                fc3=pdu.fc3,
+                                fc4=pdu.fc4,
+                                attack=pdu.attack.decode('utf-8'),
+                                label=pdu.label)
+                            
+                            # Append the new Row to the DataFrame
+                            appended_df = sparkModbusDF.union(spark.createDataFrame([new_row], modbusSchema))
+
+                            # Show the result
+                            appended_df.show()
+                    
+
 
                         elif pdu.pduType == 72:  # garage
-                            spark_df.append((
-                                msg.timestamp()[1] // 1000.0,
-                                pdu.door_state.decode('utf-8'),
-                                pdu.sphone,
-                                pdu.attack.decode('utf-8'),
-                                pdu.label
-                            ))
-                            print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
-                                    + "Timestamp  : {}\n".format(msg.timestamp()[1] // 1000.0)
-                                    + " Door State: {}\n".format(pdu.door_state.decode('utf-8'))
-                                    + " SPhone: {}\n".format(pdu.sphone)
-                                    + " Attack: {}\n".format(pdu.attack.decode('utf-8'))
-                                    + " Label : {}\n".format(pdu.label))
+                            timestamp = msg.timestamp()[1] // 1000.0
+                            # convert timestamp to datetime
+                            date_time = datetime.fromtimestamp(timestamp)
+
+                            new_row = Row(
+                                timestamp= date_time,
+                                door_state=pdu.door_state.decode('utf-8'),
+                                sphone=pdu.sphone,
+                                attack=pdu.attack.decode('utf-8'),
+                                label=pdu.label)
+                            
+                            # Append the new Row to the DataFrame
+                            appended_df = sparkGarageDF.union(spark.createDataFrame([new_row], garageSchema))
+
+                            # Show the result
+                            appended_df.show()
 
                         else:
                             print("Received PDU {}, {} bytes".format(
@@ -218,74 +387,60 @@ spark = SparkSession.builder \
     .config("spark.driver.host", "localhost") \
     .getOrCreate()
 
+
 spark.sparkContext.setLogLevel("ERROR")
 
-# create a function that constantly checks if we have a new kafka message
+# # Go through the PDU kafka messages
+kafa_read_dis_stream(topic='fridge', group_id=GROUP_ID, 
+                   transmission='kafka_pdu')
 
 
 
-# Define the schema for the Kafka message
-fridgeSchema = StructType([
-    StructField("timestamp", StringType(), True),
-    StructField("temperature", StringType(), True),
-    StructField("temp_condition", StringType(), True),
-    StructField("attack", StringType(), True),
-    StructField("label", StringType(), True)
-])
+# # Create a Kafka DataFrame for streaming
+# input_df = spark.readStream \
+#     .format("kafka") \
+#     .option("kafka.bootstrap.servers", "172.18.0.4:9092") \
+#     .option("subscribe", "fridge") \
+#     .option("startingOffsets", "earliest") \
+#     .load()
 
-# create spark_df 
-spark_df = []
-# Go through the PDU kafka messages
-kafka_pdu_consumer(topic='fridge', group_id=GROUP_ID, 
-                   transmission='kafka_pdu', spark_df=spark_df)
+# # Extract and parse the message value
+# expanded_df = input_df \
+#     .selectExpr("CAST(value AS STRING)") \
+#     .select(from_json(col("value"), fridgeSchema).alias("fridge")) \
+#     .select("fridge.*")
 
-print('spark_df: ', spark_df)
+# # Generate a UUID column
+# uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+# expanded_df = expanded_df.withColumn("uuid", uuid_udf())
 
-# Create a Kafka DataFrame for streaming
-input_df = spark.readStream \
-    .format("kafka") \
-    .option("kafka.bootstrap.servers", "172.18.0.4:9092") \
-    .option("subscribe", "fridge") \
-    .option("startingOffsets", "earliest") \
-    .load()
+# # Output to Console
+# console_query = expanded_df.writeStream \
+#     .outputMode("append") \
+#     .format("console") \
+#     .option("truncate", False) \
+#     .start()
 
-# Extract and parse the message value
-expanded_df = input_df \
-    .selectExpr("CAST(value AS STRING)") \
-    .select(from_json(col("value"), fridgeSchema).alias("fridge")) \
-    .select("fridge.*")
+# # Define a checkpoint location for the streaming query
+# checkpoint_location = os.getcwd()
 
-# Generate a UUID column
-uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
-expanded_df = expanded_df.withColumn("uuid", uuid_udf())
+# # Output to Cassandra
+# cassandra_query = expanded_df.writeStream \
+#     .trigger(processingTime="15 seconds") \
+#     .outputMode("append") \
+#     .option("checkpointLocation", checkpoint_location) \
+#     .foreachBatch(save_to_cassandra) \
+#     .start()
 
-# Output to Console
-console_query = expanded_df.writeStream \
-    .outputMode("append") \
-    .format("console") \
-    .option("truncate", False) \
-    .start()
+# # Output to MySQL
+# mysql_query = expanded_df.writeStream \
+#     .trigger(processingTime="15 seconds") \
+#     .outputMode("append") \
+#     .option("checkpointLocation", checkpoint_location) \
+#     .foreachBatch(save_to_mysql) \
+#     .start()
 
-# Define a checkpoint location for the streaming query
-checkpoint_location = os.getcwd()
-
-# Output to Cassandra
-cassandra_query = expanded_df.writeStream \
-    .trigger(processingTime="15 seconds") \
-    .outputMode("append") \
-    .option("checkpointLocation", checkpoint_location) \
-    .foreachBatch(save_to_cassandra) \
-    .start()
-
-# Output to MySQL
-mysql_query = expanded_df.writeStream \
-    .trigger(processingTime="15 seconds") \
-    .outputMode("append") \
-    .option("checkpointLocation", checkpoint_location) \
-    .foreachBatch(save_to_mysql) \
-    .start()
-
-# Wait for the streaming queries to terminate
-console_query.awaitTermination()
-cassandra_query.awaitTermination()
-mysql_query.awaitTermination()
+# # Wait for the streaming queries to terminate
+# console_query.awaitTermination()
+# cassandra_query.awaitTermination()
+# mysql_query.awaitTermination()

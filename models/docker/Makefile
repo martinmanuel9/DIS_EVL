@@ -11,14 +11,8 @@ help:
 	@echo "  env-down     		- Stop and remove all containers"
 	@echo "  logs     		- View container logs"
 	@echo "  status   		- Show container status"
-	@echo "  kafka	  		- Start Kafka Service"
-	@echo "  pyspark  		- Start Pyspark Service"
-	@echo "  cassandra		- Start Cassandra Service"
-	@echo "  kafka-down		- Stop Kafka Service"
-	@echo "  pyspark-down		- Stop Pyspark Service"
-	@echo "  cassandra-down	- Stop Cassandra Service"
+	@echo "  port-reset   		- Reset ports"
 	@echo "  help     		- Show this help message"
-
 
 env-up:
 	@for file in $(COMPOSE_FILES); do \
@@ -31,8 +25,15 @@ env-down:
 	@for file in $(COMPOSE_FILES); do \
 		echo "Stopping and removing containers in $$file"; \
 		docker-compose -f $$file down --remove-orphans; \
+		docker image prune --all; \
 	done
 	@make status
+
+port-reset:
+	lsof -i -u $(whoami); \
+	lsof -i -u $(whoami) | awk 'NR>1 {print $$2}' | xargs kill -9; \
+	done
+	
 
 logs:
 	@for file in $(COMPOSE_FILES); do \
@@ -46,34 +47,7 @@ status:
 	@echo "-----------------------------------------------------------------------------------------------------------------------------------------"\
 	done
 
-kafka:
-	@echo "Starting Kafka Service"
-	@docker-compose -f docker-compose-kafka.yml up -d;
-	@make status 
-	 
-pyspark:
-	@echo "Starting Pyspark Service"; 
-	@docker-compose -f docker-compose-pyspark.yml up -d;
-	@make status
+	
 
-cassandra:
-	@echo "Starting Cassandra Service"; 
-	@docker-compose -f docker-compose-cassandra.yml up -d;
-	@make status \
-	done
 
-kafka-down:
-	@echo "Stopping Kafka Service"; 
-	@docker-compose -f docker-compose-kafka.yml down --remove-orphans;
-	@make status 
-
-pyspark-down:
-	@echo "Stopping Pyspark Service";
-	@docker-compose -f docker-compose-pyspark.yml down --remove-orphans;
-	@make status 
-
-cassandra-down:
-	@echo "Stopping Cassandra Service"; 
-	@docker-compose -f docker-compose-cassandra.yml down --remove-orphans;
-	@make status 
 	

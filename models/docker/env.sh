@@ -7,6 +7,7 @@ password="secret"
 mysql -u root -p$password  -h 172.18.0.8 -P 3306 -e "CREATE DATABASE IF NOT EXISTS dis_db;"
 mysql -u root -p$password  -h 172.18.0.8 -P 3306 -e "USE dis_db; CREATE TABLE IF NOT EXISTS fridge(
     id int primary key AUTO_INCREMENT,
+    device varchar(255),
     temperature float,
     temp_condition varchar(255),
     attack varchar(255),
@@ -22,7 +23,7 @@ docker start $CASSANDRA_CONTAINER_NAME 2>/dev/null
 
 # Run CQLSH commands in the Cassandra containerCRE
 docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE KEYSPACE IF NOT EXISTS dis WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
-docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.fridge_table(uuid uuid primary key, timestamp timestamp, temperature double, temp_condition text, attack text, label int);"
+docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.fridge_table(uuid uuid primary key, timestamp timestamp, device text, temperature double, temp_condition text, attack text, label int);"
 
 # Check the exit status of cqlsh
 if [ $? -eq 0 ]; then
