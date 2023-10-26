@@ -20,6 +20,8 @@ env-up:
 		docker-compose -f $$file up -d; \
 	done
 	@make status
+	sleep 20
+	./env.sh
 
 env-down:
 	@for file in $(COMPOSE_FILES); do \
@@ -29,10 +31,10 @@ env-down:
 	done
 	@make status
 
+
 port-reset:
-	lsof -i -u $(whoami); \
-	lsof -i -u $(whoami) | awk 'NR>1 {print $$2}' | xargs kill -9; \
-	done
+	lsof -i -u $(shell whoami)
+	lsof -i -u $(shell whoami) | awk 'NR>1 {print $$2}' | xargs kill -9
 	
 
 logs:
