@@ -44,28 +44,6 @@ class SparkStructuredStreaming:
             .options(**db_credentials) \
             .start()
 
-    def process_pdu(self, in_pdu):
-        pdu = createPdu(in_pdu)
-        fridge_data = [
-            pdu.device.decode('utf-8'),
-            pdu.temperature,
-            pdu.condition.decode('utf-8'),
-            pdu.attack.decode('utf-8'),
-            pdu.label,
-            str(uuid.uuid4())
-        ]
-        return fridge_data
-
-    def process_pdu_message(self, value):
-        return udf(self.process_pdu, StructType([
-            StructField("device", StringType(), True),
-            StructField("temperature", DoubleType(), True),
-            StructField("temp_condition", StringType(), True),
-            StructField("attack", StringType(), True),
-            StructField("label", IntegerType(), True),
-            StructField("uuid", StringType(), True)
-        ]))(value).alias("fridgeData")
-
     def receive_kafka_message(self):
         sparkFridgeDF = self.spark.readStream \
             .format("kafka") \
@@ -81,8 +59,7 @@ class SparkStructuredStreaming:
             StructField("temperature", DoubleType(), True),
             StructField("temp_condition", StringType(), True),
             StructField("attack", StringType(), True),
-            StructField("label", IntegerType(), True),
-            StructField("uuid", StringType(), True)])
+            StructField("label", IntegerType(), True)])
         
         pduUDF = udf(createPdu, fridgeSchema)
 
@@ -90,7 +67,19 @@ class SparkStructuredStreaming:
         # so that it can be used in the udf
         fridgeDF = serialFridgeDF.select(pduUDF("value").alias("fridgeData"))
 
-        query = fridgeDF.writeStream \
+        # need to decode utf('utf-8') for the device, condition, and attack
+        fridgeDF = fridgeDF.select(
+            fridgeDF.fridgeData.device.decode,
+            fridgeDF.fridgeData.temperature,
+            fridgeDF.fridgeData.temp_condition,
+            fridgeDF.fridgeData.attack,
+            fridgeDF.fridgeData.label
+        )
+
+        uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+        expandedFridgeDF = fridgeDF.withColumn("uuid", uuid_udf())
+
+        query = expandedFridgeDF.writeStream \
             .outputMode("append") \
             .format("console") \
             .option("truncate", False) \
