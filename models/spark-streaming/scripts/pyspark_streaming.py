@@ -57,7 +57,7 @@ class SparkStructuredStreaming:
         fridgeSchema = StructType([ 
             StructField("device", StringType(), True),
             StructField("temperature", DoubleType(), True),
-            StructField("temp_condition", StringType(), True),
+            StructField("condition", StringType(), True),
             StructField("attack", StringType(), True),
             StructField("label", IntegerType(), True)])
         
@@ -69,9 +69,9 @@ class SparkStructuredStreaming:
 
         # need to decode utf('utf-8') for the device, condition, and attack
         fridgeDF = fridgeDF.select(
-            fridgeDF.fridgeData.device.decode,
+            fridgeDF.fridgeData.device,
             fridgeDF.fridgeData.temperature,
-            fridgeDF.fridgeData.temp_condition,
+            fridgeDF.fridgeData.condition,
             fridgeDF.fridgeData.attack,
             fridgeDF.fridgeData.label
         )
