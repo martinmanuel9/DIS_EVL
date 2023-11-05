@@ -42,7 +42,7 @@ class SparkStructuredStreaming:
             .option("url", "jdbc:mysql://172.18.0.8:3306/sales_db") \
             .option("dbtable", "fridge") \
             .options(**db_credentials) \
-            .start()
+            .start()  
 
     def receive_kafka_message(self):
         sparkFridgeDF = self.spark.readStream \
@@ -51,6 +51,9 @@ class SparkStructuredStreaming:
             .option("subscribe", "fridge") \
             .option("startingOffsets", "earliest") \
             .load()
+        
+        # Determine which topic 
+        sparkFridgeDF.printSchema()
 
         serialFridgeDF  = sparkFridgeDF.select(["value"])
 
@@ -63,18 +66,16 @@ class SparkStructuredStreaming:
         
         pduUDF = udf(createPdu, fridgeSchema)
 
-        # need to pass the serialFridgeDF to the process_pdu_message function
-        # so that it can be used in the udf
         fridgeDF = serialFridgeDF.select(pduUDF("value").alias("fridgeData"))
 
-        # need to decode utf('utf-8') for the device, condition, and attack
+        # decode_udf = udf(lambda value: value.decode("utf-8") if value is not None else None, StringType())
+
         fridgeDF = fridgeDF.select(
             fridgeDF.fridgeData.device,
             fridgeDF.fridgeData.temperature,
             fridgeDF.fridgeData.condition,
             fridgeDF.fridgeData.attack,
-            fridgeDF.fridgeData.label
-        )
+            fridgeDF.fridgeData.label) 
 
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedFridgeDF = fridgeDF.withColumn("uuid", uuid_udf())

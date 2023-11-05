@@ -107,13 +107,13 @@ class KafkaConsumer:
                         
                         elif pdu.pduType == 70:  # environment
                             print("Received {}: {} Bytes \n".format(pduTypeName, len(message), flush=True)
-                                    + " Device      : {}\n".format(pdu.device.decode('utf-8'))
+                                    + " Device      : {}\n".format(pdu.device)
                                     + " Temperature : {}\n".format(pdu.temperature)
                                     + " Pressure    : {}\n".format(pdu.pressure)
                                     + " Humidity    : {}\n".format(pdu.humidity)
-                                    + " Condition   : {}\n".format(pdu.condition.decode('utf-8'))
+                                    + " Condition   : {}\n".format(pdu.condition)
                                     + " Temp Status : {}\n".format(pdu.temp_status)
-                                    + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
+                                    + " Attack      : {}\n".format(pdu.attack)
                                     + " Label       : {}\n".format(pdu.label)  
                                     )
                             
@@ -175,7 +175,7 @@ def main():
             parser.add_argument("--bootstrap_servers", default="localhost:9092", help="Bootstrap servers")
             parser.add_argument("--group_id", default="dis", help="Group ID")
             parser.add_argument("--topic", default="fridge", help="Topic")
-            parser.add_argument("--transmission", choices = ["kafka","kafka_pdu"], default="kafka", help="Transmission option")
+            parser.add_argument("--transmission", choices = ["kafka","kafka_pdu"], default="kafka_pdu", help="Transmission option")
 
             args = parser.parse_args() 
 

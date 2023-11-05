@@ -89,13 +89,13 @@ def recv():
     
     elif pdu.pduType == 70:  # environment
         print("Received {}: {} Bytes \n".format(pduTypeName, len(data), flush=True)
-                + " Device      : {}\n".format(pdu.device.decode('utf-8'))
+                + " Device      : {}\n".format(pdu.device)
                 + " Temperature : {}\n".format(pdu.temperature)
                 + " Pressure    : {}\n".format(pdu.pressure)
                 + " Humidity    : {}\n".format(pdu.humidity)
-                + " Condition   : {}\n".format(pdu.condition.decode('utf-8'))
+                + " Condition   : {}\n".format(pdu.condition)
                 + " Temp Status : {}\n".format(pdu.temp_status)
-                + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
+                + " Attack      : {}\n".format(pdu.attack)
                 + " Label       : {}\n".format(pdu.label)  
                 )
         
