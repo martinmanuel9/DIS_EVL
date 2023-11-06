@@ -75,24 +75,15 @@ class KafkaConsumer:
                         pduTypeName = pdu.__class__.__name__
 
                         if pdu.pduType == 1: # PduTypeDecoders.EntityStatePdu:
-                            gps = GPS()
-                            loc = (pdu.entityLocation.x,
-                                    pdu.entityLocation.y,
-                                    pdu.entityLocation.z,
-                                    pdu.entityOrientation.psi,
-                                    pdu.entityOrientation.theta,
-                                    pdu.entityOrientation.phi
-                                    )
-                            
-                            body = gps.ecef2llarpy(*loc)
+
                             print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
                                     + " Id          : {}\n".format(pdu.entityID.entityID)
-                                    + " Latitude    : {:.2f} degrees\n".format(rad2deg(body[0]))
-                                    + " Longitude   : {:.2f} degrees\n".format(rad2deg(body[1]))
-                                    + " Altitude    : {:.0f} meters\n".format(body[2])
-                                    + " Yaw         : {:.2f} degrees\n".format(rad2deg(body[3]))
-                                    + " Pitch       : {:.2f} degrees\n".format(rad2deg(body[4]))
-                                    + " Roll        : {:.2f} degrees\n".format(rad2deg(body[5]))
+                                    + " Latitude    : {:.2f} degrees\n".format(pdu.entityLocation.x)
+                                    + " Longitude   : {:.2f} degrees\n".format(pdu.entityLocation.y)
+                                    + " Altitude    : {:.0f} meters\n".format(pdu.entityLocation.z)
+                                    + " Yaw         : {:.2f} degrees\n".format(pdu.entityOrientation.psi)
+                                    + " Pitch       : {:.2f} degrees\n".format(pdu.entityOrientation.theta)
+                                    + " Roll        : {:.2f} degrees\n".format(pdu.entityOrientation.phi)
                                     + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
                                     + " Label       : {}\n".format(pdu.label)
                                     )

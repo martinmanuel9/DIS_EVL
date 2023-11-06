@@ -19,6 +19,7 @@ class SparkStructuredStreaming:
             .config("spark.driver.host", "localhost") \
             .getOrCreate()
         
+        self.spark.sparkContext.setLogLevel("WARN")
         self.pdu_factory_bc = self.spark.sparkContext.broadcast(createPdu)
 
     def save_to_cassandra(self, writeDF):
@@ -45,48 +46,125 @@ class SparkStructuredStreaming:
             .start()  
 
     def receive_kafka_message(self):
-        sparkFridgeDF = self.spark.readStream \
+        sparkDF = self.spark.readStream \
             .format("kafka") \
             .option("kafka.bootstrap.servers", "172.18.0.4:9092") \
-            .option("subscribe", "fridge") \
+            .option("subscribePattern", "fridge|garage|gps|light|modbus|thermostat|weather") \
             .option("startingOffsets", "earliest") \
             .load()
+
+        # Filter and process data based on the topic
+        filteredDF = sparkDF.filter(sparkDF["topic"].isin("fridge", "garage", "gps", "light", "modbus", "thermostat", "weather"))
+
+        # Process data for each topic separately
+        fridgeDF = filteredDF.filter(filteredDF["topic"] == "fridge")
+        garageDF = filteredDF.filter(filteredDF["topic"] == "garage")
+        gpsDF = filteredDF.filter(filteredDF["topic"] == "gps")
+        lightDF = filteredDF.filter(filteredDF["topic"] == "light")
+        modbusDF = filteredDF.filter(filteredDF["topic"] == "modbus")
+        thermostatDF = filteredDF.filter(filteredDF["topic"] == "thermostat")
+        weatherDF = filteredDF.filter(filteredDF["topic"] == "weather")
+
+        # -----------------------------------------------
+        # Process data for the "fridge" topic
+        # serialFridgeDF = fridgeDF.select("value")
+        # fridgeSchema = StructType([
+        #     StructField("device", StringType(), True),
+        #     StructField("temperature", DoubleType(), True),
+        #     StructField("condition", StringType(), True),
+        #     StructField("attack", StringType(), True),
+        #     StructField("label", IntegerType(), True)])
+
+        # pduUDF = udf(createPdu, fridgeSchema)
+        # fridgeDF = serialFridgeDF.select(pduUDF("value").alias("fridgeData"))
+
+        # fridgeReadyDF = fridgeDF.select(
+        #     fridgeDF.fridgeData.device,
+        #     fridgeDF.fridgeData.temperature,
+        #     fridgeDF.fridgeData.condition,
+        #     fridgeDF.fridgeData.attack,
+        #     fridgeDF.fridgeData.label)
+
+        # uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+        # expandedFridgeDF = fridgeReadyDF.withColumn("uuid", uuid_udf())
+
+        # fridgeQuery = expandedFridgeDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start()
         
-        # Determine which topic 
-        sparkFridgeDF.printSchema()
+        # fridgeQuery.awaitTermination()
 
-        serialFridgeDF  = sparkFridgeDF.select(["value"])
+        # ----------------------------------------------- 
+        # Process data for the "garage" topic
+        # serialGarageDF = garageDF.select("value")
+        # garageSchema = StructType([
+        #     StructField("door_state", StringType(), True),
+        #     StructField("sphone", IntegerType(), True), 
+        #     StructField("attack", StringType(), True),
+        #     StructField("label", IntegerType(), True)])
 
-        fridgeSchema = StructType([ 
-            StructField("device", StringType(), True),
-            StructField("temperature", DoubleType(), True),
-            StructField("condition", StringType(), True),
+        # pduUDF = udf(createPdu, garageSchema)
+        # garageDF = serialGarageDF.select(pduUDF("value").alias("garageData"))
+
+        # garageReadyDF = garageDF.select( 
+        #     garageDF.garageData.door_state,
+        #     garageDF.garageData.sphone,
+        #     garageDF.garageData.attack,
+        #     garageDF.garageData.label)
+
+        # uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+        # expandedGarageDF = garageReadyDF.withColumn("uuid", uuid_udf())
+
+        # garageQuery = expandedGarageDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start()
+        
+        # garageQuery.awaitTermination()
+        
+        # -----------------------------------------------
+        # Process data for the "gps" topic
+        serialGpsDF = gpsDF.select("value")
+        
+        gpsSchema = StructType([
+            StructField("longitude", FloatType(), True),
+            StructField("latitude", FloatType(), True), 
+            StructField("altitude", FloatType(), True),
+            StructField("roll", FloatType(), True),
+            StructField("pitch", FloatType(), True),
+            StructField("yaw", FloatType(), True),
             StructField("attack", StringType(), True),
             StructField("label", IntegerType(), True)])
-        
-        pduUDF = udf(createPdu, fridgeSchema)
 
-        fridgeDF = serialFridgeDF.select(pduUDF("value").alias("fridgeData"))
+        pduUDF = udf(createPdu, gpsSchema)
+        gpsDF = serialGpsDF.select(pduUDF("value").alias("gpsData"))
 
-        # decode_udf = udf(lambda value: value.decode("utf-8") if value is not None else None, StringType())
+        gpsDF.printSchema()
 
-        fridgeDF = fridgeDF.select(
-            fridgeDF.fridgeData.device,
-            fridgeDF.fridgeData.temperature,
-            fridgeDF.fridgeData.condition,
-            fridgeDF.fridgeData.attack,
-            fridgeDF.fridgeData.label) 
+        gpsReadyDF = gpsDF.select( 
+            gpsDF.gpsData.longitude,
+            gpsDF.gpsData.latitude,
+            gpsDF.gpsData.altitude,
+            gpsDF.gpsData.roll,
+            gpsDF.gpsData.pitch,
+            gpsDF.gpsData.yaw,
+            gpsDF.gpsData.attack,
+            gpsDF.gpsData.label)
 
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
-        expandedFridgeDF = fridgeDF.withColumn("uuid", uuid_udf())
+        expandedGpsDF = gpsReadyDF.withColumn("uuid", uuid_udf())
 
-        query = expandedFridgeDF.writeStream \
+        gpsQuery = expandedGpsDF.writeStream \
             .outputMode("append") \
             .format("console") \
             .option("truncate", False) \
             .start()
-
-        query.awaitTermination()
+        
+        gpsQuery.awaitTermination()
+        
 
         # # Define your sink operations
         # cassandra_sink = self.save_to_cassandra(fridgeDF)

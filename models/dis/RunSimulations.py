@@ -91,7 +91,7 @@ class DeviceTrain():
 
             # Create threads for each simulation and add them to the list
             threads.append(threading.Thread(target=fridgeTest.sendFridgeTest))
-            threads.append(threading.Thread(target=garageTest.sendGaragaeTest))
+            threads.append(threading.Thread(target=garageTest.sendGarageTest))
             threads.append(threading.Thread(target=gpsTest.sendGPSTest))
             threads.append(threading.Thread(target=lightTest.sendLightTest))
             threads.append(threading.Thread(target=modbusTest.sendModbusTest))

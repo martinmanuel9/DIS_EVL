@@ -44,7 +44,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import EntityStatePdu
 from opendismodel.opendis.DataOutputStream import DataOutputStream
-from opendismodel.opendis.RangeCoordinates import GPS
+from opendismodel.opendis.RangeCoordinates import *
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import KafkaProducer as kp
 import xml.etree.ElementTree as ET
@@ -60,7 +60,7 @@ class GPSSim:
 
         if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
-            self.KAFKA_TOPIC = 'dis'
+            self.KAFKA_TOPIC = 'gps'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
 
 
@@ -91,12 +91,12 @@ class GPSSim:
                                             0                # yaw (radians)
                                             )
                 
-                gpsPDU.entityLocation.x = gpsLocation[0]
-                gpsPDU.entityLocation.y = gpsLocation[1]
-                gpsPDU.entityLocation.z = gpsLocation[2]
-                gpsPDU.entityOrientation.psi = gpsLocation[3]
-                gpsPDU.entityOrientation.theta = gpsLocation[4]
-                gpsPDU.entityOrientation.phi = gpsLocation[5]
+                gpsPDU.entityLocation.x = round(np.double(gpsLocation[0]),3)
+                gpsPDU.entityLocation.y = round(np.double(gpsLocation[1]),3)
+                gpsPDU.entityLocation.z = round(np.double(gpsLocation[2]),3)
+                gpsPDU.entityOrientation.psi = round(np.double(gpsLocation[3]),3)
+                gpsPDU.entityOrientation.theta = round(np.double(gpsLocation[4]),3)
+                gpsPDU.entityOrientation.phi = round(np.double(gpsLocation[5]),3)
 
                 gpsPDU.attack = self.gpsTrain['Data'][0][i][0][5].encode()
                 gpsPDU.label = self.gpsTrain['Data'][0][i][0][6] 
@@ -110,12 +110,12 @@ class GPSSim:
 
                 print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
                     + "\n GPS Data Sent:"
-                    + "\n  Longitude   : {}".format(gpsLocation[0]) 
-                    + "\n  Latitude    : {}".format(gpsLocation[1])
-                    + "\n  Altitude    : {}".format(gpsLocation[2])
-                    + "\n  Roll        : {}".format(gpsLocation[3])
-                    + "\n  Pitch       : {}".format(gpsLocation[4])
-                    + "\n  Yaw         : {}".format(gpsLocation[5])
+                    + "\n  Longitude   : {}".format(gpsPDU.entityLocation.x) 
+                    + "\n  Latitude    : {}".format(gpsPDU.entityLocation.y)
+                    + "\n  Altitude    : {}".format(gpsPDU.entityLocation.z)
+                    + "\n  Roll        : {}".format(gpsPDU.entityOrientation.psi)
+                    + "\n  Pitch       : {}".format(gpsPDU.entityOrientation.theta)
+                    + "\n  Yaw         : {}".format(gpsPDU.entityOrientation.phi)
                     + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
@@ -166,14 +166,29 @@ class GPSSim:
                                             0                # yaw (radians)
                                             )
                 
-                gpsPDU.entityLocation.x = gpsLocation[0]
-                gpsPDU.entityLocation.y = gpsLocation[1]
-                gpsPDU.entityLocation.z = gpsLocation[2]
-                gpsPDU.entityOrientation.psi = gpsLocation[3]
-                gpsPDU.entityOrientation.theta = gpsLocation[4]
-                gpsPDU.entityOrientation.phi = gpsLocation[5]
+                gpsPDU.entityLocation.x = round(gpsLocation[0],3)
+                gpsPDU.entityLocation.y = round(gpsLocation[1],3)
+                gpsPDU.entityLocation.z = round(gpsLocation[2],3)
+                gpsPDU.entityOrientation.psi = round(gpsLocation[3],3)
+                gpsPDU.entityOrientation.theta = round(gpsLocation[4],3)
+                gpsPDU.entityOrientation.phi = round(gpsLocation[5],3)
 
-                gpsPDU.attack = self.gpsTrain['Data'][0][i][0][5].encode()
+                loc = (gpsPDU.entityLocation.x,
+                    gpsPDU.entityLocation.y,
+                    gpsPDU.entityLocation.z,
+                    gpsPDU.entityOrientation.psi,
+                    gpsPDU.entityOrientation.theta,
+                    gpsPDU.entityOrientation.phi)
+                            
+                body = self.gps.ecef2llarpy(*loc)
+
+                gpsPDU.entityLocation.x = round(rad2deg(body[0]),3)
+                gpsPDU.entityLocation.y =round(rad2deg(body[1]),3)
+                gpsPDU.entityLocation.z = round(body[2],3)
+                gpsPDU.entityOrientation.psi = round(rad2deg(body[3]),3)
+                gpsPDU.entityOrientation.theta = round(rad2deg(body[4]),3)
+                gpsPDU.entityOrientation.phi = round(rad2deg(body[5]),3)
+                gpsPDU.attack = self.gpsTrain['Data'][0][i][0][5].encode('utf-8')
                 gpsPDU.label = self.gpsTrain['Data'][0][i][0][6] 
 
                 memoryStream = BytesIO()
@@ -183,14 +198,15 @@ class GPSSim:
 
                 self.producer.produce_message(data)
 
+
                 print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
                     + "\n GPS Data Sent:"
-                    + "\n  Longitude   : {}".format(gpsLocation[0]) 
-                    + "\n  Latitude    : {}".format(gpsLocation[1])
-                    + "\n  Altitude    : {}".format(gpsLocation[2])
-                    + "\n  Roll        : {}".format(gpsLocation[3])
-                    + "\n  Pitch       : {}".format(gpsLocation[4])
-                    + "\n  Yaw         : {}".format(gpsLocation[5])
+                    + "\n  Longitude   : {}".format(gpsPDU.entityLocation.x) 
+                    + "\n  Latitude    : {}".format(gpsPDU.entityLocation.y)
+                    + "\n  Altitude    : {}".format(gpsPDU.entityLocation.z)
+                    + "\n  Roll        : {}".format(gpsPDU.entityOrientation.psi)
+                    + "\n  Pitch       : {}".format(gpsPDU.entityOrientation.theta)
+                    + "\n  Yaw         : {}".format(gpsPDU.entityOrientation.phi)
                     + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
@@ -217,14 +233,14 @@ class GPSSim:
                                             0                # yaw (radians)
                                             )
                 
-                gpsPDU.entityLocation.x = gpsLocation[0]
-                gpsPDU.entityLocation.y = gpsLocation[1]
-                gpsPDU.entityLocation.z = gpsLocation[2]
-                gpsPDU.entityOrientation.psi = gpsLocation[3]
-                gpsPDU.entityOrientation.theta = gpsLocation[4]
-                gpsPDU.entityOrientation.phi = gpsLocation[5]
+                gpsPDU.entityLocation.x = round(np.double(gpsLocation[0]),3)
+                gpsPDU.entityLocation.y = round(np.double(gpsLocation[1]),3)
+                gpsPDU.entityLocation.z = round(np.double(gpsLocation[2]),3)
+                gpsPDU.entityOrientation.psi = round(np.double(gpsLocation[3]),3)
+                gpsPDU.entityOrientation.theta = round(np.double(gpsLocation[4]),3)
+                gpsPDU.entityOrientation.phi = round(np.double(gpsLocation[5]),3)
 
-                gpsPDU.attack = self.gpsTest['Data'][0][i][0][5].encode()
+                gpsPDU.attack = self.gpsTest['Data'][0][i][0][5].encode('utf-8')
                 gpsPDU.label = self.gpsTest['Data'][0][i][0][6] 
 
                 memoryStream = BytesIO()
@@ -236,12 +252,12 @@ class GPSSim:
 
                 print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
                     + "\n GPS Data Sent:"
-                    + "\n  Longitude   : {}".format(gpsLocation[0]) 
-                    + "\n  Latitude    : {}".format(gpsLocation[1])
-                    + "\n  Altitude    : {}".format(gpsLocation[2])
-                    + "\n  Roll        : {}".format(gpsLocation[3])
-                    + "\n  Pitch       : {}".format(gpsLocation[4])
-                    + "\n  Yaw         : {}".format(gpsLocation[5])
+                    + "\n  Longitude   : {}".format(gpsPDU.entityLocation.x) 
+                    + "\n  Latitude    : {}".format(gpsPDU.entityLocation.y)
+                    + "\n  Altitude    : {}".format(gpsPDU.entityLocation.z)
+                    + "\n  Roll        : {}".format(gpsPDU.entityOrientation.psi)
+                    + "\n  Pitch       : {}".format(gpsPDU.entityOrientation.theta)
+                    + "\n  Yaw         : {}".format(gpsPDU.entityOrientation.phi)
                     + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
@@ -291,14 +307,14 @@ class GPSSim:
                                             0                # yaw (radians)
                                             )
                 
-                gpsPDU.entityLocation.x = gpsLocation[0]
-                gpsPDU.entityLocation.y = gpsLocation[1]
-                gpsPDU.entityLocation.z = gpsLocation[2]
-                gpsPDU.entityOrientation.psi = gpsLocation[3]
-                gpsPDU.entityOrientation.theta = gpsLocation[4]
-                gpsPDU.entityOrientation.phi = gpsLocation[5]
+                gpsPDU.entityLocation.x = round(np.double(gpsLocation[0]),3)
+                gpsPDU.entityLocation.y = round(np.double(gpsLocation[1]),3)
+                gpsPDU.entityLocation.z = round(np.double(gpsLocation[2]),3)
+                gpsPDU.entityOrientation.psi = round(np.double(gpsLocation[3]),3)
+                gpsPDU.entityOrientation.theta = round(np.double(gpsLocation[4]),3)
+                gpsPDU.entityOrientation.phi = round(np.double(gpsLocation[5]),3)
 
-                gpsPDU.attack = self.gpsTest['Data'][0][i][0][5].encode()
+                gpsPDU.attack = self.gpsTest['Data'][0][i][0][5].encode('utf-8')
                 gpsPDU.label = self.gpsTest['Data'][0][i][0][6] 
 
                 memoryStream = BytesIO()
@@ -310,18 +326,18 @@ class GPSSim:
 
                 print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
                     + "\n GPS Data Sent:"
-                    + "\n  Longitude   : {}".format(gpsLocation[0]) 
-                    + "\n  Latitude    : {}".format(gpsLocation[1])
-                    + "\n  Altitude    : {}".format(gpsLocation[2])
-                    + "\n  Roll        : {}".format(gpsLocation[3])
-                    + "\n  Pitch       : {}".format(gpsLocation[4])
-                    + "\n  Yaw         : {}".format(gpsLocation[5])
+                    + "\n  Longitude   : {}".format(gpsPDU.entityLocation.x) 
+                    + "\n  Latitude    : {}".format(gpsPDU.entityLocation.y)
+                    + "\n  Altitude    : {}".format(gpsPDU.entityLocation.z)
+                    + "\n  Roll        : {}".format(gpsPDU.entityOrientation.psi)
+                    + "\n  Pitch       : {}".format(gpsPDU.entityOrientation.theta)
+                    + "\n  Yaw         : {}".format(gpsPDU.entityOrientation.phi)
                     + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
                 
                 time.sleep(10)
 
-# if __name__ == '__main__':
-#     gpsSim = GPSSim(transmission= 'kafka_pdu')
-#     gpsSim.sendGPSTrain()
+if __name__ == '__main__':
+    gpsSim = GPSSim(transmission= 'kafka_pdu')
+    gpsSim.sendGPSTrain()
