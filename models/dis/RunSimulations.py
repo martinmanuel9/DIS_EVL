@@ -81,7 +81,6 @@ class DeviceTrain():
     def runTestData(self):
         try:
             threads = []
-
             fridgeTest = fridgeSim.FridgeSim(transmission=self.transmission)
             garageTest = garageSim.GarageSim(transmission=self.transmission)
             gpsTest = gpsSim.GPSSim(transmission=self.transmission)
