@@ -203,6 +203,12 @@ class GPSSim:
                 gpsPDU.entityOrientation.psi = float(round(rad2deg(body[3]),3))
                 gpsPDU.entityOrientation.theta = float(round(rad2deg(body[4]),3))
                 gpsPDU.entityOrientation.phi = float(round(rad2deg(body[5]),3))
+                gpsPDU.longitude = gpsPDU.entityLocation.x
+                gpsPDU.latitude = gpsPDU.entityLocation.y
+                gpsPDU.altitude = gpsPDU.entityLocation.z
+                gpsPDU.roll = gpsPDU.entityOrientation.psi
+                gpsPDU.pitch = gpsPDU.entityOrientation.theta
+                gpsPDU.yaw = gpsPDU.entityOrientation.phi
                 gpsPDU.attack = self.gpsTrain['Data'][0][i][0][5].encode('utf-8')
                 gpsPDU.label = self.gpsTrain['Data'][0][i][0][6] 
 
@@ -216,7 +222,7 @@ class GPSSim:
 
                 print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
                     + "\n GPS Data Sent:"
-                    + "\n  Longitude   : {} degrees".format(gpsPDU.entityLocation.x) 
+                    + "\n  Longitude   : {} degrees".format(gpsPDU.longitude) 
                     + "\n  Latitude    : {} degrees".format(gpsPDU.entityLocation.y)
                     + "\n  Altitude    : {} meters".format(gpsPDU.entityLocation.z)
                     + "\n  Roll        : {} degrees".format(gpsPDU.entityOrientation.psi)

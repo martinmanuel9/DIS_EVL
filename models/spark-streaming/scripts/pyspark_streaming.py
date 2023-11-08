@@ -126,7 +126,7 @@ class SparkStructuredStreaming:
         # garageQuery.awaitTermination()
         
         # -----------------------------------------------
-        # Process data for the "gps" topic
+        # Process data for the "gps" topic 
         serialGpsDF = gpsDF.select("value")
         
         gpsSchema = StructType([
@@ -140,9 +140,7 @@ class SparkStructuredStreaming:
             StructField("label", IntegerType(), True)])
 
         pduUDF = udf(createPdu, gpsSchema)
-        gpsDF = serialGpsDF.select(pduUDF("value").alias("gpsData"))
-
-        gpsDF.printSchema()
+        gpsDF = serialGpsDF.select(pduUDF("value").alias("gpsData")) 
 
         gpsReadyDF = gpsDF.select( 
             gpsDF.gpsData.longitude,
