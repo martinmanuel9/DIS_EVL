@@ -23,7 +23,13 @@ docker start $CASSANDRA_CONTAINER_NAME 2>/dev/null
 
 # Run CQLSH commands in the Cassandra containerCRE
 docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE KEYSPACE IF NOT EXISTS dis WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"
-docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.fridge_table(uuid uuid primary key, timestamp timestamp, device text, temperature double, temp_condition text, attack text, label int);"
+docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.fridge_table(device TEXT, temperature DOUBLE, condition TEXT, attack TEXT, label INTEGER, uuid UUID, PRIMARY KEY (uuid));"
+docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.garage_table(door_state TEXT, sphone INTEGER, attack TEXT, label INTEGER, uuid UUID, PRIMARY KEY (uuid));"
+docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.gps_table(longitude DOUBLE, latitude DOUBLE, altitude DOUBLE, roll DOUBLE, pitch DOUBLE, yaw DOUBLE, attack TEXT, label INTEGER, uuid UUID, PRIMARY KEY (uuid));"
+docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.light_table(motion_status TEXT, light_status TEXT, attack TEXT, label INTEGER, uuid UUID, PRIMARY KEY (uuid));"
+docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.modbus_table(fc1 DOUBLE, fc2 DOUBLE, fc3 DOUBLE, fc4 DOUBLE, attack TEXT, label INTEGER, uuid UUID, PRIMARY KEY (uuid));"
+docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.thermostat_table(device TEXT, temperature DOUBLE, temp_status INTEGER, attack TEXT, label INTEGER, uuid UUID, PRIMARY KEY (uuid));"
+docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE TABLE IF NOT EXISTS dis.weather_table(device TEXT, temperature DOUBLE, pressure DOUBLE, humidity DOUBLE, attack TEXT, label INTEGER, uuid UUID, PRIMARY KEY (uuid));"
 
 # Check the exit status of cqlsh
 if [ $? -eq 0 ]; then
