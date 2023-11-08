@@ -75,8 +75,8 @@ class SparkStructuredStreaming:
         #     StructField("attack", StringType(), True),
         #     StructField("label", IntegerType(), True)])
 
-        # pduUDF = udf(createPdu, fridgeSchema)
-        # fridgeDF = serialFridgeDF.select(pduUDF("value").alias("fridgeData"))
+        # fridgeUDF = udf(createPdu, fridgeSchema)
+        # fridgeDF = serialFridgeDF.select(fridgeUDF("value").alias("fridgeData"))
 
         # fridgeReadyDF = fridgeDF.select(
         #     fridgeDF.fridgeData.device.alias("device"),
@@ -105,8 +105,8 @@ class SparkStructuredStreaming:
         #     StructField("attack", StringType(), True),
         #     StructField("label", IntegerType(), True)])
 
-        # pduUDF = udf(createPdu, garageSchema)
-        # garageDF = serialGarageDF.select(pduUDF("value").alias("garageData"))
+        # garageUDF = udf(createPdu, garageSchema)
+        # garageDF = serialGarageDF.select(garageUDF("value").alias("garageData"))
 
         # garageReadyDF = garageDF.select( 
         #     garageDF.garageData.door_state.alias("door_state"),
@@ -126,45 +126,170 @@ class SparkStructuredStreaming:
         # garageQuery.awaitTermination()
         
         # -----------------------------------------------
-        # Process data for the "gps" topic 
-        serialGpsDF = gpsDF.select("value")
+        # # Process data for the "gps" topic 
+        # serialGpsDF = gpsDF.select("value")
+        # gpsSchema = StructType([
+        #     StructField("entityLocation", StructType([
+        #         StructField("x", FloatType(), True),
+        #         StructField("y", FloatType(), True),
+        #         StructField("z", FloatType(), True)]), True),
+        #     StructField("entityOrientation", StructType([
+        #         StructField("psi", FloatType(), True),
+        #         StructField("theta", FloatType(), True),
+        #         StructField("phi", FloatType(), True)]), True),
+        #     StructField("attack", StringType(), True),
+        #     StructField("label", IntegerType(), True)    
+        #     ])
+
+        # gpsUDF = udf(createPdu, gpsSchema)
+        # gpsDF = serialGpsDF.select(gpsUDF("value").alias("gpsData")) 
+
+        # gpsReadyDF = gpsDF.select( 
+        #     gpsDF.gpsData.entityLocation.x.alias("longitude"),
+        #     gpsDF.gpsData.entityLocation.y.alias("latitude"),
+        #     gpsDF.gpsData.entityLocation.z.alias("altitude"),
+        #     gpsDF.gpsData.entityOrientation.psi.alias("roll"),
+        #     gpsDF.gpsData.entityOrientation.theta.alias("pitch"),
+        #     gpsDF.gpsData.entityOrientation.phi.alias("yaw"),
+        #     gpsDF.gpsData.attack.alias("attack"),
+        #     gpsDF.gpsData.label.alias("label"))
+
+        # uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+        # expandedGpsDF = gpsReadyDF.withColumn("uuid", uuid_udf())
+
+        # gpsQuery = expandedGpsDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start()
         
-        gpsSchema = StructType([
-            StructField("entityLocation", StructType([
-                StructField("x", FloatType(), True),
-                StructField("y", FloatType(), True),
-                StructField("z", FloatType(), True)]), True),
-            StructField("entityOrientation", StructType([
-                StructField("psi", FloatType(), True),
-                StructField("theta", FloatType(), True),
-                StructField("phi", FloatType(), True)]), True),
+        # gpsQuery.awaitTermination()
+
+        # -----------------------------------------------
+        # Process data for the "light" topic  
+        # serialLightDF = lightDF.select("value")
+        # lightSchema = StructType([
+        #     StructField("motion_status", StringType(), True),
+        #     StructField("light_status", StringType(), True),
+        #     StructField("attack", StringType(), True),
+        #     StructField("label", IntegerType(), True)])
+        
+        # lightUDF = udf(createPdu, lightSchema)
+        # lightDF = serialLightDF.select(lightUDF("value").alias("lightData"))
+
+        # lightReadyDF = lightDF.select(
+        #     lightDF.lightData.motion_status.alias("motion_status"),
+        #     lightDF.lightData.light_status.alias("light_status"),
+        #     lightDF.lightData.attack.alias("attack"),
+        #     lightDF.lightData.label.alias("label"))
+        
+        # uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+        # expandedLightDF = lightReadyDF.withColumn("uuid", uuid_udf())
+
+        # lightQuery = expandedLightDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start()
+        
+        # lightQuery.awaitTermination()
+
+        # -----------------------------------------------
+        # Process data for the "modbus" topic  
+        # serialModbusDF = modbusDF.select("value")
+        # modbusSchema = StructType([
+        #     StructField("fc1", DoubleType(), True),
+        #     StructField("fc2", DoubleType(), True),
+        #     StructField("fc3", DoubleType(), True),
+        #     StructField("fc4", DoubleType(), True),
+        #     StructField("attack", StringType(), True),
+        #     StructField("label", IntegerType(), True)])
+        
+        # modbusUDF = udf(createPdu, modbusSchema)
+        # modbusDF = serialModbusDF.select(modbusUDF("value").alias("modbusData"))
+
+        # modbusReadyDF = modbusDF.select(
+        #     modbusDF.modbusData.fc1.alias("fc1"),
+        #     modbusDF.modbusData.fc2.alias("fc2"),
+        #     modbusDF.modbusData.fc3.alias("fc3"),
+        #     modbusDF.modbusData.fc4.alias("fc4"),
+        #     modbusDF.modbusData.attack.alias("attack"),
+        #     modbusDF.modbusData.label.alias("label"))
+        
+        # uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+        # expandedModbusDF = modbusReadyDF.withColumn("uuid", uuid_udf())
+
+        # modbusQuery = expandedModbusDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start()
+        
+        # modbusQuery.awaitTermination()
+
+        # -----------------------------------------------
+        # Process data for the "thermostat" topic 
+        # serialThermostatDF = thermostatDF.select("value")
+        # thermostatSchema = StructType([
+        #     StructField("device", StringType(), True),
+        #     StructField("temperature", DoubleType(), True),
+        #     StructField("temp_status", IntegerType(), True),
+        #     StructField("attack", StringType(), True),
+        #     StructField("label", IntegerType(), True)])
+        
+        # thermostatUDF = udf(createPdu, thermostatSchema)
+        # thermostatDF = serialThermostatDF.select(thermostatUDF("value").alias("thermostatData"))
+
+        # thermostatReadyDF = thermostatDF.select(
+        #     thermostatDF.thermostatData.device.alias("device"),
+        #     thermostatDF.thermostatData.temperature.alias("temperature"),
+        #     thermostatDF.thermostatData.temp_status.alias("temp_status"),
+        #     thermostatDF.thermostatData.attack.alias("attack"),
+        #     thermostatDF.thermostatData.label.alias("label"))
+        
+        # uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
+        # expandedThermostatDF = thermostatReadyDF.withColumn("uuid", uuid_udf())
+
+        # thermostatQuery = expandedThermostatDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start()
+        
+        # thermostatQuery.awaitTermination()
+
+        # -----------------------------------------------
+        # Process data for the "weather" topic 
+        serialWeatherDF = weatherDF.select("value")
+        weatherSchema = StructType([
+            StructField("device", StringType(), True),
+            StructField("temperature", DoubleType(), True),
+            StructField("pressure", DoubleType(), True),
+            StructField("humidity", DoubleType(), True),
             StructField("attack", StringType(), True),
-            StructField("label", IntegerType(), True)    
-            ])
+            StructField("label", IntegerType(), True)])
+        
+        weatherUDF = udf(createPdu, weatherSchema)
+        weatherDF = serialWeatherDF.select(weatherUDF("value").alias("weatherData"))
 
-        pduUDF = udf(createPdu, gpsSchema)
-        gpsDF = serialGpsDF.select(pduUDF("value").alias("gpsData")) 
-
-        gpsReadyDF = gpsDF.select( 
-            gpsDF.gpsData.entityLocation.x.alias("longitude"),
-            gpsDF.gpsData.entityLocation.y.alias("latitude"),
-            gpsDF.gpsData.entityLocation.z.alias("altitude"),
-            gpsDF.gpsData.entityOrientation.psi.alias("roll"),
-            gpsDF.gpsData.entityOrientation.theta.alias("pitch"),
-            gpsDF.gpsData.entityOrientation.phi.alias("yaw"),
-            gpsDF.gpsData.attack.alias("attack"),
-            gpsDF.gpsData.label.alias("label"))
-
+        weatherReadyDF = weatherDF.select(
+            weatherDF.weatherData.device.alias("device"),
+            weatherDF.weatherData.temperature.alias("temperature"),
+            weatherDF.weatherData.pressure.alias("pressure"),
+            weatherDF.weatherData.humidity.alias("humidity"),
+            weatherDF.weatherData.attack.alias("attack"),
+            weatherDF.weatherData.label.alias("label"))
+        
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
-        expandedGpsDF = gpsReadyDF.withColumn("uuid", uuid_udf())
+        expandedWeatherDF = weatherReadyDF.withColumn("uuid", uuid_udf())
 
-        gpsQuery = expandedGpsDF.writeStream \
+        weatherQuery = expandedWeatherDF.writeStream \
             .outputMode("append") \
             .format("console") \
             .option("truncate", False) \
             .start()
         
-        gpsQuery.awaitTermination()
+        weatherQuery.awaitTermination()
         
 
         # # Define your sink operations
