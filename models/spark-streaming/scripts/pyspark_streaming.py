@@ -79,11 +79,11 @@ class SparkStructuredStreaming:
         # fridgeDF = serialFridgeDF.select(pduUDF("value").alias("fridgeData"))
 
         # fridgeReadyDF = fridgeDF.select(
-        #     fridgeDF.fridgeData.device,
-        #     fridgeDF.fridgeData.temperature,
-        #     fridgeDF.fridgeData.condition,
-        #     fridgeDF.fridgeData.attack,
-        #     fridgeDF.fridgeData.label)
+        #     fridgeDF.fridgeData.device.alias("device"),
+        #     fridgeDF.fridgeData.temperature.alias("temperature"),
+        #     fridgeDF.fridgeData.condition.alias("condition"),
+        #     fridgeDF.fridgeData.attack.alias("attack"),
+        #     fridgeDF.fridgeData.label.alias("label")
 
         # uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         # expandedFridgeDF = fridgeReadyDF.withColumn("uuid", uuid_udf())
@@ -109,10 +109,10 @@ class SparkStructuredStreaming:
         # garageDF = serialGarageDF.select(pduUDF("value").alias("garageData"))
 
         # garageReadyDF = garageDF.select( 
-        #     garageDF.garageData.door_state,
-        #     garageDF.garageData.sphone,
-        #     garageDF.garageData.attack,
-        #     garageDF.garageData.label)
+        #     garageDF.garageData.door_state.alias("door_state"),
+        #     garageDF.garageData.sphone.alias("sphone"),
+        #     garageDF.garageData.attack.alias("attack"),
+        #     garageDF.garageData.label.alias("label"))
 
         # uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         # expandedGarageDF = garageReadyDF.withColumn("uuid", uuid_udf())
@@ -130,27 +130,30 @@ class SparkStructuredStreaming:
         serialGpsDF = gpsDF.select("value")
         
         gpsSchema = StructType([
-            StructField("longitude", FloatType(), True),
-            StructField("latitude", FloatType(), True), 
-            StructField("altitude", FloatType(), True),
-            StructField("roll", FloatType(), True),
-            StructField("pitch", FloatType(), True),
-            StructField("yaw", FloatType(), True),
+            StructField("entityLocation", StructType([
+                StructField("x", FloatType(), True),
+                StructField("y", FloatType(), True),
+                StructField("z", FloatType(), True)]), True),
+            StructField("entityOrientation", StructType([
+                StructField("psi", FloatType(), True),
+                StructField("theta", FloatType(), True),
+                StructField("phi", FloatType(), True)]), True),
             StructField("attack", StringType(), True),
-            StructField("label", IntegerType(), True)])
+            StructField("label", IntegerType(), True)    
+            ])
 
         pduUDF = udf(createPdu, gpsSchema)
         gpsDF = serialGpsDF.select(pduUDF("value").alias("gpsData")) 
 
         gpsReadyDF = gpsDF.select( 
-            gpsDF.gpsData.longitude,
-            gpsDF.gpsData.latitude,
-            gpsDF.gpsData.altitude,
-            gpsDF.gpsData.roll,
-            gpsDF.gpsData.pitch,
-            gpsDF.gpsData.yaw,
-            gpsDF.gpsData.attack,
-            gpsDF.gpsData.label)
+            gpsDF.gpsData.entityLocation.x.alias("longitude"),
+            gpsDF.gpsData.entityLocation.y.alias("latitude"),
+            gpsDF.gpsData.entityLocation.z.alias("altitude"),
+            gpsDF.gpsData.entityOrientation.psi.alias("roll"),
+            gpsDF.gpsData.entityOrientation.theta.alias("pitch"),
+            gpsDF.gpsData.entityOrientation.phi.alias("yaw"),
+            gpsDF.gpsData.attack.alias("attack"),
+            gpsDF.gpsData.label.alias("label"))
 
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedGpsDF = gpsReadyDF.withColumn("uuid", uuid_udf())

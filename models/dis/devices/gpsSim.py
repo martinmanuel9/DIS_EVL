@@ -131,7 +131,7 @@ class GPSSim:
                     + "\n  Roll        : {} degrees".format(gpsPDU.entityOrientation.psi)
                     + "\n  Pitch       : {} degrees".format(gpsPDU.entityOrientation.theta)
                     + "\n  Yaw         : {} degrees".format(gpsPDU.entityOrientation.phi)
-                    + "\n  Attack      : {} degrees".format(gpsPDU.attack.decode('utf-8'))
+                    + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
 
@@ -228,7 +228,7 @@ class GPSSim:
                     + "\n  Roll        : {} degrees".format(gpsPDU.entityOrientation.psi)
                     + "\n  Pitch       : {} degrees".format(gpsPDU.entityOrientation.theta)
                     + "\n  Yaw         : {} degrees".format(gpsPDU.entityOrientation.phi)
-                    + "\n  Attack      : {} degrees".format(gpsPDU.attack.decode('utf-8'))
+                    + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
 
@@ -294,7 +294,7 @@ class GPSSim:
                     + "\n  Roll        : {} degrees".format(gpsPDU.entityOrientation.psi)
                     + "\n  Pitch       : {} degrees".format(gpsPDU.entityOrientation.theta)
                     + "\n  Yaw         : {} degrees".format(gpsPDU.entityOrientation.phi)
-                    + "\n  Attack      : {} degrees".format(gpsPDU.attack.decode('utf-8'))
+                    + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
                 
@@ -383,7 +383,7 @@ class GPSSim:
                     + "\n  Roll        : {} degrees".format(gpsPDU.entityOrientation.psi)
                     + "\n  Pitch       : {} degrees".format(gpsPDU.entityOrientation.theta)
                     + "\n  Yaw         : {} degrees".format(gpsPDU.entityOrientation.phi)
-                    + "\n  Attack      : {} degrees".format(gpsPDU.attack.decode('utf-8'))
+                    + "\n  Attack      : {}".format(gpsPDU.attack.decode('utf-8'))
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
                 

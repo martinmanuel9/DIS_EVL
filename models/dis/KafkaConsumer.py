@@ -75,10 +75,11 @@ class KafkaConsumer:
                         pduTypeName = pdu.__class__.__name__
 
                         if pdu.pduType == 1: # PduTypeDecoders.EntityStatePdu:
+                            print("entity velocity", pdu.entityLinearVelocity.y)
 
                             print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
                                     + " Id          : {}\n".format(pdu.entityID.entityID)
-                                    + " Longitude   : {:.3f} degrees\n".format(pdu.longitude)
+                                    + " Longitude   : {:.3f} degrees\n".format(pdu.entityLocation.x)
                                     + " Latitude    : {:.3f} degrees\n".format(pdu.entityLocation.y)
                                     + " Altitude    : {:.3f} meters\n".format(pdu.entityLocation.z)
                                     + " Yaw         : {:.3f} degrees\n".format(pdu.entityOrientation.psi)
