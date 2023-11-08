@@ -58,23 +58,23 @@ def recv():
     pduTypeName = pdu.__class__.__name__
      
     if pdu.pduType == 1: # PduTypeDecoders.EntityStatePdu:
-        loc = (pdu.entityLocation.x,
-                pdu.entityLocation.y,
-                pdu.entityLocation.z,
-                pdu.entityOrientation.psi,
-                pdu.entityOrientation.theta,
-                pdu.entityOrientation.phi
-                )
+        # loc = (pdu.entityLocation.x,
+        #         pdu.entityLocation.y,
+        #         pdu.entityLocation.z,
+        #         pdu.entityOrientation.psi,
+        #         pdu.entityOrientation.theta,
+        #         pdu.entityOrientation.phi
+        #         )
         
-        body = gps.ecef2llarpy(*loc)
+        # body = gps.ecef2llarpy(*loc)
         print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
                 + " Id          : {}\n".format(pdu.entityID.entityID)
-                + " Latitude    : {:.2f} degrees\n".format(rad2deg(body[0]))
-                + " Longitude   : {:.2f} degrees\n".format(rad2deg(body[1]))
-                + " Altitude    : {:.0f} meters\n".format(body[2])
-                + " Yaw         : {:.2f} degrees\n".format(rad2deg(body[3]))
-                + " Pitch       : {:.2f} degrees\n".format(rad2deg(body[4]))
-                + " Roll        : {:.2f} degrees\n".format(rad2deg(body[5]))
+                + " Longitude   : {:.3f} degrees\n".format(pdu.entityLocation.x)
+                + " Latitude    : {:.3f} degrees\n".format(pdu.entityLocation.y)
+                + " Altitude    : {:.3f} meters\n".format(pdu.entityLocation.z)
+                + " Yaw         : {:.3f} degrees\n".format(pdu.entityOrientation.psi)
+                + " Pitch       : {:.3f} degrees\n".format(pdu.entityOrientation.theta)
+                + " Roll        : {:.3f} degrees\n".format(pdu.entityOrientation.phi)
                 + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
                 + " Label       : {}\n".format(pdu.label)
                 )
