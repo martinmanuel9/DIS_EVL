@@ -285,6 +285,10 @@ class SparkStructuredStreaming:
             .format("console") \
             .option("truncate", False) \
             .start()
+
+        # Define your sink operations
+        cassandra_sink = self.save_to_cassandra(expandedFridgeDF)
+        # mysql_sink = self.save_to_mysql(fridgeDF)
         
         fridgeQuery.awaitTermination()
         garageQuery.awaitTermination()
@@ -295,9 +299,7 @@ class SparkStructuredStreaming:
         weatherQuery.awaitTermination()
 
 
-    #     # # Define your sink operations
-    #     # cassandra_sink = self.save_to_cassandra(fridgeDF)
-    #     # mysql_sink = self.save_to_mysql(fridgeDF)
+
 
 
 if __name__ == "__main__":
