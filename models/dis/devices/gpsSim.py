@@ -40,6 +40,7 @@ import time
 from io import BytesIO
 import numpy as np
 import pandas as pd
+import random
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import EntityStatePdu
@@ -135,7 +136,7 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
 
-                time.sleep(10)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka':
                 # Create an XML element for the data
@@ -164,7 +165,7 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(self.gpsTrain['Data'][0][i][0][6])
                     )
 
-                time.sleep(10)
+                time.sleep(random.uniform(0, 1))
             
             if self.transmission == 'kafka_pdu':
                 gpsPDU = EntityStatePdu()
@@ -232,7 +233,7 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
 
-                time.sleep(10)
+                time.sleep(random.uniform(0, 1))
 
     def sendGPSTest(self):
         columnNames = self.gpsTest['Dataframe'].columns
@@ -298,7 +299,7 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
                 
-                time.sleep(10)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka':
                 # Create an XML element for the data
@@ -326,7 +327,7 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(self.gpsTest['Data'][0][i][0][6])
                     )
                 
-                time.sleep(10)
+                time.sleep(random.uniform(0, 1))
             
             if self.transmission == 'kafka_pdu':
                 gpsPDU = EntityStatePdu()
@@ -387,7 +388,7 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
                 
-                time.sleep(10)
+                time.sleep(random.uniform(0, 1))
 
 # if __name__ == '__main__':
 #     gpsSim = GPSSim(transmission= 'kafka_pdu')

@@ -40,6 +40,7 @@ import time
 from io import BytesIO
 import numpy as np
 import pandas as pd
+import random
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import *
@@ -96,7 +97,7 @@ class GarageSim:
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
                 
-                time.sleep(8)
+                time.sleep(random.uniform(0, 1))
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -121,7 +122,7 @@ class GarageSim:
                     + "\n  Label          : {}\n".format(self.garageTrain['Data'][0][i][0][6])
                     )
                 
-                time.sleep(8)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka_pdu':
                 garagePdu = Garage() 
@@ -145,7 +146,7 @@ class GarageSim:
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
                 
-                time.sleep(8)
+                time.sleep(random.uniform(0, 1))
 
 
     def sendGarageTest(self):
@@ -173,7 +174,7 @@ class GarageSim:
                     + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
-                time.sleep(8)
+                time.sleep(random.uniform(0, 1))
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -198,7 +199,7 @@ class GarageSim:
                     + "\n  Label          : {}".format(self.garageTest['Data'][0][i][0][6])
                     )
                 
-                time.sleep(8)
+                time.sleep(random.uniform(0, 1))
             
             if self.transmission == 'kafka_pdu':
                 garagePdu = Garage() 
@@ -221,7 +222,7 @@ class GarageSim:
                     + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
-                time.sleep(8)
+                time.sleep(random.uniform(0, 1))
 
 
 # if __name__ == "__main__":

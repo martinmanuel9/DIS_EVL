@@ -19,7 +19,7 @@ class SparkStructuredStreaming:
             .config("spark.driver.host", "localhost") \
             .getOrCreate()
         
-        self.spark.sparkContext.setLogLevel("WARN")
+        self.spark.sparkContext.setLogLevel("ERROR") # WARN
         self.pdu_factory_bc = self.spark.sparkContext.broadcast(createPdu)
 
     def save_to_cassandra(self, writeDF):
@@ -43,7 +43,7 @@ class SparkStructuredStreaming:
             .option("url", "jdbc:mysql://172.18.0.8:3306/sales_db") \
             .option("dbtable", "fridge") \
             .options(**db_credentials) \
-            .start()  
+            .start() 
 
     def receive_kafka_message(self):
         sparkDF = self.spark.readStream \
@@ -53,7 +53,7 @@ class SparkStructuredStreaming:
             .option("startingOffsets", "earliest") \
             .load()
 
-        # Filter and process data based on the topic
+        # # Filter and process data based on the topic
         filteredDF = sparkDF.filter(sparkDF["topic"].isin("fridge", "garage", "gps", "light", "modbus", "thermostat", "weather"))
 
         # Process data for each topic separately
@@ -65,9 +65,10 @@ class SparkStructuredStreaming:
         thermostatDF = filteredDF.filter(filteredDF["topic"] == "thermostat")
         weatherDF = filteredDF.filter(filteredDF["topic"] == "weather")
 
+
         # -----------------------------------------------
         # Process data for the "fridge" topic
-        # -----------------------------------------------
+        # ----------------------------------------------- 
         serialFridgeDF = fridgeDF.select("value")
         fridgeSchema = StructType([
             StructField("device", StringType(), True),
@@ -89,13 +90,7 @@ class SparkStructuredStreaming:
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedFridgeDF = fridgeReadyDF.withColumn("uuid", uuid_udf())
 
-        fridgeQuery = expandedFridgeDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
-        
-        fridgeQuery.awaitTermination()
+
 
         # ----------------------------------------------- 
         # Process data for the "garage" topic
@@ -119,18 +114,10 @@ class SparkStructuredStreaming:
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedGarageDF = garageReadyDF.withColumn("uuid", uuid_udf())
 
-        garageQuery = expandedGarageDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
-        
-        garageQuery.awaitTermination()
-        
         # -----------------------------------------------
         # # Process data for the "gps" topic 
-        # serialGpsDF = gpsDF.select("value")
         # -----------------------------------------------
+        serialGpsDF = gpsDF.select("value")
         gpsSchema = StructType([
             StructField("entityLocation", StructType([
                 StructField("x", FloatType(), True),
@@ -160,14 +147,6 @@ class SparkStructuredStreaming:
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedGpsDF = gpsReadyDF.withColumn("uuid", uuid_udf())
 
-        gpsQuery = expandedGpsDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
-        
-        gpsQuery.awaitTermination()
-
         # -----------------------------------------------
         # Process data for the "light" topic  
         # -----------------------------------------------
@@ -189,14 +168,6 @@ class SparkStructuredStreaming:
         
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedLightDF = lightReadyDF.withColumn("uuid", uuid_udf())
-
-        lightQuery = expandedLightDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
-        
-        lightQuery.awaitTermination()
 
         # -----------------------------------------------
         # Process data for the "modbus" topic  
@@ -224,14 +195,6 @@ class SparkStructuredStreaming:
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedModbusDF = modbusReadyDF.withColumn("uuid", uuid_udf())
 
-        modbusQuery = expandedModbusDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
-        
-        modbusQuery.awaitTermination()
-
         # -----------------------------------------------
         # Process data for the "thermostat" topic
         # ----------------------------------------------- 
@@ -255,14 +218,6 @@ class SparkStructuredStreaming:
         
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedThermostatDF = thermostatReadyDF.withColumn("uuid", uuid_udf())
-
-        thermostatQuery = expandedThermostatDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
-        
-        thermostatQuery.awaitTermination()
 
         # -----------------------------------------------
         # Process data for the "weather" topic 
@@ -289,6 +244,43 @@ class SparkStructuredStreaming:
         
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedWeatherDF = weatherReadyDF.withColumn("uuid", uuid_udf())
+        
+        # -----------------------------------------------
+        fridgeQuery = expandedFridgeDF.writeStream \
+            .outputMode("append") \
+            .format("console") \
+            .option("truncate", False) \
+            .start()
+
+        garageQuery = expandedGarageDF.writeStream \
+                .outputMode("append") \
+                .format("console") \
+                .option("truncate", False) \
+                .start()
+            
+        gpsQuery = expandedGpsDF.writeStream \
+            .outputMode("append") \
+            .format("console") \
+            .option("truncate", False) \
+            .start()
+
+        lightQuery = expandedLightDF.writeStream \
+            .outputMode("append") \
+            .format("console") \
+            .option("truncate", False) \
+            .start()
+        
+        modbusQuery = expandedModbusDF.writeStream \
+            .outputMode("append") \
+            .format("console") \
+            .option("truncate", False) \
+            .start()
+
+        thermostatQuery = expandedThermostatDF.writeStream \
+            .outputMode("append") \
+            .format("console") \
+            .option("truncate", False) \
+            .start()
 
         weatherQuery = expandedWeatherDF.writeStream \
             .outputMode("append") \
@@ -296,12 +288,19 @@ class SparkStructuredStreaming:
             .option("truncate", False) \
             .start()
         
+        fridgeQuery.awaitTermination()
+        garageQuery.awaitTermination()
+        gpsQuery.awaitTermination()
+        lightQuery.awaitTermination()
+        modbusQuery.awaitTermination()
+        thermostatQuery.awaitTermination()
         weatherQuery.awaitTermination()
 
 
-        # # Define your sink operations
-        # cassandra_sink = self.save_to_cassandra(fridgeDF)
-        # mysql_sink = self.save_to_mysql(fridgeDF)
+    #     # # Define your sink operations
+    #     # cassandra_sink = self.save_to_cassandra(fridgeDF)
+    #     # mysql_sink = self.save_to_mysql(fridgeDF)
+
 
 if __name__ == "__main__":
     sparkStructuredStreaming = SparkStructuredStreaming()

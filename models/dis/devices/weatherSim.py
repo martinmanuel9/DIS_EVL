@@ -40,6 +40,7 @@ import time
 from io import BytesIO
 import numpy as np
 import pandas as pd
+import random
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import *
@@ -101,7 +102,7 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
 
-                time.sleep(20)
+                time.sleep(random.uniform(0, 1))
 
             elif self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -127,7 +128,7 @@ class WeatherSim:
                     + "\n  Label           : {}".format(self.weatherTrain['Data'][0][i][0][7])
                     )
                   
-                time.sleep(18)
+                time.sleep(random.uniform(0, 1))
 
             elif self.transmission == 'kafka_pdu':
                 weatherPdu = Environment()
@@ -156,7 +157,7 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
 
-                time.sleep(20)
+                time.sleep(random.uniform(0, 1))
 
     def sendWeatherTest(self ):
         columnNames = self.weatherTest['Dataframe'].columns
@@ -189,7 +190,7 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
                 
-                time.sleep(18)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -214,7 +215,7 @@ class WeatherSim:
                     + "\n  Attack          : {}".format(self.weatherTrain['Data'][0][i][0][6])
                     + "\n  Label           : {}".format(self.weatherTrain['Data'][0][i][0][7])
                     )
-                time.sleep(18)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka_pdu':
                 weatherPdu = Environment()
@@ -243,7 +244,7 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
                 
-                time.sleep(18)
+                time.sleep(random.uniform(0, 1))
 
 
 # if __name__ == '__main__':

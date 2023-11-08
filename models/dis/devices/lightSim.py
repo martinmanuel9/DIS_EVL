@@ -40,6 +40,7 @@ import time
 from io import BytesIO
 import numpy as np
 import pandas as pd
+import random
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import * 
@@ -95,7 +96,7 @@ class LightSim:
                     + "\n  Label         : {}\n".format(lightTrainPdu.label)
                     )
 
-                time.sleep(12)
+                time.sleep(random.uniform(0, 1))
             
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -118,7 +119,7 @@ class LightSim:
                     + "\n  Label         : {}\n".format(self.lightTrain['Data'][0][i][0][6])
                     )
                 
-                time.sleep(12)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka_pdu':
                 lightTrainPdu = Light()
@@ -142,7 +143,7 @@ class LightSim:
                     + "\n  Label         : {}\n".format(lightTrainPdu.label)
                     )
 
-                time.sleep(12)
+                time.sleep(random.uniform(0, 1))
 
     def sendLightTest(self):
         columnNames = self.lightTest['Dataframe'].columns
@@ -169,7 +170,7 @@ class LightSim:
                     + "\n  Attack        : {}".format(lightPdu.attack.decode('utf-8'))
                     + "\n  Label         : {}\n".format(lightPdu.label)
                     )
-                time.sleep(12)
+                time.sleep(random.uniform(0, 1))
             
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -192,7 +193,7 @@ class LightSim:
                     + "\n  Label         : {}\n".format(self.lightTest['Data'][0][i][0][6])
                     )
                 
-                time.sleep(12)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka_pdu':
                 lightPdu = Light()
@@ -216,7 +217,7 @@ class LightSim:
                     + "\n  Label         : {}\n".format(lightPdu.label)
                     )
                 
-                time.sleep(12)
+                time.sleep(random.uniform(0, 1))
 
 
 # if __name__ == '__main__':

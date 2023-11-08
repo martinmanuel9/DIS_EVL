@@ -40,6 +40,7 @@ import time
 from io import BytesIO
 import numpy as np
 import pandas as pd
+import random
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import *
@@ -97,7 +98,7 @@ class ThermostatSim:
                     + "\n  Label              : {}".format(thermostatPdu.label)
                     )
                 
-                time.sleep(16)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka':
                 #create an xml element for data
@@ -119,7 +120,7 @@ class ThermostatSim:
                     + "\n  Label              : {}\n".format(self.thermoTest['Data'][0][i][0][6])
                     ) 
                 
-                time.sleep(16)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka_pdu':
                 thermostatPdu = Environment()
@@ -146,7 +147,7 @@ class ThermostatSim:
                     + "\n  Label              : {}".format(thermostatPdu.label)
                     )
                 
-                time.sleep(16)
+                time.sleep(random.uniform(0, 1))
 
     def sendThermostatTest(self ):
         columnNames = self.thermoTest['Dataframe'].columns
@@ -177,7 +178,7 @@ class ThermostatSim:
                     + "\n  Label              : {}".format(thermostatPdu.label)
                     )
                  
-                time.sleep(16)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka':
                 #create an xml element for data
@@ -199,7 +200,7 @@ class ThermostatSim:
                     + "\n  Label              : {}\n".format(self.thermoTest['Data'][0][i][0][6])
                     ) 
                 
-                time.sleep(16)
+                time.sleep(random.uniform(0, 1))
             
             if self.transmission == 'kafka_pdu':
                 thermostatPdu = Environment()
@@ -226,7 +227,7 @@ class ThermostatSim:
                     + "\n  Label              : {}".format(thermostatPdu.label)
                     )
                  
-                time.sleep(16)
+                time.sleep(random.uniform(0, 1))
 
 # if __name__ == '__main__':
 #     thermostat = ThermostatSim(transmission= 'kafka_pdu')

@@ -40,6 +40,7 @@ import time
 from io import BytesIO
 import numpy as np
 import pandas as pd
+import random
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import *
@@ -99,7 +100,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(modbusPdu.label)
                     ) 
                 
-                time.sleep(14)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -126,7 +127,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(self.modbusTrain['Data'][0][i][0][8])
                     ) 
                     
-                time.sleep(14)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka_pdu':
                 modbusPdu = Modbus() 
@@ -154,7 +155,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(modbusPdu.label)
                     ) 
                 
-                time.sleep(14)
+                time.sleep(random.uniform(0, 1))
 
     def sendModbusTest(self ):
         columnNames = self.modbusTest['Dataframe'].columns
@@ -186,7 +187,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(modbusPdu.label)
                     )  
                 
-                time.sleep(14)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -213,7 +214,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(self.modbusTest['Data'][0][i][0][8])
                     ) 
                 
-                time.sleep(14)
+                time.sleep(random.uniform(0, 1))
 
             if self.transmission == 'kafka_pdu':
                 modbusPdu = Modbus() 
@@ -241,7 +242,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(modbusPdu.label)
                     )  
                 
-                time.sleep(14)
+                time.sleep(random.uniform(0, 1))
 
 # if __name__ == '__main__':
 #     modbusSim = ModbusSim(transmission = 'kafka_pdu')
