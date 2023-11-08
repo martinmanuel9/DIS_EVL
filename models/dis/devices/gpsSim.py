@@ -384,5 +384,5 @@ class GPSSim:
                 time.sleep(10)
 
 if __name__ == '__main__':
-    gpsSim = GPSSim(transmission= 'pdu')
+    gpsSim = GPSSim(transmission= 'kafka_pdu')
     gpsSim.sendGPSTrain()

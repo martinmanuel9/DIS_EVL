@@ -76,6 +76,8 @@ class KafkaConsumer:
 
                         if pdu.pduType == 1: # PduTypeDecoders.EntityStatePdu:
 
+                            print(type(pdu.entityLocation.x))
+
                             print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
                                     + " Id          : {}\n".format(pdu.entityID.entityID)
                                     + " Longitude   : {:.3f} degrees\n".format(pdu.entityLocation.x)
