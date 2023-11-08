@@ -90,8 +90,6 @@ class SparkStructuredStreaming:
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedFridgeDF = fridgeReadyDF.withColumn("uuid", uuid_udf())
 
-
-
         # ----------------------------------------------- 
         # Process data for the "garage" topic
         # -----------------------------------------------
