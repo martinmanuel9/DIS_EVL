@@ -1,1 +1,74 @@
 # DIS_EVL
+
+# Setting up the Environment
+
+1. **Clone the Codebase:**
+   Download the code base from the [DIS_EVL repository](https://github.com/martinmanuel9/DIS_EVL).
+
+2. **Directory Structure:**
+   The code base has the following structure:
+
+   - **data:** Contains IoT devices data, including TON_IoT_data and specific devices like fridge, garage, gps, modbus, motion light, thermostat, and weather.
+   - **models:** Includes settings for microservices and machine learning models.
+     - **dis:** Manages simulations and communication.
+       - **devices:** Simulations for each device (e.g., fridgeSim.py).
+       - **DISReceiver.py:** Proof-of-concept script for open DIS communication.
+       - Kafka Producer and Kafka Consumer Python files generate open DIS PDU packets.
+       - **RunSimulations.py:** Runs all simulations for streaming.
+
+3. **Run Simulations:**
+   To process training data for all devices:
+
+   ```batch
+   python RunSimulations.py --transmission kafka_pdu --mode train
+   ```
+
+   Explore other options using `python RunSimulations.py --help`.
+
+4. **Microservices Setup:**
+   - Cassandra, Kafka, and MySQL directories have batch files for manual setup (obsolete).
+   - Automation using the YML file under the docker capability.
+
+# Establishing Microservices
+
+Automate services start-up using Docker images for Cassandra, MySQL, Kafka, Zookeeper, and Spark.
+
+1. **Connect to Compute Environment:**
+   Connect to `compute.engr.arizona.edu` with your UArizona netid.
+
+2. **Clone and Run:**
+
+   - Change directory to `DIS_EVL/models/docker`.
+   - Execute:
+     ```batch
+     make env-up
+     ```
+     This starts Docker images, establishes MySQL and Cassandra databases, and sets up required tables.
+
+3. **Shutdown Environment:**
+   To bring the environment down:
+
+   ```batch
+   make env-down
+   ```
+
+   This shuts down the environment and removes all images.
+
+4. **Ports Cleanup:**
+   Remove all ports associated with the user during PySpark experiments.
+   ```batch
+   make clean-ports
+   ```
+
+# Running PySpark Streaming
+
+1. **Change Directory:**
+   Navigate to `DIS_EVL/models/spark-streaming`.
+
+2. **Run Spark Setup:**
+   Execute:
+   ```batch
+   ./spark-setup.sh
+   ```
+
+Feel free to explore and experiment with the DIS_EVL environment!

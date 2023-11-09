@@ -3,6 +3,7 @@ from pyspark.sql.types import *
 import os
 import uuid
 from pyspark.sql.functions import *
+from pyspark.sql.streaming import *
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')))
 from opendismodel.opendis.RangeCoordinates import * 
 from opendismodel.opendis.PduFactory import createPdu
@@ -22,13 +23,18 @@ class SparkStructuredStreaming:
         self.spark.sparkContext.setLogLevel("ERROR") # WARN
         self.pdu_factory_bc = self.spark.sparkContext.broadcast(createPdu)
 
-    def save_to_cassandra(self, writeDF):
+    def save_to_cassandra(self, writeDF, table_name="fridge_table", keyspace="dis"):
+        cassandraConfig = {
+            "keyspace": keyspace,
+            "table": table_name,
+            "outputMode": "append"
+        }
         writeDF.writeStream \
-            .outputMode("append") \
             .format("org.apache.spark.sql.cassandra") \
-            .option("table", "fridge_table") \
-            .option("keyspace", "dis") \
-            .start()
+            .options(**cassandraConfig) \
+            .mode("append") \
+            .save()
+            
 
     def save_to_mysql(self, writeDF):
         db_credentials = {
@@ -89,6 +95,13 @@ class SparkStructuredStreaming:
 
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedFridgeDF = fridgeReadyDF.withColumn("uuid", uuid_udf())
+
+        # Define your sink operations
+        # expandedFridgeDF.writeStream \
+        #     .foreachBatch(self.save_to_cassandra) \
+        #     .start()
+        
+        # mysql_sink = self.save_to_mysql(fridgeDF)
 
         # ----------------------------------------------- 
         # Process data for the "garage" topic
@@ -286,20 +299,16 @@ class SparkStructuredStreaming:
             .option("truncate", False) \
             .start()
 
-        # Define your sink operations
-        cassandra_sink = self.save_to_cassandra(expandedFridgeDF)
-        # mysql_sink = self.save_to_mysql(fridgeDF)
         
-        fridgeQuery.awaitTermination()
-        garageQuery.awaitTermination()
-        gpsQuery.awaitTermination()
-        lightQuery.awaitTermination()
-        modbusQuery.awaitTermination()
-        thermostatQuery.awaitTermination()
-        weatherQuery.awaitTermination()
-
-
-
+        
+        # fridgeQuery.awaitTermination()
+        # garageQuery.awaitTermination()
+        # gpsQuery.awaitTermination()
+        # lightQuery.awaitTermination()
+        # modbusQuery.awaitTermination()
+        # thermostatQuery.awaitTermination()
+        # weatherQuery.awaitTermination()
+        self.spark.streams.awaitAnyTermination()
 
 
 if __name__ == "__main__":
