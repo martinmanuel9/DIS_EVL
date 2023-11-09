@@ -23,19 +23,6 @@ class SparkStructuredStreaming:
         self.spark.sparkContext.setLogLevel("ERROR") # WARN
         self.pdu_factory_bc = self.spark.sparkContext.broadcast(createPdu)
 
-    def save_to_cassandra(self, writeDF, table_name="fridge_table", keyspace="dis"):
-        cassandraConfig = {
-            "keyspace": keyspace,
-            "table": table_name,
-            "outputMode": "append"
-        }
-        writeDF.writeStream \
-            .format("org.apache.spark.sql.cassandra") \
-            .options(**cassandraConfig) \
-            .mode("append") \
-            .save()
-            
-
     def save_to_mysql(self, writeDF):
         db_credentials = {
             "user": "root",
@@ -96,13 +83,20 @@ class SparkStructuredStreaming:
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedFridgeDF = fridgeReadyDF.withColumn("uuid", uuid_udf())
 
-        # Define your sink operations
-        # expandedFridgeDF.writeStream \
-        #     .foreachBatch(self.save_to_cassandra) \
-        #     .start()
+        if expandedFridgeDF.isStreaming:
+            # save to cassandra
+            cassandraFridgeConfig = {
+                "keyspace": "dis",
+                "table": "fridge_table",
+                "outputMode": "append"
+            }
+            checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
+            expandedFridgeDF.writeStream \
+                .format("org.apache.spark.sql.cassandra") \
+                .options(**cassandraFridgeConfig) \
+                .option("checkpointLocation", checkpoint_location) \
+                .start()
         
-        # mysql_sink = self.save_to_mysql(fridgeDF)
-
         # ----------------------------------------------- 
         # Process data for the "garage" topic
         # -----------------------------------------------
@@ -124,6 +118,20 @@ class SparkStructuredStreaming:
 
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedGarageDF = garageReadyDF.withColumn("uuid", uuid_udf())
+
+        if expandedGarageDF.isStreaming:
+            # save to cassandra
+            cassandraGarageConfig = {
+                "keyspace": "dis",
+                "table": "garage_table",
+                "outputMode": "append"
+            }
+            checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
+            expandedGarageDF.writeStream \
+                .format("org.apache.spark.sql.cassandra") \
+                .options(**cassandraGarageConfig) \
+                .option("checkpointLocation", checkpoint_location) \
+                .start()
 
         # -----------------------------------------------
         # # Process data for the "gps" topic 
@@ -158,6 +166,20 @@ class SparkStructuredStreaming:
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedGpsDF = gpsReadyDF.withColumn("uuid", uuid_udf())
 
+        if expandedGpsDF.isStreaming:
+            # save to cassandra
+            cassandraGpsConfig = {
+                "keyspace": "dis",
+                "table": "gps_table",
+                "outputMode": "append"
+            }
+            checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
+            expandedGpsDF.writeStream \
+                .format("org.apache.spark.sql.cassandra") \
+                .options(**cassandraGpsConfig) \
+                .option("checkpointLocation", checkpoint_location) \
+                .start()
+
         # -----------------------------------------------
         # Process data for the "light" topic  
         # -----------------------------------------------
@@ -179,6 +201,20 @@ class SparkStructuredStreaming:
         
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedLightDF = lightReadyDF.withColumn("uuid", uuid_udf())
+
+        if expandedLightDF.isStreaming:
+            # save to cassandra
+            cassandraLightConfig = {
+                "keyspace": "dis",
+                "table": "light_table",
+                "outputMode": "append"
+            }
+            checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
+            expandedLightDF.writeStream \
+                .format("org.apache.spark.sql.cassandra") \
+                .options(**cassandraLightConfig) \
+                .option("checkpointLocation", checkpoint_location) \
+                .start()
 
         # -----------------------------------------------
         # Process data for the "modbus" topic  
@@ -206,6 +242,20 @@ class SparkStructuredStreaming:
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedModbusDF = modbusReadyDF.withColumn("uuid", uuid_udf())
 
+        if expandedModbusDF.isStreaming:
+            # save to cassandra
+            cassandraModbusConfig = {
+                "keyspace": "dis",
+                "table": "modbus_table",
+                "outputMode": "append"
+            }
+            checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
+            expandedModbusDF.writeStream \
+                .format("org.apache.spark.sql.cassandra") \
+                .options(**cassandraModbusConfig) \
+                .option("checkpointLocation", checkpoint_location) \
+                .start()
+
         # -----------------------------------------------
         # Process data for the "thermostat" topic
         # ----------------------------------------------- 
@@ -229,6 +279,20 @@ class SparkStructuredStreaming:
         
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedThermostatDF = thermostatReadyDF.withColumn("uuid", uuid_udf())
+
+        if expandedThermostatDF.isStreaming:
+            # save to cassandra
+            cassandraThermostatConfig = {
+                "keyspace": "dis",
+                "table": "modbus_table",
+                "outputMode": "append"
+            }
+            checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
+            expandedThermostatDF.writeStream \
+                .format("org.apache.spark.sql.cassandra") \
+                .options(**cassandraThermostatConfig) \
+                .option("checkpointLocation", checkpoint_location) \
+                .start()
 
         # -----------------------------------------------
         # Process data for the "weather" topic 
@@ -255,59 +319,65 @@ class SparkStructuredStreaming:
         
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedWeatherDF = weatherReadyDF.withColumn("uuid", uuid_udf())
+
+        if expandedWeatherDF.isStreaming:
+            # save to cassandra
+            cassandraWeatherConfig = {
+                "keyspace": "dis",
+                "table": "weather_table",
+                "outputMode": "append"
+            }
+            checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
+            expandedWeatherDF.writeStream \
+                .format("org.apache.spark.sql.cassandra") \
+                .options(**cassandraWeatherConfig) \
+                .option("checkpointLocation", checkpoint_location) \
+                .start()
         
         # -----------------------------------------------
-        fridgeQuery = expandedFridgeDF.writeStream \
+        expandedFridgeDF.writeStream \
             .outputMode("append") \
             .format("console") \
             .option("truncate", False) \
             .start()
 
-        garageQuery = expandedGarageDF.writeStream \
+        expandedGarageDF.writeStream \
                 .outputMode("append") \
                 .format("console") \
                 .option("truncate", False) \
                 .start()
             
-        gpsQuery = expandedGpsDF.writeStream \
+        expandedGpsDF.writeStream \
             .outputMode("append") \
             .format("console") \
             .option("truncate", False) \
             .start()
 
-        lightQuery = expandedLightDF.writeStream \
+        expandedLightDF.writeStream \
             .outputMode("append") \
             .format("console") \
             .option("truncate", False) \
             .start()
         
-        modbusQuery = expandedModbusDF.writeStream \
+        expandedModbusDF.writeStream \
             .outputMode("append") \
             .format("console") \
             .option("truncate", False) \
             .start()
 
-        thermostatQuery = expandedThermostatDF.writeStream \
+        expandedThermostatDF.writeStream \
             .outputMode("append") \
             .format("console") \
             .option("truncate", False) \
             .start()
 
-        weatherQuery = expandedWeatherDF.writeStream \
+        expandedWeatherDF.writeStream \
             .outputMode("append") \
             .format("console") \
             .option("truncate", False) \
             .start()
 
-        
-        
-        # fridgeQuery.awaitTermination()
-        # garageQuery.awaitTermination()
-        # gpsQuery.awaitTermination()
-        # lightQuery.awaitTermination()
-        # modbusQuery.awaitTermination()
-        # thermostatQuery.awaitTermination()
-        # weatherQuery.awaitTermination()
+        # -----------------------------------------------
         self.spark.streams.awaitAnyTermination()
 
 
