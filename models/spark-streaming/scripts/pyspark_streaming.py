@@ -134,7 +134,7 @@ class SparkStructuredStreaming:
                 .start()
 
         # -----------------------------------------------
-        # # Process data for the "gps" topic 
+        # Process data for the "gps" topic 
         # -----------------------------------------------
         serialGpsDF = gpsDF.select("value")
         gpsSchema = StructType([
