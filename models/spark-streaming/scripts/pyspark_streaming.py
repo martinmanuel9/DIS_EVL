@@ -43,6 +43,7 @@ class SparkStructuredStreaming:
             .format("kafka") \
             .option("kafka.bootstrap.servers", "172.18.0.4:9092") \
             .option("subscribePattern", "fridge|garage|gps|light|modbus|thermostat|weather") \
+            .option("failOnDataLoss", "false") \
             .option("startingOffsets", "earliest") \
             .load()
 
@@ -284,7 +285,7 @@ class SparkStructuredStreaming:
             # save to cassandra
             cassandraThermostatConfig = {
                 "keyspace": "dis",
-                "table": "modbus_table",
+                "table": "thermostat_table",
                 "outputMode": "append"
             }
             checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
