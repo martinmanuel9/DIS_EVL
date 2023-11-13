@@ -1,4 +1,5 @@
 # Ignore data 
 data/BoT_IoT_Data/**
+models/spark-streaming/scripts/checkpoint/**
 
 

@@ -225,6 +225,6 @@ class GarageSim:
                 time.sleep(random.uniform(0, 1))
 
 
-if __name__ == "__main__":
-    GarageSim = GarageSim(transmission='kafka_pdu')
-    GarageSim.sendGarageTrain()
+# if __name__ == "__main__":
+#     GarageSim = GarageSim(transmission='kafka_pdu')
+#     GarageSim.sendGarageTrain()

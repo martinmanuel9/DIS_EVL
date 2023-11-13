@@ -29,6 +29,57 @@
    - Cassandra, Kafka, and MySQL directories have batch files for manual setup (obsolete).
    - Automation using the YML file under the docker capability.
 
+# Establishing Conda Environment
+
+1. Get the following anaconda file:
+   Anaconda3-2023.07-1-Linux-x86_64.sh
+
+2. Run the following:
+
+```bash
+wget https://repo.continuum.io/archive/Anaconda3-2023.07-1-Linux-x86_64.sh
+```
+
+3. Run the following command:
+   `bash Anaconda3-2023.07-1-Linux-x86_64.sh`
+
+4. Run the following command to activate conda and run it on the environment
+   `source ~/anaconda3/bin/activate`
+
+5. Run the following to ensure you can run via bash
+   `source ~/.bashrc`
+
+6. Update conda
+   `conda update conda`
+
+or
+
+`conda update --all`
+
+7. Create a conda environment to make sure that your enviornment is ran correctly:
+   `conda create -n pyvenv python=3.11.4 anaconda`
+
+8. Run the following command to activate the conda environment
+   `conda activate pyvenv`
+
+   - To deactivate this environment you can run `conda deactivate`
+
+9. Run the following to install python libraries to run simulations:
+
+```bash
+python -m pip install --upgrade pip
+```
+
+```bash
+pip3 install matplotlib numpy pandas tqdm category_encoders -U scikit-learn threadpoolctl==3.1.0
+```
+
+Now everytime you begin runnig the simulations you can activate the conda environment when you login by running the following command:
+
+```bash
+conda activate pyvenv
+```
+
 # Establishing Microservices
 
 Automate services start-up using Docker images for Cassandra, MySQL, Kafka, Zookeeper, and Spark.
