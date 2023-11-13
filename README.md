@@ -119,7 +119,61 @@ Automate services start-up using Docker images for Cassandra, MySQL, Kafka, Zook
 2. **Run Spark Setup:**
    Execute:
    ```batch
-   ./spark-setup.sh
+   ./spark-run.sh
    ```
 
 Feel free to explore and experiment with the DIS_EVL environment!
+
+# Git commands to branch from the Main Branch
+
+1. To update and add additional functionality for this create a new branch by running:
+
+```bash
+git switch -c <name_of_your_branch>
+```
+
+This command is able to create a new branch based on `<name_of_your_branch>` the `-c` creates a new branch
+
+Ensure that you create from the origin/main branch by running the following:
+
+```bash
+git pull
+```
+
+This ensures that you have the latest commits of the main branch
+
+2. You can then later switch to the main by running the following:
+
+```bash
+git switch main
+```
+
+or switching to your brand new branch from step 1
+
+```bash
+git switch <name_of_your_branch>
+```
+
+3. Assuming that you continue developing in your branch you should merge the latest updates from the main
+
+```bash
+git switch main
+```
+
+```bash
+git pull
+```
+
+```bash
+git switch <name_of_your_branch>
+```
+
+```bash
+git pull
+```
+
+```bash
+git merge --no-ff main
+```
+
+4. You will then need to determine and resolve conflicts. This can happen in the merge conflict in vs code or any other code editor
