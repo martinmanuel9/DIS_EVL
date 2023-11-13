@@ -1,8 +1,5 @@
-# Ignore data 
-data/BoT_IoT_Data/**
 __pycache*
 *egg-info*
 build/*
 dist/*
 docs/*
-
