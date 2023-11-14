@@ -97,7 +97,7 @@ class GarageSim:
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -122,7 +122,7 @@ class GarageSim:
                     + "\n  Label          : {}\n".format(self.garageTrain['Data'][0][i][0][6])
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
             if self.transmission == 'kafka_pdu':
                 garagePdu = Garage() 
@@ -146,7 +146,7 @@ class GarageSim:
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
 
     def sendGarageTest(self):
@@ -174,7 +174,7 @@ class GarageSim:
                     + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -199,7 +199,7 @@ class GarageSim:
                     + "\n  Label          : {}".format(self.garageTest['Data'][0][i][0][6])
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
             
             if self.transmission == 'kafka_pdu':
                 garagePdu = Garage() 
@@ -222,7 +222,7 @@ class GarageSim:
                     + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
 
 # if __name__ == "__main__":

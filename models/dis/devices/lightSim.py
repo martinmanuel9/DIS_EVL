@@ -96,7 +96,7 @@ class LightSim:
                     + "\n  Label         : {}\n".format(lightTrainPdu.label)
                     )
 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
             
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -119,7 +119,7 @@ class LightSim:
                     + "\n  Label         : {}\n".format(self.lightTrain['Data'][0][i][0][6])
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
 
             if self.transmission == 'kafka_pdu':
                 lightTrainPdu = Light()
@@ -143,7 +143,7 @@ class LightSim:
                     + "\n  Label         : {}\n".format(lightTrainPdu.label)
                     )
 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
 
     def sendLightTest(self):
         columnNames = self.lightTest['Dataframe'].columns
@@ -170,7 +170,7 @@ class LightSim:
                     + "\n  Attack        : {}".format(lightPdu.attack.decode('utf-8'))
                     + "\n  Label         : {}\n".format(lightPdu.label)
                     )
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
             
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -193,7 +193,7 @@ class LightSim:
                     + "\n  Label         : {}\n".format(self.lightTest['Data'][0][i][0][6])
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
 
             if self.transmission == 'kafka_pdu':
                 lightPdu = Light()
@@ -217,7 +217,7 @@ class LightSim:
                     + "\n  Label         : {}\n".format(lightPdu.label)
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
 
 
 # if __name__ == '__main__':

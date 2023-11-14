@@ -282,6 +282,7 @@ class SparkStructuredStreaming:
         expandedThermostatDF = thermostatReadyDF.withColumn("uuid", uuid_udf())
 
         if expandedThermostatDF.isStreaming:
+ 
             # save to cassandra
             cassandraThermostatConfig = {
                 "keyspace": "dis",
@@ -336,52 +337,52 @@ class SparkStructuredStreaming:
                 .start()
         
         # -----------------------------------------------
-        expandedFridgeDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
-
-        expandedGarageDF.writeStream \
-                .outputMode("append") \
-                .format("console") \
-                .option("truncate", False) \
-                .start()
-            
-        expandedGpsDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
-
-        expandedLightDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
         
-        expandedModbusDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
+        # expandedFridgeDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
 
-        expandedThermostatDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
+        # expandedGarageDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
+            
+        # expandedGpsDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
 
-        expandedWeatherDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
+        # expandedLightDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
+        
+        # expandedModbusDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
+        
+        # expandedThermostatDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
 
-        # -----------------------------------------------
-        self.spark.streams.awaitAnyTermination()
-
+        # expandedWeatherDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start()
+            
+        # ----------------------------------------------
 
 if __name__ == "__main__":
     sparkStructuredStreaming = SparkStructuredStreaming()
     sparkStructuredStreaming.receive_kafka_message()
+    sparkStructuredStreaming.spark.streams.awaitAnyTermination()

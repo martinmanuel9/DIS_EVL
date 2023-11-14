@@ -100,7 +100,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(modbusPdu.label)
                     ) 
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -127,7 +127,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(self.modbusTrain['Data'][0][i][0][8])
                     ) 
                     
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
             if self.transmission == 'kafka_pdu':
                 modbusPdu = Modbus() 
@@ -155,7 +155,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(modbusPdu.label)
                     ) 
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
     def sendModbusTest(self ):
         columnNames = self.modbusTest['Dataframe'].columns
@@ -187,7 +187,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(modbusPdu.label)
                     )  
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -214,7 +214,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(self.modbusTest['Data'][0][i][0][8])
                     ) 
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
             if self.transmission == 'kafka_pdu':
                 modbusPdu = Modbus() 
@@ -242,7 +242,7 @@ class ModbusSim:
                     + "\n  Label          : {}\n".format(modbusPdu.label)
                     )  
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 3))
 
 # if __name__ == '__main__':
 #     modbusSim = ModbusSim(transmission = 'kafka_pdu')

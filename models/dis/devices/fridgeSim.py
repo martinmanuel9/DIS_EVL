@@ -100,7 +100,7 @@ class FridgeSim:
                     + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
                 )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -125,7 +125,7 @@ class FridgeSim:
                     + "\n Label           : {}\n".format(self.fridgeTrain['Data'][0][i][0][6])
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
             
             if self.transmission == 'kafka_pdu':
                 # send pdu via kafka
@@ -154,7 +154,7 @@ class FridgeSim:
                     + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
                 )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
 
     def sendFridgeTest(self):
         columnNames = self.fridgeTest['Dataframe'].columns
@@ -186,7 +186,7 @@ class FridgeSim:
                     + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
                 )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -211,7 +211,7 @@ class FridgeSim:
                     + "\n Label           : {}\n".format(self.fridgeTest['Data'][0][i][0][6])
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
 
             if self.transmission == 'kafka_pdu':
                 # send pdu via kafka
@@ -239,7 +239,7 @@ class FridgeSim:
                     + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
                 )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 2))
                 
 
 
