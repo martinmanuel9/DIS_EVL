@@ -338,47 +338,47 @@ class SparkStructuredStreaming:
         
         # -----------------------------------------------
         
-        expandedFridgeDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start() 
+        # expandedFridgeDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
 
-        expandedGarageDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start() 
+        # expandedGarageDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
             
-        expandedGpsDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start() 
+        # expandedGpsDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
 
-        expandedLightDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start() 
+        # expandedLightDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
         
-        expandedModbusDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start() 
+        # expandedModbusDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
         
-        expandedThermostatDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start() 
+        # expandedThermostatDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start() 
 
-        expandedWeatherDF.writeStream \
-            .outputMode("append") \
-            .format("console") \
-            .option("truncate", False) \
-            .start()
+        # expandedWeatherDF.writeStream \
+        #     .outputMode("append") \
+        #     .format("console") \
+        #     .option("truncate", False) \
+        #     .start()
             
         # ----------------------------------------------
 
