@@ -38,5 +38,5 @@ else
     echo "Error executing CQL commands."
 fi
 
-
-docker cp /home/martinmlopez/DIS_EVL/models spark_master:/opt/bitnami/spark/tmp
+current_directory=$(pwd)
+docker cp $current_directory/DIS_EVL/models spark_master:/opt/bitnami/spark/tmp
