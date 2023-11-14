@@ -16,20 +16,7 @@
        - Kafka Producer and Kafka Consumer Python files generate open DIS PDU packets.
        - **RunSimulations.py:** Runs all simulations for streaming.
 
-3. **Run Simulations:**
-   To process training data for all devices:
-
-   ```batch
-   python RunSimulations.py --transmission kafka_pdu --mode train
-   ```
-
-   Explore other options using
-
-   ```bash
-   python RunSimulations.py --help
-   ```
-
-4. **Microservices Setup:**
+3. **Microservices Setup:**
    - Cassandra, Kafka, and MySQL directories have batch files for manual setup (obsolete).
    - Automation using the YML file under the docker capability.
 
@@ -56,7 +43,7 @@ bash Anaconda3-2023.07-1-Linux-x86_64.sh
 source ~/anaconda3/bin/activate
 ```
 
-5. Run the following to ensure you can run via bash 
+5. Run the following to ensure you can run via bash
 
 ```bash
 source ~/.bashrc
@@ -218,3 +205,5 @@ git merge --no-ff main
 ```
 
 4. You will then need to determine and resolve conflicts. This can happen in the merge conflict in vs code or any other code editor
+
+# Running the Simulations
