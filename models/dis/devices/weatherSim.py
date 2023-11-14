@@ -102,7 +102,7 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 5))
 
             elif self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -128,7 +128,7 @@ class WeatherSim:
                     + "\n  Label           : {}".format(self.weatherTrain['Data'][0][i][0][7])
                     )
                   
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 5))
 
             elif self.transmission == 'kafka_pdu':
                 weatherPdu = Environment()
@@ -157,7 +157,7 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 5))
 
     def sendWeatherTest(self ):
         columnNames = self.weatherTest['Dataframe'].columns
@@ -190,7 +190,7 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 5))
 
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -215,7 +215,7 @@ class WeatherSim:
                     + "\n  Attack          : {}".format(self.weatherTrain['Data'][0][i][0][6])
                     + "\n  Label           : {}".format(self.weatherTrain['Data'][0][i][0][7])
                     )
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 5))
 
             if self.transmission == 'kafka_pdu':
                 weatherPdu = Environment()
@@ -244,7 +244,7 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
                 
-                time.sleep(random.uniform(0, 1))
+                time.sleep(random.uniform(0, 5))
 
 
 # if __name__ == '__main__':
