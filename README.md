@@ -23,7 +23,11 @@
    python RunSimulations.py --transmission kafka_pdu --mode train
    ```
 
-   Explore other options using `python RunSimulations.py --help`.
+   Explore other options using
+
+   ```bash
+   python RunSimulations.py --help
+   ```
 
 4. **Microservices Setup:**
    - Cassandra, Kafka, and MySQL directories have batch files for manual setup (obsolete).
@@ -40,29 +44,53 @@
 wget https://repo.continuum.io/archive/Anaconda3-2023.07-1-Linux-x86_64.sh
 ```
 
-3. Run the following command:
-   `bash Anaconda3-2023.07-1-Linux-x86_64.sh`
+3. Run the following command for a x86_64:
+
+```bash
+bash Anaconda3-2023.07-1-Linux-x86_64.sh
+```
 
 4. Run the following command to activate conda and run it on the environment
-   `source ~/anaconda3/bin/activate`
+
+```bash
+source ~/anaconda3/bin/activate
+```
 
 5. Run the following to ensure you can run via bash
-   `source ~/.bashrc`
+
+```bash
+source ~/.bashrc
+```
 
 6. Update conda
-   `conda update conda`
+
+```bash
+conda update conda
+```
 
 or
 
-`conda update --all`
+```bash
+conda update --all
+```
 
 7. Create a conda environment to make sure that your enviornment is ran correctly:
-   `conda create -n pyvenv python=3.11.4 anaconda`
+
+```bash
+conda create -n pyvenv python=3.11.4 anaconda
+```
 
 8. Run the following command to activate the conda environment
-   `conda activate pyvenv`
 
-   - To deactivate this environment you can run `conda deactivate`
+```bash
+conda activate pyvenv
+```
+
+- To deactivate this environment you can run
+
+```bash
+conda deactivate
+```
 
 9. Run the following to install python libraries to run simulations:
 
