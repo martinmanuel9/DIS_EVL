@@ -78,7 +78,7 @@ def getPdu(inputStream):
         return pdu
 
     # Punt and return none if we don't have a match on anything
-    # print("Unable to find a PDU corresponding to PduType {}".format(pduType))
+    print("Unable to find a PDU corresponding to PduType {}".format(pduType))
 
     return None
 

@@ -56,10 +56,23 @@ bash Anaconda3-2023.07-1-Linux-x86_64.sh
 source ~/anaconda3/bin/activate
 ```
 
-5. Run the following to ensure you can run via bash
+5. Run the following to ensure you can run via bash 
 
 ```bash
 source ~/.bashrc
+```
+
+or
+
+```bash
+source ~/.zshrc
+```
+
+You may need to run the following to add your conda binaries:
+
+```bash
+export PATH="$HOME/anaconda3/bin:$PATH"
+
 ```
 
 6. Update conda

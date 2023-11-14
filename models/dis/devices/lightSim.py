@@ -220,6 +220,6 @@ class LightSim:
                 time.sleep(random.uniform(0, 2))
 
 
-# if __name__ == '__main__':
-#     LightSim = LightSim(transmission= 'kafka_pdu')
-#     LightSim.sendLightTrain()
+if __name__ == '__main__':
+    LightSim = LightSim(transmission= 'kafka_pdu')
+    LightSim.sendLightTrain()

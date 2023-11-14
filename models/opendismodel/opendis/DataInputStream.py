@@ -39,7 +39,10 @@ class DataInputStream:
 
     def read_utf(self):
         utf_length = struct.unpack('>H', self.stream.read(2))[0]
-        return self.stream.read(utf_length)
+        utf_bytes = self.stream.read(utf_length)
+        string = utf_bytes.decode('utf-8')
+        return string
+
 
     def read_int(self):
         return struct.unpack('>i', self.stream.read(4))[0]  
