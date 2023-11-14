@@ -164,7 +164,7 @@ def main():
         while True:
             logging.basicConfig(level=logging.INFO)
             parser = argparse.ArgumentParser(description="Kafka Consumer")
-            parser.add_argument("--bootstrap_servers", default="localhost:9092", help="Bootstrap servers")
+            parser.add_argument("--bootstrap_servers", default="172.18.0.4:9092", help="Bootstrap servers")
             parser.add_argument("--group_id", default="dis", help="Group ID")
             parser.add_argument("--topic", default="fridge", help="Topic")
             parser.add_argument("--transmission", choices = ["kafka","kafka_pdu"], default="kafka_pdu", help="Transmission option")

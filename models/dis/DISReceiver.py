@@ -75,15 +75,15 @@ def recv():
                 + " Yaw         : {:.3f} degrees\n".format(pdu.entityOrientation.psi)
                 + " Pitch       : {:.3f} degrees\n".format(pdu.entityOrientation.theta)
                 + " Roll        : {:.3f} degrees\n".format(pdu.entityOrientation.phi)
-                + " Attack      : {}\n".format(pdu.attack.decode('utf-8'))
+                + " Attack      : {}\n".format(pdu.attack)
                 + " Label       : {}\n".format(pdu.label)
                 )
     
     elif pdu.pduType == 73: # Light
         print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
               + " Motion Status : {}\n".format(pdu.motion_status)
-              + " Light Status  : {}\n".format(pdu.light_status.decode('utf-8'))
-              + " Attack        : {}\n".format(pdu.attack.decode('utf-8'))
+              + " Light Status  : {}\n".format(pdu.light_status)
+              + " Attack        : {}\n".format(pdu.attack)
               + " Label         : {}\n".format(pdu.label)
               )
     
@@ -105,15 +105,15 @@ def recv():
             + " FC2 Discrete    : {}\n".format(pdu.fc2)
             + " FC3 Register    : {}\n".format(pdu.fc3)
             + " FC4 Read Coil   : {}\n".format(pdu.fc4)
-            + " Attack          : {}\n".format(pdu.attack.decode('utf-8'))
+            + " Attack          : {}\n".format(pdu.attack)
             + " Label           : {}\n".format(pdu.label)
             )
     
     elif pdu.pduType == 72: # garage
         print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
-            + " Door State: {}\n".format(pdu.door_state.decode('utf-8'))
+            + " Door State: {}\n".format(pdu.door_state)
             + " SPhone: {}\n".format(pdu.sphone)
-            + " Attack: {}\n".format(pdu.attack.decode('utf-8'))
+            + " Attack: {}\n".format(pdu.attack)
             + " Label : {}\n".format(pdu.label)
             )
 

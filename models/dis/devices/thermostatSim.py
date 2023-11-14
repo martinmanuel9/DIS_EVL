@@ -61,7 +61,7 @@ class ThermostatSim:
         if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
             self.KAFKA_TOPIC = 'thermostat'
-            self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+            self.producer = kp.KafkaProducer('172.18.0.4:9092', self.KAFKA_TOPIC)
 
 
         # Create garage dataset and timesteps for simulation

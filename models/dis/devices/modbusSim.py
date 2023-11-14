@@ -62,7 +62,7 @@ class ModbusSim:
         if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
             self.KAFKA_TOPIC = 'modbus'
-            self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
+            self.producer = kp.KafkaProducer('172.18.0.4:9092', self.KAFKA_TOPIC)
 
         # Create garage dataset and timesteps for simulation
         modbusDataset = ton.TON_IoT_Datagen(dataset= 'modbus')
