@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
   
   # current_directory = __dir__
   # config.vm.synced_folder current_directory, "/vagrant/DIS_EVL"
-  
+
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update
     sudo apt-get install -y docker.io docker-compose
@@ -21,11 +21,18 @@ Vagrant.configure("2") do |config|
 
     git clone https://github.com/martinmanuel9/DIS_EVL
 
-
     # Navigate to the synced directory containing the Docker Compose project
-    cd DIS_EVL
-    make env-up
+    cd DIS_EVL/models/docker
 
+    sudo usermod -aG docker $USER
+    sudo systemctl start docker
+    ls -l /var/run/docker.sock
+    sudo chown root:docker /var/run/docker.sock
+    sudo chmod 660 /var/run/docker.sock
+    sudo systemctl restart docker
+    sudo make env-up
+
+    cd ~/DIS_EVL
 
   SHELL
 end
