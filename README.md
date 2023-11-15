@@ -194,6 +194,19 @@ You will then need to copy that file and paste it on your `~/.ssh` file
 
 After you set the VS and ssh into the virtual machine you are now able to ssh into it. It is recommended to conduct the conda environment on the virtual machine so that the same configuration is complete. 
 
+**Install Java on the virtual machine**
+```bash
+sudo apt update
+```
+
+```bash
+sudo apt install default-jre
+```
+
+```bash
+sudo apt install default-jdk
+```
+
 If you have already ran the virtual machine you can run: 
 ```bash 
 vagrant reload --provision
