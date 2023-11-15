@@ -11,8 +11,7 @@ Vagrant.configure("2") do |config|
   
   # current_directory = __dir__
   # config.vm.synced_folder current_directory, "/vagrant/DIS_EVL"
-
-
+  
   config.vm.provision "shell", inline: <<-SHELL
     sudo apt-get update
     sudo apt-get install -y docker.io docker-compose
