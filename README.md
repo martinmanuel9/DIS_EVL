@@ -156,6 +156,37 @@ We have enabled automation and wit
 Prior to running this on your local machine or any other machine ensure that you have the following capabilities installed:
 1. Makefile and the ability to run make configurations
 2. wget capabilties so that your conda environment can run
+3. You have to ensure that you have virtualbox to install vagrant to run a linux based system. This will allow you to develop a VM
+
+To ensure to run on your local machine you will need to install Vagrant using homebrew:
+```bash
+brew tap hashicorp/tap
+brew install hashicorp/tap/hashicorp-vagrant
+```
+
+Ensure that you have installed Vagrant:
+```bash
+vagrant --version
+```
+
+Once you know that vagrant and virtual box is installed run the following:
+```bash
+vagrant up
+```
+
+If you have already ran the virtual machine you can run: 
+```bash 
+vagrant reload --provision
+```
+Bring the environment down:
+```bash
+vagrant halt
+```
+
+To completely remove the VM:
+```bash
+vagrant destroy
+```
 
 # Git commands to branch from the Main Branch
 
