@@ -93,13 +93,13 @@ class SparkStructuredStreaming:
                 "outputMode": "append"
             }
             checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-            fridgeQuery = expandedFridgeDF.writeStream \
+            expandedFridgeDF.writeStream \
                 .format("org.apache.spark.sql.cassandra") \
                 .options(**cassandraFridgeConfig) \
                 .option("checkpointLocation", checkpoint_location) \
                 .start() 
-                
-            # fridgeQuery.awaitTermination()
+            
+            print("Fridge data saved to Cassandra")  
 
             consoleFridge = expandedFridgeDF.writeStream \
                 .outputMode("append") \
@@ -107,7 +107,6 @@ class SparkStructuredStreaming:
                 .option("truncate", False) \
                 .start() 
         
-            # consoleFridge.awaitTermination()
         
         # ----------------------------------------------- 
         # Process data for the "garage" topic
@@ -139,12 +138,19 @@ class SparkStructuredStreaming:
                 "outputMode": "append"
             }
             checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-            garageQuery = expandedGarageDF.writeStream \
+            expandedGarageDF.writeStream \
                 .format("org.apache.spark.sql.cassandra") \
                 .options(**cassandraGarageConfig) \
                 .option("checkpointLocation", checkpoint_location) \
                 .start()
             
+            print("Garage data saved to Cassandra")
+
+            consoleGarage = expandedGarageDF.writeStream \
+                .outputMode("append") \
+                .format("console") \
+                .option("truncate", False) \
+                .start()
 
         # -----------------------------------------------
         # Process data for the "gps" topic 
@@ -187,13 +193,20 @@ class SparkStructuredStreaming:
                 "outputMode": "append"
             }
             checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-            gpsQuery = expandedGpsDF.writeStream \
+            expandedGpsDF.writeStream \
                 .format("org.apache.spark.sql.cassandra") \
                 .options(**cassandraGpsConfig) \
                 .option("checkpointLocation", checkpoint_location) \
                 .start()
             
+            print("GPS data saved to Cassandra")
 
+            consoleGps = expandedGpsDF.writeStream \
+                .outputMode("append") \
+                .format("console") \
+                .option("truncate", False) \
+                .start()
+            
         # -----------------------------------------------
         # Process data for the "light" topic  
         # -----------------------------------------------
@@ -224,12 +237,19 @@ class SparkStructuredStreaming:
                 "outputMode": "append"
             }
             checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-            lightQuery = expandedLightDF.writeStream \
+            expandedLightDF.writeStream \
                 .format("org.apache.spark.sql.cassandra") \
                 .options(**cassandraLightConfig) \
                 .option("checkpointLocation", checkpoint_location) \
                 .start()
             
+            print("Light data saved to Cassandra")
+
+            consoleLight = expandedLightDF.writeStream \
+                .outputMode("append") \
+                .format("console") \
+                .option("truncate", False) \
+                .start()
 
         # -----------------------------------------------
         # Process data for the "modbus" topic  
@@ -265,10 +285,18 @@ class SparkStructuredStreaming:
                 "outputMode": "append"
             }
             checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-            modbusQuery = expandedModbusDF.writeStream \
+            expandedModbusDF.writeStream \
                 .format("org.apache.spark.sql.cassandra") \
                 .options(**cassandraModbusConfig) \
                 .option("checkpointLocation", checkpoint_location) \
+                .start()
+            
+            print("Modbus data saved to Cassandra")
+
+            consoleModbus = expandedModbusDF.writeStream \
+                .outputMode("append") \
+                .format("console") \
+                .option("truncate", False) \
                 .start()
             
 
@@ -305,13 +333,20 @@ class SparkStructuredStreaming:
                 "outputMode": "append"
             }
             checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-            thermostatQuery = expandedThermostatDF.writeStream \
+            expandedThermostatDF.writeStream \
                 .format("org.apache.spark.sql.cassandra") \
                 .options(**cassandraThermostatConfig) \
                 .option("checkpointLocation", checkpoint_location) \
                 .start()
             
+            print("Thermostat data saved to Cassandra")
 
+            consoleThermostat = expandedThermostatDF.writeStream \
+                .outputMode("append") \
+                .format("console") \
+                .option("truncate", False) \
+                .start()
+            
         # -----------------------------------------------
         # Process data for the "weather" topic 
         # -----------------------------------------------
@@ -346,76 +381,24 @@ class SparkStructuredStreaming:
                 "outputMode": "append"
             }
             checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-            weatherQuery = expandedWeatherDF.writeStream \
+            expandedWeatherDF.writeStream \
                 .format("org.apache.spark.sql.cassandra") \
                 .options(**cassandraWeatherConfig) \
                 .option("checkpointLocation", checkpoint_location) \
                 .start()
             
-        
-        # -----------------------------------------------
-        
-        # consoleFridge = expandedFridgeDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start() 
-        
-        # consoleFridge.awaitTermination()
-        
+            print("Weather data saved to Cassandra")
 
-        # consoleGarage = expandedGarageDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start() 
-        
-        # consoleGarage.awaitTermination()
-
-            
-        # consoleGps = expandedGpsDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start() 
-        
-        # consoleGps.awaitTermination()
-
-        # consoleLight = expandedLightDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start() 
-        
-        # consoleLight.awaitTermination()
-        
-        # consoleModbus = expandedModbusDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start() 
-        
-        # consoleModbus.awaitTermination()
-        
-        # consoleThermostat = expandedThermostatDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start() 
-        
-        # consoleThermostat.awaitTermination()
-
-        # consoleWeather = expandedWeatherDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start()
-        
-        # consoleWeather.awaitTermination()
+            # consoleWeather = expandedWeatherDF.writeStream \
+            #     .outputMode("append") \
+            #     .format("console") \
+            #     .option("truncate", False) \
+            #     .start()
             
         # ----------------------------------------------
 
 if __name__ == "__main__":
     sparkStructuredStreaming = SparkStructuredStreaming()
-    sparkStructuredStreaming.receive_kafka_message()
-    sparkStructuredStreaming.spark.streams.awaitAnyTermination()
+    while True:
+        sparkStructuredStreaming.receive_kafka_message()
+        sparkStructuredStreaming.spark.streams.awaitAnyTermination()
