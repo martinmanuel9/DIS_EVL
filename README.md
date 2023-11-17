@@ -156,6 +156,72 @@ We have enabled automation and wit
 Prior to running this on your local machine or any other machine ensure that you have the following capabilities installed:
 1. Makefile and the ability to run make configurations
 2. wget capabilties so that your conda environment can run
+3. You have to ensure that you have virtualbox to install vagrant to run a linux based system. This will allow you to develop a VM
+
+To ensure to run on your local machine you will need to install Vagrant using homebrew:
+```bash
+brew tap hashicorp/tap
+brew install hashicorp/tap/hashicorp-vagrant
+```
+
+Ensure that you have installed Vagrant:
+```bash
+vagrant --version
+```
+
+Once you know that vagrant and virtual box is installed run the following:
+```bash
+vagrant up
+```
+The vagrant file will run and clone the DIS_EVL repository.
+
+By running this file you create a ubuntu virtual machine establishing docker and its containers. You have now the capability of running and adding code to this environment. 
+
+You can now SSH into the environment and virtual machine by navigating to the `.vagrant` directory. You are able to connect using VS Code IDE or any other IDE to connect to the environment and make update to the code. that has been and do the following: 
+
+1. Configure Connection: Click on "Configure SSH Hosts", then select "Add New SSH Host". Enter the SSH connection information for your Vagrant box:
+   - Host: vagrant@localhost (or whatever username and IP or hostname you're using for your Vagrant box)
+   - User: vagrant (or your Vagrant username)
+   - Port: Default is usually 2222, but check your Vagrantfile for the SSH port number.
+   - IdentityFile: Browse and select the private_key file from your .vagrant directory.
+
+The easiest way to do this is to run the vagrant file first then get run the following commands: 
+```bash
+cd vagrant/machine
+vagrant ssh-config
+```
+You will then need to copy that file and paste it on your `~/.ssh` file
+
+After you set the VS and ssh into the virtual machine you are now able to ssh into it. It is recommended to conduct the conda environment on the virtual machine so that the same configuration is complete. 
+
+**Install Java on the virtual machine**
+```bash
+sudo apt update
+```
+
+```bash
+sudo apt install default-jre
+```
+
+```bash
+sudo apt install default-jdk
+```
+
+If you have already ran the virtual machine you can run: 
+```bash 
+vagrant reload --provision
+```
+
+**The following will stop the environment**
+Bring the environment down:
+```bash
+vagrant halt
+```
+**The following will completely remove the environment**
+To completely remove the VM:
+```bash
+vagrant destroy
+```
 
 # Git commands to branch from the Main Branch
 
