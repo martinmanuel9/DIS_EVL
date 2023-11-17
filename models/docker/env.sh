@@ -31,6 +31,7 @@ execute_sql "CREATE TABLE IF NOT EXISTS thermostat_table(device VARCHAR(255), te
 execute_sql "CREATE TABLE IF NOT EXISTS weather_table(device VARCHAR(255), temperature DOUBLE, pressure DOUBLE, humidity DOUBLE, attack VARCHAR(255), label INT, uuid CHAR(36), PRIMARY KEY (uuid));"
 
 
+
 # Cassandra Section
 docker start $CASSANDRA_CONTAINER_NAME 2>/dev/null
 docker exec -i $CASSANDRA_CONTAINER_NAME cqlsh -u cassandra -p cassandra -e "CREATE KEYSPACE IF NOT EXISTS dis WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};"

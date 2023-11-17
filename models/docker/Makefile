@@ -20,7 +20,8 @@ env-up:
 		docker-compose -f $$file up -d; \
 	done
 	@make status
-	sleep 20
+	@echo "Waiting for services to start..."
+	sleep 90
 	./env.sh
 
 env-down:
