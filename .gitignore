@@ -5,3 +5,4 @@ __pycache__/**
 models/dis/devices/__pycache__/**
 models/spark-streaming/scripts/checkpoint/**
 .vagrant/**
+models/dis/__pycache__/**

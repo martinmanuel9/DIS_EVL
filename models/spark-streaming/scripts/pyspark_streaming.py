@@ -23,22 +23,7 @@ class SparkStructuredStreaming:
         
         self.spark.sparkContext.setLogLevel("ERROR") # WARN
         self.pdu_factory_bc = self.spark.sparkContext.broadcast(createPdu)
-
-    def save_to_mysql(self, writeDF):
-        db_credentials = {
-            "user": "root",
-            "password": "secret",
-            "driver": "com.mysql.jdbc.Driver"
-        }
-
-        writeDF.writeStream \
-            .outputMode("append") \
-            .format("jdbc") \
-            .option("url", "jdbc:mysql://172.18.0.8:3306/sales_db") \
-            .option("dbtable", "fridge_table") \
-            .options(**db_credentials) \
-            .start() 
-
+        
     def receive_kafka_message(self):
         sparkDF = self.spark.readStream \
             .format("kafka") \
@@ -47,6 +32,16 @@ class SparkStructuredStreaming:
             .option("failOnDataLoss", "false") \
             .option("startingOffsets", "earliest") \
             .load()
+        
+        # -----------------------------------------------
+        # mysql properties 
+        # -----------------------------------------------
+        jdbc_url = "jdbc:mysql://172.18.0.8:3306/dis" 
+        mysql_db_properties = {
+            "user": "root",
+            "password": "secret",
+            "driver": "com.mysql.cj.jdbc.Driver"
+        }
 
         # # Filter and process data based on the topic
         filteredDF = sparkDF.filter(sparkDF["topic"].isin("fridge", "garage", "gps", "light", "modbus", "thermostat", "weather"))
@@ -97,6 +92,12 @@ class SparkStructuredStreaming:
             .option("checkpointLocation", checkpoint_location) \
             .start() 
 
+
+        # save to mysql
+        fridgeMySql = expandedFridgeDF.writeStream \
+            .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="fridge_table", mode="append", properties=mysql_db_properties)) \
+            .start()
+
         consoleFridge = expandedFridgeDF.writeStream \
             .outputMode("append") \
             .format("console") \
@@ -136,6 +137,11 @@ class SparkStructuredStreaming:
             .format("org.apache.spark.sql.cassandra") \
             .options(**cassandraGarageConfig) \
             .option("checkpointLocation", checkpoint_location) \
+            .start()
+        
+        # save to mysql
+        garageMySql = expandedGarageDF.writeStream \
+            .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="garage_table", mode="append", properties=mysql_db_properties)) \
             .start()
 
         consoleGarage = expandedGarageDF.writeStream \
@@ -189,6 +195,11 @@ class SparkStructuredStreaming:
             .options(**cassandraGpsConfig) \
             .option("checkpointLocation", checkpoint_location) \
             .start()
+        
+        # save to mysql
+        gpsMySql = expandedGpsDF.writeStream \
+            .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="gps_table", mode="append", properties=mysql_db_properties)) \
+            .start()
 
         consoleGps = expandedGpsDF.writeStream \
             .outputMode("append") \
@@ -229,6 +240,11 @@ class SparkStructuredStreaming:
             .format("org.apache.spark.sql.cassandra") \
             .options(**cassandraLightConfig) \
             .option("checkpointLocation", checkpoint_location) \
+            .start()
+        
+        # save to mysql
+        lightMySql = expandedLightDF.writeStream \
+            .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="light_table", mode="append", properties=mysql_db_properties)) \
             .start()
 
         consoleLight = expandedLightDF.writeStream \
@@ -275,6 +291,11 @@ class SparkStructuredStreaming:
             .options(**cassandraModbusConfig) \
             .option("checkpointLocation", checkpoint_location) \
             .start()
+        
+        # save to mysql
+        modbusMySql = expandedModbusDF.writeStream \
+            .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="modbus_table", mode="append", properties=mysql_db_properties)) \
+            .start()
 
         consoleModbus = expandedModbusDF.writeStream \
             .outputMode("append") \
@@ -317,6 +338,11 @@ class SparkStructuredStreaming:
             .format("org.apache.spark.sql.cassandra") \
             .options(**cassandraThermostatConfig) \
             .option("checkpointLocation", checkpoint_location) \
+            .start()
+        
+        # save to mysql
+        thermostatMySql = expandedThermostatDF.writeStream \
+            .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="thermostat_table", mode="append", properties=mysql_db_properties)) \
             .start()
 
         consoleThermostat = expandedThermostatDF.writeStream \
@@ -363,6 +389,11 @@ class SparkStructuredStreaming:
             .options(**cassandraWeatherConfig) \
             .option("checkpointLocation", checkpoint_location) \
             .start()
+        
+        # save to mysql
+        weatherMySql = expandedWeatherDF.writeStream \
+            .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="weather_table", mode="append", properties=mysql_db_properties)) \
+            .start()
 
         consoleWeather = expandedWeatherDF.writeStream \
             .outputMode("append") \
@@ -374,8 +405,7 @@ class SparkStructuredStreaming:
 
 if __name__ == "__main__":
     sparkStructuredStreaming = SparkStructuredStreaming()
-    try:
+    while True:
         sparkStructuredStreaming.receive_kafka_message()
         sparkStructuredStreaming.spark.streams.awaitAnyTermination()
-    except KeyboardInterrupt:
-        sparkStructuredStreaming.spark.streams.active[0].stop()
+
