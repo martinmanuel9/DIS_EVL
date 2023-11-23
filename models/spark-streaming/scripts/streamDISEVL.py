@@ -70,16 +70,6 @@ class SparkStructuredStreaming:
             .option("startingOffsets", "earliest") \
             .load()
         
-        # -----------------------------------------------
-        # mysql properties 
-        # -----------------------------------------------
-        jdbc_url = "jdbc:mysql://172.18.0.8:3306/dis" 
-        mysql_db_properties = {
-            "user": "root",
-            "password": "secret",
-            "driver": "com.mysql.cj.jdbc.Driver"
-        }
-
         # # Filter and process data based on the topic
         filteredDF = sparkDF.filter(sparkDF["topic"].isin("fridge", "garage", "gps", "light", "modbus", "thermostat", "weather"))
 
@@ -116,34 +106,11 @@ class SparkStructuredStreaming:
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedFridgeDF = fridgeReadyDF.withColumn("uuid", uuid_udf())
 
-        # # save to cassandra
-        # cassandraFridgeConfig = {
-        #     "keyspace": "dis",
-        #     "table": "fridge_table",
-        #     "outputMode": "append"
-        # }
-        # checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-        # expandedFridgeDF.writeStream \
-        #     .format("org.apache.spark.sql.cassandra") \
-        #     .options(**cassandraFridgeConfig) \
-        #     .option("checkpointLocation", checkpoint_location) \
-        #     .start() 
-        
-        # # save to mysql
-        # fridgeMySql = expandedFridgeDF.writeStream \
-        #     .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="fridge_table", mode="append", properties=mysql_db_properties)) \
-        #     .start()
-
-        # consoleFridge = expandedFridgeDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start() 
-
-        
+        # Save to Cassandra
         cassandraSink = CassandraSink(keyspace="dis", table="fridge_table")
         cassandraSink.write(expandedFridgeDF)
 
+        # Save to MySQL
         mySqlSink = MySQLSink(table="fridge_table")
         mySqlSink.write(expandedFridgeDF)
 
@@ -168,34 +135,12 @@ class SparkStructuredStreaming:
 
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedGarageDF = garageReadyDF.withColumn("uuid", uuid_udf())
-
-        # # save to cassandra
-        # cassandraGarageConfig = {
-        #     "keyspace": "dis",
-        #     "table": "garage_table",
-        #     "outputMode": "append"
-        # }
-        # checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-        # expandedGarageDF.writeStream \
-        #     .format("org.apache.spark.sql.cassandra") \
-        #     .options(**cassandraGarageConfig) \
-        #     .option("checkpointLocation", checkpoint_location) \
-        #     .start()
         
-        # # save to mysql
-        # garageMySql = expandedGarageDF.writeStream \
-        #     .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="garage_table", mode="append", properties=mysql_db_properties)) \
-        #     .start()
-
-        # consoleGarage = expandedGarageDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start()
-        
+        # Save to Cassandra
         cassandraSink = CassandraSink(keyspace="dis", table="garage_table")
         cassandraSink.write(expandedGarageDF)
 
+        # Save to MySQL
         mySqlSink = MySQLSink(table="garage_table")
         mySqlSink.write(expandedGarageDF)
 
@@ -231,34 +176,12 @@ class SparkStructuredStreaming:
 
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedGpsDF = gpsReadyDF.withColumn("uuid", uuid_udf())
-
-        # # save to cassandra
-        # cassandraGpsConfig = {
-        #     "keyspace": "dis",
-        #     "table": "gps_table",
-        #     "outputMode": "append"
-        # }
-        # checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-        # expandedGpsDF.writeStream \
-        #     .format("org.apache.spark.sql.cassandra") \
-        #     .options(**cassandraGpsConfig) \
-        #     .option("checkpointLocation", checkpoint_location) \
-        #     .start()
         
-        # # save to mysql
-        # gpsMySql = expandedGpsDF.writeStream \
-        #     .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="gps_table", mode="append", properties=mysql_db_properties)) \
-        #     .start()
-
-        # consoleGps = expandedGpsDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start()
-        
+        # Save to Cassandra
         cassandraSink = CassandraSink(keyspace="dis", table="gps_table")
         cassandraSink.write(expandedGpsDF)
 
+        # Save to MySQL
         mySqlSink = MySQLSink(table="gps_table")
         mySqlSink.write(expandedGpsDF)
             
@@ -284,33 +207,11 @@ class SparkStructuredStreaming:
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedLightDF = lightReadyDF.withColumn("uuid", uuid_udf())
 
-        # # save to cassandra
-        # cassandraLightConfig = {
-        #     "keyspace": "dis",
-        #     "table": "light_table",
-        #     "outputMode": "append"
-        # }
-        # checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-        # expandedLightDF.writeStream \
-        #     .format("org.apache.spark.sql.cassandra") \
-        #     .options(**cassandraLightConfig) \
-        #     .option("checkpointLocation", checkpoint_location) \
-        #     .start()
-        
-        # # save to mysql
-        # lightMySql = expandedLightDF.writeStream \
-        #     .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="light_table", mode="append", properties=mysql_db_properties)) \
-        #     .start()
-
-        # consoleLight = expandedLightDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start()
-        
+        # Save to Cassandra
         cassandraSink = CassandraSink(keyspace="dis", table="light_table")
         cassandraSink.write(expandedLightDF)
 
+        # Save to MySQL
         mySqlSink = MySQLSink(table="light_table")
         mySqlSink.write(expandedLightDF)
 
@@ -339,34 +240,12 @@ class SparkStructuredStreaming:
         
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedModbusDF = modbusReadyDF.withColumn("uuid", uuid_udf())
-
-        # # save to cassandra
-        # cassandraModbusConfig = {
-        #     "keyspace": "dis",
-        #     "table": "modbus_table",
-        #     "outputMode": "append"
-        # }
-        # checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-        # expandedModbusDF.writeStream \
-        #     .format("org.apache.spark.sql.cassandra") \
-        #     .options(**cassandraModbusConfig) \
-        #     .option("checkpointLocation", checkpoint_location) \
-        #     .start()
         
-        # # save to mysql
-        # modbusMySql = expandedModbusDF.writeStream \
-        #     .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="modbus_table", mode="append", properties=mysql_db_properties)) \
-        #     .start()
-
-        # consoleModbus = expandedModbusDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start()
-        
+        # Save to Cassandra
         cassandraSink = CassandraSink(keyspace="dis", table="modbus_table")
         cassandraSink.write(expandedModbusDF)
 
+        # Save to MySQL
         mySqlSink = MySQLSink(table="modbus_table")
         mySqlSink.write(expandedModbusDF)
 
@@ -393,34 +272,12 @@ class SparkStructuredStreaming:
         
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedThermostatDF = thermostatReadyDF.withColumn("uuid", uuid_udf())
- 
-        # # save to cassandra
-        # cassandraThermostatConfig = {
-        #     "keyspace": "dis",
-        #     "table": "thermostat_table",
-        #     "outputMode": "append"
-        # }
-        # checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-        # expandedThermostatDF.writeStream \
-        #     .format("org.apache.spark.sql.cassandra") \
-        #     .options(**cassandraThermostatConfig) \
-        #     .option("checkpointLocation", checkpoint_location) \
-        #     .start()
-        
-        # # save to mysql
-        # thermostatMySql = expandedThermostatDF.writeStream \
-        #     .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="thermostat_table", mode="append", properties=mysql_db_properties)) \
-        #     .start()
 
-        # consoleThermostat = expandedThermostatDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start()
-        
+        # Save to Cassandra 
         cassandraSink = CassandraSink(keyspace="dis", table="thermostat_table")
         cassandraSink.write(expandedThermostatDF)
 
+        # Save to MySQL
         mySqlSink = MySQLSink(table="thermostat_table")
         mySqlSink.write(expandedThermostatDF)
             
@@ -449,34 +306,12 @@ class SparkStructuredStreaming:
         
         uuid_udf = udf(lambda: str(uuid.uuid4()), StringType()).asNondeterministic()
         expandedWeatherDF = weatherReadyDF.withColumn("uuid", uuid_udf())
-
-        # # save to cassandra
-        # cassandraWeatherConfig = {
-        #     "keyspace": "dis",
-        #     "table": "weather_table",
-        #     "outputMode": "append"
-        # }
-        # checkpoint_location = "/home/martinmlopez/DIS_EVL/models/spark-streaming/scripts/checkpoint" 
-        # expandedWeatherDF.writeStream \
-        #     .format("org.apache.spark.sql.cassandra") \
-        #     .options(**cassandraWeatherConfig) \
-        #     .option("checkpointLocation", checkpoint_location) \
-        #     .start()
         
-        # # save to mysql
-        # weatherMySql = expandedWeatherDF.writeStream \
-        #     .foreachBatch(lambda df, epochId: df.write.jdbc(url=jdbc_url, table="weather_table", mode="append", properties=mysql_db_properties)) \
-        #     .start()
-
-        # consoleWeather = expandedWeatherDF.writeStream \
-        #     .outputMode("append") \
-        #     .format("console") \
-        #     .option("truncate", False) \
-        #     .start()
-        
+        # Save to Cassandra
         cassandraSink = CassandraSink(keyspace="dis", table="weather_table")
         cassandraSink.write(expandedWeatherDF)
 
+        # Save to MySQL
         mySqlSink = MySQLSink(table="weather_table")
         mySqlSink.write(expandedWeatherDF)
             
@@ -487,4 +322,3 @@ if __name__ == "__main__":
     while True:
         sparkStructuredStreaming.receive_kafka_message()
         sparkStructuredStreaming.spark.streams.awaitAnyTermination()
-
