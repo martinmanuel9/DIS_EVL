@@ -1,9 +1,16 @@
 #!/usr/bin/env python 
 
-# MIT License
-#
-# Copyright (c) 2021
-#
+"""
+Application:        PySpark Pipeline for Streaming DIS and utilizing EVL
+File name:          evlStream.py 
+Author:             Martin Manuel Lopez
+Creation:           11/23/2023
+
+The University of Arizona
+Department of Electrical and Computer Engineering
+College of Engineering
+"""
+
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -22,31 +29,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
-import pandas as pd 
-import numpy as np
-
-def stream_file_loader(experiment_name:str='1CDT', 
-                       chunk_size:int=500): 
-    """read data in from a file stream
-    """
-    df = pd.read_csv(''.join(['data/files/', experiment_name, '.txt']), header=None)
-    X, Y = df.values[:,:-1], df.values[:,-1]
-    N = len(Y)
-
-    # set Xinit and Yinit
-    Xinit, Yinit = X[:chunk_size,:], Y[:chunk_size]
-    Xt, Yt = [], []
-
-    for i in range(chunk_size, N-chunk_size, chunk_size): 
-        Xt.append(X[i:i+chunk_size])
-        Yt.append(Y[i:i+chunk_size])
-    
-    return Xinit, Yinit, Xt, Yt
-
-
-def generate_stream(dataset_name:str='', 
-                    dataset_params:dict={'val': None}):
-    """
-    """
-    return None 
+from pyspark.sql import SparkSession
+from pyspark.sql.types import *
+import os
+import uuid
+from pyspark.sql.functions import *
+from pyspark.sql.streaming import *
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')))
+from opendismodel.opendis.RangeCoordinates import * 
+from opendismodel.opendis.PduFactory import createPdu
+from opendismodel.opendis.dis7 import *
+from saveCassandra import CassandraSink
+from saveMySQL import MySQLSink
+from featureExtraction import FeatureSelection
