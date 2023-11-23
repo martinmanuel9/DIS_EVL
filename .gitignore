@@ -4,5 +4,6 @@ models/spark-streaming/scripts/checkpoint/**
 __pycache__/**
 models/dis/devices/__pycache__/**
 models/spark-streaming/scripts/checkpoint/**
+models/spark-streaming/scripts/checkpoint/offsets/**
 .vagrant/**
 models/dis/__pycache__/**
