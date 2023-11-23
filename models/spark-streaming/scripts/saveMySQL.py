@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 
 """
-Application:        Save to MySQL
-File name:          
+Application:        DIS EVL
+File name:          saveCassandra.py 
 Author:             Martin Manuel Lopez
 Creation:           11/22/2023
 

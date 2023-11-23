@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 
 """
-Application:        StreamDISEVL
-File name:          
+Application:        PySpark Pipeline for Streaming DIS and utilizing EVL
+File name:          streamDISEVL.py 
 Author:             Martin Manuel Lopez
 Creation:           10/05/2023
 
@@ -45,6 +45,7 @@ from opendismodel.opendis.PduFactory import createPdu
 from opendismodel.opendis.dis7 import *
 from saveCassandra import CassandraSink
 from saveMySQL import MySQLSink
+from featureExtraction import FeatureSelection
 
 class SparkStructuredStreaming:
     def __init__(self):
@@ -114,6 +115,10 @@ class SparkStructuredStreaming:
         mySqlSink = MySQLSink(table="fridge_table")
         mySqlSink.write(expandedFridgeDF)
 
+        # feature extraction for Fridge 
+        fridgeFeatures = FeatureSelection(tableName="fridge_table", dataFrame=expandedFridgeDF).extractFeature()
+        
+
         # ----------------------------------------------- 
         # Process data for the "garage" topic
         # -----------------------------------------------
@@ -143,6 +148,9 @@ class SparkStructuredStreaming:
         # Save to MySQL
         mySqlSink = MySQLSink(table="garage_table")
         mySqlSink.write(expandedGarageDF)
+
+        # feature extraction for Garage
+        garageFeatures = FeatureSelection(tableName="garage_table", dataFrame=expandedGarageDF).extractFeature()
 
         # -----------------------------------------------
         # Process data for the "gps" topic 
@@ -184,6 +192,9 @@ class SparkStructuredStreaming:
         # Save to MySQL
         mySqlSink = MySQLSink(table="gps_table")
         mySqlSink.write(expandedGpsDF)
+
+        # feature extraction for GPS
+        gpsFeatures = FeatureSelection(tableName="gps_table", dataFrame=expandedGpsDF).extractFeature()
             
         # -----------------------------------------------
         # Process data for the "light" topic  
@@ -214,6 +225,9 @@ class SparkStructuredStreaming:
         # Save to MySQL
         mySqlSink = MySQLSink(table="light_table")
         mySqlSink.write(expandedLightDF)
+
+        # feature extraction for Light
+        lightFeatures = FeatureSelection(tableName="light_table", dataFrame=expandedLightDF).extractFeature()
 
         # -----------------------------------------------
         # Process data for the "modbus" topic  
@@ -249,6 +263,9 @@ class SparkStructuredStreaming:
         mySqlSink = MySQLSink(table="modbus_table")
         mySqlSink.write(expandedModbusDF)
 
+        # feature extraction for Modbus
+        modbusFeatures = FeatureSelection(tableName="modbus_table", dataFrame=expandedModbusDF).extractFeature()
+
         # -----------------------------------------------
         # Process data for the "thermostat" topic
         # ----------------------------------------------- 
@@ -280,6 +297,9 @@ class SparkStructuredStreaming:
         # Save to MySQL
         mySqlSink = MySQLSink(table="thermostat_table")
         mySqlSink.write(expandedThermostatDF)
+
+        # feature extraction for Thermostat
+        thermostatFeatures = FeatureSelection(tableName="thermostat_table", dataFrame=expandedThermostatDF).extractFeature()
             
         # -----------------------------------------------
         # Process data for the "weather" topic 
@@ -314,6 +334,9 @@ class SparkStructuredStreaming:
         # Save to MySQL
         mySqlSink = MySQLSink(table="weather_table")
         mySqlSink.write(expandedWeatherDF)
+
+        # feature extraction for Weather
+        weatherFeatures = FeatureSelection(tableName="weather_table", dataFrame=expandedWeatherDF).extractFeature()
             
         # ----------------------------------------------
 
