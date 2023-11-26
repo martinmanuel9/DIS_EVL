@@ -107,6 +107,9 @@ services:
   tensorflow:
     image: tensorflow/tensorflow:latest
     container_name: tensorflow
+    volumes:
+      - .:/project:rw
+    tty: true
     networks:
       datapipeline:
-        ipv4_address: 172.18.0.9
+        ipv4_address: 172.18.0.10
