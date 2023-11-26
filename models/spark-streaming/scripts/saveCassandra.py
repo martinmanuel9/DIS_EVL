@@ -29,16 +29,11 @@ College of Engineering
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from pyspark.sql import SparkSession
+
 from pyspark.sql.types import *
-import os
-import uuid
 from pyspark.sql.functions import *
 from pyspark.sql.streaming import *
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')))
-from opendismodel.opendis.RangeCoordinates import * 
-from opendismodel.opendis.PduFactory import createPdu
-from opendismodel.opendis.dis7 import *
+import os
 
 class CassandraSink:
     def __init__(self, keyspace, table):

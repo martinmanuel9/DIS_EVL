@@ -3,10 +3,6 @@
 # Author:             Martin Manuel Lopez
 # Creation:           9/28/2023
 
-# MIT License
-#
-# Copyright (c) 2023
-#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -97,16 +93,20 @@ services:
         ipv4_address: 172.18.0.5
 
   mysql:
-    image: mysql:8.0
+    image: mysql:latest
     container_name: mysql
     ports:
       - "3306:3306"
-    # command: --init-file /home/martinmlopez/DIS_EVL/models/docker/mysql/init.sql
-    # volumes:
-    #   - ./mysql/init.sql:/data/application/init.sql
     environment:
       MYSQL_ROOT_USER: root
       MYSQL_ROOT_PASSWORD: secret
     networks:
       datapipeline:
         ipv4_address: 172.18.0.8
+
+  tensorflow:
+    image: tensorflow/tensorflow:latest
+    container_name: tensorflow
+    networks:
+      datapipeline:
+        ipv4_address: 172.18.0.9
