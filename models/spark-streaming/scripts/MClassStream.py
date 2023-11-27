@@ -553,8 +553,6 @@ class StreamingMClassification:
 
         return unique_dict
     
-    def trainStream(self, streamDF):
-        pass
 
     def run(self):
         """
