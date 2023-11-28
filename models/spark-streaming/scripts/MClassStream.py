@@ -31,6 +31,9 @@ College of Engineering
 
 import numpy as np
 import pandas as pd
+from pyspark.sql.types import *
+from pyspark.sql.functions import *
+from pyspark.sql.streaming import *
 from pyspark.ml.linalg import Vectors
 from pyspark.sql.types import *
 from pyspark.mllib.clustering import KMeans, KMeansModel
@@ -84,6 +87,12 @@ class StreamingMClassification:
         self.performance_metric = {}
         self.avg_perf_metric = {}
         self.microCluster = {}
+        self.setDataStream(inDF= self.streamDF)
+
+    def setDataStream(self, inDF):
+        self.all_data = inDF.drop(['uuid'], axis=1)
+        self.y = inDF['label']
+        self.X = inDF.drop(['label'], axis=1)
 
     def findClosestMC(self, x, MC_Centers):
         """
@@ -109,7 +118,7 @@ class StreamingMClassification:
         minDistMC['MinDistIndex'] = minDistIndex   
         return minDistMC
     
-    def find_silhoette_score(self, X, y, ts):
+    def find_silhoette_score(self, X, y):
         """
         Find Silhoette Scores allows us to get the optimal number of clusters for the data
         """
@@ -122,10 +131,10 @@ class StreamingMClassification:
             optimal_cluster = max(sil_score, key=sil_score.get)
             self.NClusters = optimal_cluster
 
-    def cluster(self, X, y, ts):
+    def cluster(self, X, y):
         if self.method == 'kmeans':
             if ts == 0:
-                self.find_silhoette_score(X=self.all_data, y=self.all_data[:,-1], ts=ts)
+                self.find_silhoette_score(X=self.all_data, y=self.all_data[:,-1])
                 kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X)  
             else:
                 kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X) #may not need to do this as we need to create a new cluster for the new data
@@ -451,7 +460,7 @@ class StreamingMClassification:
         return updatedMicroCluster, updatedClusters, updatedClusterCenters
       
 
-    def initLabelData(self, ts, inData, inLabels):
+    def initLabelData(self, inData, inLabels):
         self.cluster(X= inData, y= inLabels, ts=ts )
         t_start = time.time()
         # classify based on the clustered predictions (self.preds) done in the init step
@@ -567,76 +576,81 @@ class StreamingMClassification:
         The two farthest MCs from xt are merged into one MC that will be placed closest to the emerging new concept. 
         """
         total_start = time.time()
-        timesteps = self.X.keys()
+        # timesteps = self.X.keys()
+
         
-        for ts in tqdm(range(len(timesteps) - 1), position=0, leave=True):
-            # This takes the fist labeled data set T and creates the initial MCs
-            if ts == 0:
-                self.initLabelData(inData= self.all_data, inLabels= self.all_data[:,-1], ts=ts)
-            # determine if added x_t to MC exceeds radii of MC
-            else:
-                # Step 2 begin classification of next stream to determine yhat 
-                t_start = time.time()
-                # classify based on the clustered predictions (self.preds) done in the init step 
-                # self.clusters is the previous preds
-                closestMC = self.findClosestMC(x= self.X[ts], MC_Centers= self.cluster_centers[ts-1])
-                preGroupedPoints, preGroupedXt = self.preGroupMC(inDict= closestMC, ts= ts)
-                pointsAddToMC, pointsNewMC, xtAddToMC, xtNewMC = self.evaluateXt(inPreGroupedPoints= preGroupedPoints, 
-                                                                                 prevMC= self.microCluster[ts-1], inPreGroupedXt= preGroupedXt)
-                
-                
-                # we first check if we first need to create a new cluster based on streaming data
-                if len(xtNewMC) > 0:
-                    self.NClusters = self.NClusters + len(xtNewMC) 
-                    newMCData = np.vstack([xtNewMC[mc] for mc in xtNewMC.keys()])
-                    # inData = np.vstack((self.X[ts-1], newMCData))
-                    
-                    if len(newMCData) >= self.NClusters:
-                        self.microCluster[ts], self.clusters[ts], self.cluster_centers[ts] = self.updateModelMC(inData= newMCData , ts= ts)
-                    else:
-                        self.updateMCluster(inMCluster=self.microCluster[ts-1], inXtAddMC= xtAddToMC, addToMC=pointsAddToMC, ts= ts)
+        # for ts in tqdm(range(len(timesteps) - 1), position=0, leave=True):
+        # This takes the fist labeled data set T and creates the initial MCs
+        # TODO: first we will potentialy create mcs that are not needed
 
-                if not xtNewMC: 
+
+        
+        self.initLabelData(inData= self.X, inLabels= self.y)
+        
+        # determine if added x_t to MC exceeds radii of MC
+        else:
+            # Step 2 begin classification of next stream to determine yhat 
+            t_start = time.time()
+            # classify based on the clustered predictions (self.preds) done in the init step 
+            # self.clusters is the previous preds
+            closestMC = self.findClosestMC(x= self.X[ts], MC_Centers= self.cluster_centers[ts-1])
+            preGroupedPoints, preGroupedXt = self.preGroupMC(inDict= closestMC, ts= ts)
+            pointsAddToMC, pointsNewMC, xtAddToMC, xtNewMC = self.evaluateXt(inPreGroupedPoints= preGroupedPoints, 
+                                                                                prevMC= self.microCluster[ts-1], inPreGroupedXt= preGroupedXt)
+            
+            
+            # we first check if we first need to create a new cluster based on streaming data
+            if len(xtNewMC) > 0:
+                self.NClusters = self.NClusters + len(xtNewMC) 
+                newMCData = np.vstack([xtNewMC[mc] for mc in xtNewMC.keys()])
+                # inData = np.vstack((self.X[ts-1], newMCData))
+                
+                if len(newMCData) >= self.NClusters:
+                    self.microCluster[ts], self.clusters[ts], self.cluster_centers[ts] = self.updateModelMC(inData= newMCData , ts= ts)
+                else:
                     self.updateMCluster(inMCluster=self.microCluster[ts-1], inXtAddMC= xtAddToMC, addToMC=pointsAddToMC, ts= ts)
-    
-                # remove non-unique values from the clusters
-                uniqueDict = {}
-                for mc in self.microCluster[ts]:
-                    uniqueDict[mc] = self.microCluster[ts][mc]['Xt']
-                
-                uniqueData = self.drop_non_unique(uniqueDict)
-                inData = np.vstack([value for value in uniqueData.values()])
-                
-                # update model after incrementing MCs
-                self.microCluster[ts], self.clusters[ts], self.cluster_centers[ts] = self.updateModelMC(inData= inData, ts= ts)
 
-                for mc in self.microCluster[ts]:
-                    self.microCluster[ts][mc]['Step'] = 'Incrementality' 
-                
-                ## The additivity property 
-                '''
-                The additivity considers that if we have two disjoint Micro-Clusters MCA and MCB,  
-                the  union  of  these  two  groups  is equal to the sum of its parts
-                '''
-                # find the disjoint sets of the microclusters 
-                disjointMC = self.findDisjointMCs(self.microCluster[ts])
-                self.additivityMC(disjointMC= disjointMC, inMCluster= self.microCluster[ts], ts= ts)
-                # inData = np.vstack([self.microCluster[ts][mc]['Xt'] for mc in self.microCluster[ts].keys()])
+            if not xtNewMC: 
+                self.updateMCluster(inMCluster=self.microCluster[ts-1], inXtAddMC= xtAddToMC, addToMC=pointsAddToMC, ts= ts)
 
-                ## remove non-unique values from the clusters
-                uniqueDict = {}
-                for mc in self.microCluster[ts]:
-                    uniqueDict[mc] = self.microCluster[ts][mc]['Xt']
-                
-                uniqueData = self.drop_non_unique(uniqueDict)
-                inData = np.vstack([value for value in uniqueData.values()])
+            # remove non-unique values from the clusters
+            uniqueDict = {}
+            for mc in self.microCluster[ts]:
+                uniqueDict[mc] = self.microCluster[ts][mc]['Xt']
+            
+            uniqueData = self.drop_non_unique(uniqueDict)
+            inData = np.vstack([value for value in uniqueData.values()])
+            
+            # update model after incrementing MCs
+            self.microCluster[ts], self.clusters[ts], self.cluster_centers[ts] = self.updateModelMC(inData= inData, ts= ts)
 
-                self.preds[ts] = self.classify(trainData= inData, trainLabel=inData[:,-1], testData=self.Y[ts])
-                t_end = time.time()
-                perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[ts], test= self.Y[ts][:,-1], \
-                                                dataset= self.dataset , method= self.method , \
-                                                classifier= self.classifier, tstart=t_start, tend=t_end)
-                self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.Y[ts][:,-1])
+            for mc in self.microCluster[ts]:
+                self.microCluster[ts][mc]['Step'] = 'Incrementality' 
+            
+            ## The additivity property 
+            '''
+            The additivity considers that if we have two disjoint Micro-Clusters MCA and MCB,  
+            the  union  of  these  two  groups  is equal to the sum of its parts
+            '''
+            # find the disjoint sets of the microclusters 
+            disjointMC = self.findDisjointMCs(self.microCluster[ts])
+            self.additivityMC(disjointMC= disjointMC, inMCluster= self.microCluster[ts], ts= ts)
+            # inData = np.vstack([self.microCluster[ts][mc]['Xt'] for mc in self.microCluster[ts].keys()])
+
+            ## remove non-unique values from the clusters
+            uniqueDict = {}
+            for mc in self.microCluster[ts]:
+                uniqueDict[mc] = self.microCluster[ts][mc]['Xt']
+            
+            uniqueData = self.drop_non_unique(uniqueDict)
+            inData = np.vstack([value for value in uniqueData.values()])
+
+            self.preds[ts] = self.classify(trainData= inData, trainLabel=inData[:,-1], testData=self.Y[ts])
+            t_end = time.time()
+            perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[ts], test= self.Y[ts][:,-1], \
+                                            dataset= self.dataset , method= self.method , \
+                                            classifier= self.classifier, tstart=t_start, tend=t_end)
+            self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.Y[ts][:,-1])
                 
         total_end = time.time()
         self.total_time = total_end - total_start
