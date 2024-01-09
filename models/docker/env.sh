@@ -39,4 +39,4 @@ else
 fi
 
 
-docker cp /home/martinmlopez/DIS_EVL/models spark_master:/opt/bitnami/spark/tmp
+docker cp /Users/acl/DIS_EVL/models spark_master:/opt/bitnami/spark/tmp

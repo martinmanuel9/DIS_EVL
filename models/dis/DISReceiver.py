@@ -117,6 +117,43 @@ def recv():
             + " Label : {}\n".format(pdu.label)
             )
 
+     elif pdu.pduType == 75: # TCIS computer
+        print("Received {}: {} Bytes\n".format(pduTypeName, len(data), flush=True)
+            + " connections_info: {}\n".format(pdu.connections_info)
+            + " num_handles: {}\n".format(pdu.num_handles)
+            + " nonpaged_pool: {}\n".format(pdu.nonpaged_pool)
+            + " pagefile: {}\n".format(pdu.pagefile)
+            + " paged_pool: {}\n".format(pdu.paged_pool)
+            + " peak_pagefile: {}\n".format(pdu.peak_pagefile)
+            + " peak_nonpaged_pool: {}\n".format(pdu.peak_nonpaged_pool)
+            + " read_count: {}\n".format(pdu.read_count)
+            + " user: {}\n".format(pdu.user)
+            + " system: {}\n".format(pdu.system)
+            + " nice: {}\n".format(pdu.nice)
+            + " wset: {}\n".format(pdu.wset)
+            + " private: {}\n".format(pdu.private)
+            + " cnt: {}\n".format(pdu.cnt)
+            + " num_page_faults: {}\n".format(pdu.num_page_faults)
+            + " vms: {}\n".format(pdu.vms)
+            + " memory_percent: {}\n".format(pdu.memory_percent)
+            + " rss: {}\n".format(pdu.rss)
+            + " read_bytes: {}\n".format(pdu.read_bytes)
+            + " write_bytes: {}\n".format(pdu.write_bytes)
+            + " write_count: {}\n".format(pdu.write_count)
+            + " ionice: {}\n".format(pdu.ionice)
+            + " other_count: {}\n".format(pdu.other_count)
+            + " Attack: {}\n".format(pdu.label.decode('utf-8'))
+            + " Label : {}\n".format('TCIS computer')
+
+# 'label', 'connections_info', 'num_handles', 'nonpaged_pool', 'pagefile',
+#        'paged_pool', 'peak_pagefile', 'peak_nonpaged_pool', 'read_count',
+#        'user', 'system', 'nice', 'wset', 'private', 'cnt', 'num_page_faults',
+#        'vms', 'memory_percent', 'rss', 'read_bytes', 'write_bytes',
+#        'write_count', 'ionice', 'other_count'
+
+            )
+
+
     else: 
         print("Received PDU {}, {} bytes".format(pduTypeName, len(data)), flush=True)
 
