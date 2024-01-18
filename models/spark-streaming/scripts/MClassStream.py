@@ -70,6 +70,7 @@ class StreamingMClassification:
                 dataset,
                 method,
                 streamDF,
+                mode = 'trainer',
                 graph = True): 
         """
         """
@@ -87,7 +88,12 @@ class StreamingMClassification:
         self.performance_metric = {}
         self.avg_perf_metric = {}
         self.microCluster = {}
+        self.mode = mode
         self.setDataStream(inDF= self.streamDF)
+        if self.mode == 'trainer':
+            self.runTrainer()
+        elif self.mode == 'test':
+            self.run()
 
     def setDataStream(self, inDF):
         self.all_data = inDF.drop(['uuid'], axis=1)
@@ -562,6 +568,19 @@ class StreamingMClassification:
 
         return unique_dict
     
+    def runTrainer(self):
+        """
+        Streaming Micro-Cluster Classification requires to train the model first
+        we go immediately into the classify to train
+        """
+        total_start = time.time()
+        # TODO: nned to update the perf module to not take in timesteps
+        # 1. performance module uodates
+        # 2. trainer needs to save the model
+        # 3. when running the test side need to load the model
+        
+
+
 
     def run(self):
         """
@@ -576,7 +595,8 @@ class StreamingMClassification:
         The two farthest MCs from xt are merged into one MC that will be placed closest to the emerging new concept. 
         """
         total_start = time.time()
-        # timesteps = self.X.keys()
+        timesteps = self.X.keys() # not needed we are streaming data
+
 
         
         # for ts in tqdm(range(len(timesteps) - 1), position=0, leave=True):
