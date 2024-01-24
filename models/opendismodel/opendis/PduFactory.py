@@ -73,6 +73,7 @@ def getPdu(inputStream):
     pduType = inputStream.read_byte()
     inputStream.stream.seek(0, 0) # Rewind to start
 
+
     if pduType in PduTypeDecoders.keys():
         Decoder = PduTypeDecoders[pduType]
         pdu = Decoder()

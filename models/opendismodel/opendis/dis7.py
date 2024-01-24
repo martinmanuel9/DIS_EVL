@@ -7806,7 +7806,7 @@ class TCIS( Pdu ):
         outputStream.write_float(self.write_count)
         outputStream.write_int(self.ionice)
         outputStream.write_float(self.other_count)
-        outputStream.write_string(self.label); 
+        outputStream.write_utf(self.label); 
 
        
 
@@ -7836,5 +7836,5 @@ class TCIS( Pdu ):
         self.ionice = inputStream.read_int();
         self.other_count = inputStream.read_float();
         """attack"""
-        self.label = inputStream.read_string();
+        self.label = inputStream.read_utf();
         

@@ -101,7 +101,8 @@ class TcisSim:
                 tcis.write_count = row['write_count'] 
                 tcis.ionice = row['ionice']
                 tcis.other_count = row['other_count']
-                tcis.label = row['label'] 
+                tcis.label = row['label'].encode('utf-8')
+                
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -134,7 +135,7 @@ class TcisSim:
                     + " write_count: {}\n".format(tcis.write_count)
                     + " ionice: {}\n".format(tcis.ionice)
                     + " other_count: {}\n".format(tcis.other_count)
-                    + " Attack: {}\n".format(tcis.label)
+                    + " Attack: {}\n".format(tcis.label.decode('utf-8'))
                     + " Label : {}\n".format('TCIS computer')
                     )
 
