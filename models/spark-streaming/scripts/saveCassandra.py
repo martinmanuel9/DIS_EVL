@@ -1,8 +1,8 @@
 #!/usr/bin/env python 
 
 """
-Application:        Save to Cassandra
-File name:          
+Application:        DIS EVL
+File name:          saveCassandra.py 
 Author:             Martin Manuel Lopez
 Creation:           11/22/2023
 
@@ -11,10 +11,7 @@ Department of Electrical and Computer Engineering
 College of Engineering
 """
 
-# MIT License
-#
-# Copyright (c) 2021
-#
+
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -32,16 +29,11 @@ College of Engineering
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from pyspark.sql import SparkSession
+
 from pyspark.sql.types import *
-import os
-import uuid
 from pyspark.sql.functions import *
 from pyspark.sql.streaming import *
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')))
-from opendismodel.opendis.RangeCoordinates import * 
-from opendismodel.opendis.PduFactory import createPdu
-from opendismodel.opendis.dis7 import *
+import os
 
 class CassandraSink:
     def __init__(self, keyspace, table):
