@@ -7744,3 +7744,97 @@ class Light( Pdu ):
         self.light_status = inputStream.read_utf();
         self.attack = inputStream.read_utf();
         self.label = inputStream.read_int();
+
+class TCIS( Pdu ):
+    """PDU prototye for TCIS"""
+    def __init__(self):
+        """ Initializer for Environment"""
+        super(TCIS, self).__init__()
+        
+        self.connections_info = 0
+        self.num_handles = 0
+        self.nonpaged_pool = 0
+        self.pagefile = 0
+        self.paged_pool = 0
+        self.peak_pagefile = 0.0
+        self.peak_nonpaged_pool = 0.0
+        self.read_count = 0.0
+        self.user = 0
+        self.system = 0.0
+        self.nice = 0
+        self.wset = 0
+        self.private = 0
+        self.cnt = 0
+        self.num_page_faults = 0
+        self.vms = 0
+        self.memory_percent = 0
+        self.rss = 0
+        self.read_bytes = 0
+        self.write_bytes = 0
+        self.write_count = 0.0
+        self.ionice = 0
+        self.other_count = 0.0
+        """attack"""
+        self.label = 'normal'
+        """label"""
+        self.pduType = 74
+
+    
+    def serialize(self, outputStream):
+        """"Parse a message. This may recursively call embedded objects.""" 
+        super( TCIS, self).serialize(outputStream); 
+        outputStream.write_int(self.connections_info)
+        outputStream.write_int(self.num_handles)
+        outputStream.write_int(self.nonpaged_pool)
+        outputStream.write_int(self.pagefile)
+        outputStream.write_int(self.paged_pool)
+        outputStream.write_float(self.peak_pagefile)
+        outputStream.write_float(self.peak_nonpaged_pool)
+        outputStream.write_float(self.read_count)
+        outputStream.write_int(self.user)
+        outputStream.write_float(self.system)
+        outputStream.write_int(self.nice)
+        outputStream.write_int(self.wset)
+        outputStream.write_int(self.private)
+        outputStream.write_int(self.cnt)
+        outputStream.write_int(self.num_page_faults)
+        outputStream.write_long(self.vms)
+        outputStream.write_int(self.memory_percent)
+        outputStream.write_int(self.rss)
+        outputStream.write_int(self.read_bytes)
+        outputStream.write_int(self.write_bytes)
+        outputStream.write_float(self.write_count)
+        outputStream.write_int(self.ionice)
+        outputStream.write_float(self.other_count)
+        outputStream.write_string(self.label); 
+
+       
+
+    def parse(self, inputStream):
+        """"Parse a message. This may recursively call embedded objects.""" 
+        super( TCIS, self).parse(inputStream);
+        self.connections_info = inputStream.read_int();
+        self.num_handles = inputStream.read_int();
+        self.nonpaged_pool = inputStream.read_int();
+        self.pagefile = inputStream.read_int();
+        self.paged_pool = inputStream.read_int();
+        self.peak_pagefile = inputStream.read_float();
+        self.peak_nonpaged_pool = inputStream.read_float();
+        self.read_count = inputStream.read_float();
+        self.user = inputStream.read_int();
+        self.system = inputStream.read_float();
+        self.nice = inputStream.read_int();
+        self.wset = inputStream.read_int();
+        self.cnt = inputStream.read_int();
+        self.num_page_faults = inputStream.read_int();
+        self.vms = inputStream.read_long();
+        self.memory_percent = inputStream.read_int();
+        self.rss = inputStream.read_int();
+        self.read_bytes = inputStream.read_int();
+        self.write_bytes = inputStream.read_int();
+        self.write_count = inputStream.read_float();
+        self.ionice = inputStream.read_int();
+        self.other_count = inputStream.read_float();
+        """attack"""
+        self.label = inputStream.read_string();
+        

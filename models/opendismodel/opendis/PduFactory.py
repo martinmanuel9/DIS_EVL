@@ -59,10 +59,12 @@ PduTypeDecoders = {
     , 66 : CollisionElasticPdu
     , 67 : EntityStateUpdatePdu
     , 69 : EntityDamageStatusPdu 
-    , 70: Environment
-    , 71: Modbus
-    , 72: Garage
-    , 73: Light
+    , 70 : Environment
+    , 71 : Modbus
+    , 72 : Garage
+    , 73 : Light
+    , 74 : TCIS
+
  }
 
 

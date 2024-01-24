@@ -55,6 +55,6 @@ class DataInputStream:
         # Read the encoded string bytes
         string_bytes = self.stream.read(string_length)
         # Decode the string
-        string = string_bytes.decode('utf-8')
+        string = string_bytes#.decode('utf-8')
 
         return string
