@@ -48,6 +48,6 @@ class DataOutputStream:
         self.stream.write(struct.pack('>I', val))
     
     def write_string(self, string):  
-        encoded_string = string.encode('utf-8')
-        self.stream.write(struct.pack('>H', len(encoded_string)))
-        self.stream.write(encoded_string)
+        # encoded_string = string.encode('utf-8')
+        self.stream.write(struct.pack('>H', len(string)))
+        self.stream.write(string)

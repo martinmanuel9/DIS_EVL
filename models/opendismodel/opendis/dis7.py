@@ -7765,17 +7765,17 @@ class TCIS( Pdu ):
         self.wset = 0
         self.private = 0
         self.cnt = 0
-        self.num_page_faults = 0
-        self.vms = 0
-        self.memory_percent = 0
-        self.rss = 0
-        self.read_bytes = 0
-        self.write_bytes = 0
+        self.num_page_faults = 0.0
+        self.vms = 0.0
+        self.memory_percent = 0.0
+        self.rss = 0.0
+        self.read_bytes = 0.0
+        self.write_bytes = 0.0
         self.write_count = 0.0
-        self.ionice = 0
+        self.ionice = 0.0
         self.other_count = 0.0
         """attack"""
-        self.label = 'normal'
+        self.label = "normal"
         """label"""
         self.pduType = 74
 
@@ -7797,14 +7797,14 @@ class TCIS( Pdu ):
         outputStream.write_int(self.wset)
         outputStream.write_int(self.private)
         outputStream.write_int(self.cnt)
-        outputStream.write_int(self.num_page_faults)
-        outputStream.write_long(self.vms)
-        outputStream.write_int(self.memory_percent)
-        outputStream.write_int(self.rss)
-        outputStream.write_int(self.read_bytes)
-        outputStream.write_int(self.write_bytes)
+        outputStream.write_float(self.num_page_faults)
+        outputStream.write_float(self.vms)
+        outputStream.write_float(self.memory_percent)
+        outputStream.write_float(self.rss)
+        outputStream.write_float(self.read_bytes)
+        outputStream.write_float(self.write_bytes)
         outputStream.write_float(self.write_count)
-        outputStream.write_int(self.ionice)
+        outputStream.write_float(self.ionice)
         outputStream.write_float(self.other_count)
         outputStream.write_utf(self.label); 
 
@@ -7825,15 +7825,16 @@ class TCIS( Pdu ):
         self.system = inputStream.read_float();
         self.nice = inputStream.read_int();
         self.wset = inputStream.read_int();
+        self.private = inputStream.read_int();
         self.cnt = inputStream.read_int();
-        self.num_page_faults = inputStream.read_int();
-        self.vms = inputStream.read_long();
-        self.memory_percent = inputStream.read_int();
-        self.rss = inputStream.read_int();
-        self.read_bytes = inputStream.read_int();
-        self.write_bytes = inputStream.read_int();
+        self.num_page_faults = inputStream.read_float();
+        self.vms = inputStream.read_float();
+        self.memory_percent = inputStream.read_float();
+        self.rss = inputStream.read_float();
+        self.read_bytes = inputStream.read_float();
+        self.write_bytes = inputStream.read_float();
         self.write_count = inputStream.read_float();
-        self.ionice = inputStream.read_int();
+        self.ionice = inputStream.read_float();
         self.other_count = inputStream.read_float();
         """attack"""
         self.label = inputStream.read_utf();
