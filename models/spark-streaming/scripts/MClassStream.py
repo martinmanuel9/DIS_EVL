@@ -574,10 +574,12 @@ class StreamingMClassification:
         we go immediately into the classify to train
         """
         total_start = time.time()
-        # TODO: nned to update the perf module to not take in timesteps
+        # TODO: need to update the perf module to not take in timesteps
         # 1. performance module uodates
         # 2. trainer needs to save the model
         # 3. when running the test side need to load the model
+
+        self.initLabelData(inData= self.streamDF, inLabels= self.y)
         
 
 
@@ -595,13 +597,13 @@ class StreamingMClassification:
         The two farthest MCs from xt are merged into one MC that will be placed closest to the emerging new concept. 
         """
         total_start = time.time()
-        timesteps = self.X.keys() # not needed we are streaming data
+        # timesteps = self.X.keys() # not needed we are streaming data
 
 
         
         # for ts in tqdm(range(len(timesteps) - 1), position=0, leave=True):
         # This takes the fist labeled data set T and creates the initial MCs
-        # TODO: first we will potentialy create mcs that are not needed
+        
 
 
         
