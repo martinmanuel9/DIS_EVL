@@ -3,7 +3,7 @@
 
 # Store the current working directory in a variable
 current_directory=$(pwd)
-echo "Current working directory: $current_directory"
+# echo "Current working directory: $current_directory"
 
 cd "$current_directory/scripts"
 

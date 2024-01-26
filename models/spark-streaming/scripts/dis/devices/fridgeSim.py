@@ -240,6 +240,6 @@ class FridgeSim:
                 
 
 
-# if __name__ == "__main__":
-#     FridgeSim = FridgeSim(transmission= 'kafka_pdu')
-#     FridgeSim.sendFridgeTrain()
+if __name__ == "__main__":
+    FridgeSim = FridgeSim(transmission= 'kafka_pdu')
+    FridgeSim.sendFridgeTrain()

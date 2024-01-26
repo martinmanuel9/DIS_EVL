@@ -34,32 +34,27 @@ import pandas as pd
 from pyspark.sql.types import *
 from pyspark.sql.functions import *
 from pyspark.sql.streaming import *
-from pyspark.ml.linalg import Vectors
 from pyspark.sql.types import *
 from pyspark.mllib.clustering import KMeans, KMeansModel
 from pyspark.mllib.clustering import GaussianMixture, GaussianMixtureModel
 from pyspark.ml.classification import MultilayerPerceptronClassifier
-from pyspark.ml.feature import VectorAssembler
-from pyspark.ml.classification import KNN
+from sklearn.neighbors import KNeighborsClassifier as KNN
 from pyspark.ml.classification import LinearSVC
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 from keras.preprocessing.sequence import pad_sequences
-import models.evl.classifier_performance as cp
 from scipy import stats
 from sklearn.metrics import silhouette_score
-import time 
-import models.dis.KafkaProducer as kp
-
 from matplotlib import pyplot as plt
 from matplotlib import patches as mpatches
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 matplotlib_axes_logger.setLevel('ERROR')
-from tqdm import tqdm
+import time 
+from evl import classifier_performance as cp
 
 # from sklearn.cluster import KMeans
-# from sklearn.mixture import GaussianMixture as GMM
+from sklearn.mixture import GaussianMixture as GMM
 # from sklearn.neural_network import MLPClassifier
 # from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 # from sklearn.svm import SVC, SVR
@@ -96,9 +91,11 @@ class StreamingMClassification:
             self.run()
 
     def setDataStream(self, inDF):
-        self.all_data = inDF.drop(['uuid'], axis=1)
+        self.all_data = inDF
+        print('\n\n',self.all_data)
         self.y = inDF['label']
-        self.X = inDF.drop(['label'], axis=1)
+        print('\n\n',self.y)
+        # self.X = inDF.drop(['label'])
 
     def findClosestMC(self, x, MC_Centers):
         """
@@ -206,7 +203,7 @@ class StreamingMClassification:
             knn = KNN(k=10).fit(trainData, trainLabel)   # KNN.fit(train_data, train label)
             # knn = KNeighborsClassifier(n_neighbors=10).fit(trainData, trainLabel)   # KNN.fit(train_data, train label)
             # predicted_label = knn.predict(testData)
-            predicted_label = knn.transform(testData)
+            predicted_label = knn.predict(testData)
         elif self.classifier == 'svm':
             svm_mdl = LinearSVC(random_state=0, tol=1e-5).fit(trainData, trainLabel)  # fit(Xtrain, X_label_train)
             # svm_mdl = SVC(gamma='auto').fit(trainData, trainLabel)                    # fit(Xtrain, X_label_train)
@@ -578,107 +575,106 @@ class StreamingMClassification:
         # 1. performance module uodates
         # 2. trainer needs to save the model
         # 3. when running the test side need to load the model
-
-        self.initLabelData(inData= self.streamDF, inLabels= self.y)
+        print('Running Trainer')
+        print(type(self.streamDF), '\n\n')
+        self.streamDF.show()
+        # transformdf = self.streamDF.toPandas()
+        # print(transformdf)
+        # self.initLabelData(inData= self.streamDF, inLabels= self.y)
         
 
 
 
-    def run(self):
-        """
-        Micro-Cluster Classification
-        1. The Algo takes an initial set of labeled data T and builds a set of labeled MCs (this is the first labeled data) -- complete 
-        2. The classification phase we predict yhat for each example xt from the stream 
-        3. The classification is based on the nearest MC according to the Euclidean Distance 
-        4. We determine if xt from the stream corresponds to the nearest MC using the incrementality property and then we would 
-            need to update the statistic of that MC if it does NOT exceed the radius (that is predefined) 
-        5. If the radius exceeds the threshold, a new MC carrying the predicted label is created to allocate the new example 
-        6. The algo must search the two farthest MCs from the predicted class to merge them by using the additivity property. 
-        The two farthest MCs from xt are merged into one MC that will be placed closest to the emerging new concept. 
-        """
-        total_start = time.time()
-        # timesteps = self.X.keys() # not needed we are streaming data
+    # def run(self):
+    #     """
+    #     Micro-Cluster Classification
+    #     1. The Algo takes an initial set of labeled data T and builds a set of labeled MCs (this is the first labeled data) -- complete 
+    #     2. The classification phase we predict yhat for each example xt from the stream 
+    #     3. The classification is based on the nearest MC according to the Euclidean Distance 
+    #     4. We determine if xt from the stream corresponds to the nearest MC using the incrementality property and then we would 
+    #         need to update the statistic of that MC if it does NOT exceed the radius (that is predefined) 
+    #     5. If the radius exceeds the threshold, a new MC carrying the predicted label is created to allocate the new example 
+    #     6. The algo must search the two farthest MCs from the predicted class to merge them by using the additivity property. 
+    #     The two farthest MCs from xt are merged into one MC that will be placed closest to the emerging new concept. 
+    #     """
+    #     total_start = time.time()
+    #     # timesteps = self.X.keys() # not needed we are streaming data
 
-
+    #     # for ts in tqdm(range(len(timesteps) - 1), position=0, leave=True):
+    #     # This takes the fist labeled data set T and creates the initial MCs
         
-        # for ts in tqdm(range(len(timesteps) - 1), position=0, leave=True):
-        # This takes the fist labeled data set T and creates the initial MCs
+    #     self.initLabelData(inData= self.X, inLabels= self.y)
         
-
-
-        
-        self.initLabelData(inData= self.X, inLabels= self.y)
-        
-        # determine if added x_t to MC exceeds radii of MC
-        else:
-            # Step 2 begin classification of next stream to determine yhat 
-            t_start = time.time()
-            # classify based on the clustered predictions (self.preds) done in the init step 
-            # self.clusters is the previous preds
-            closestMC = self.findClosestMC(x= self.X[ts], MC_Centers= self.cluster_centers[ts-1])
-            preGroupedPoints, preGroupedXt = self.preGroupMC(inDict= closestMC, ts= ts)
-            pointsAddToMC, pointsNewMC, xtAddToMC, xtNewMC = self.evaluateXt(inPreGroupedPoints= preGroupedPoints, 
-                                                                                prevMC= self.microCluster[ts-1], inPreGroupedXt= preGroupedXt)
+    #     # determine if added x_t to MC exceeds radii of MC
+    #     else:
+    #         # Step 2 begin classification of next stream to determine yhat 
+    #         t_start = time.time()
+    #         # classify based on the clustered predictions (self.preds) done in the init step 
+    #         # self.clusters is the previous preds
+    #         closestMC = self.findClosestMC(x= self.X[ts], MC_Centers= self.cluster_centers[ts-1])
+    #         preGroupedPoints, preGroupedXt = self.preGroupMC(inDict= closestMC, ts= ts)
+    #         pointsAddToMC, pointsNewMC, xtAddToMC, xtNewMC = self.evaluateXt(inPreGroupedPoints= preGroupedPoints, 
+    #                                                                             prevMC= self.microCluster[ts-1], inPreGroupedXt= preGroupedXt)
             
             
-            # we first check if we first need to create a new cluster based on streaming data
-            if len(xtNewMC) > 0:
-                self.NClusters = self.NClusters + len(xtNewMC) 
-                newMCData = np.vstack([xtNewMC[mc] for mc in xtNewMC.keys()])
-                # inData = np.vstack((self.X[ts-1], newMCData))
+    #         # we first check if we first need to create a new cluster based on streaming data
+    #         if len(xtNewMC) > 0:
+    #             self.NClusters = self.NClusters + len(xtNewMC) 
+    #             newMCData = np.vstack([xtNewMC[mc] for mc in xtNewMC.keys()])
+    #             # inData = np.vstack((self.X[ts-1], newMCData))
                 
-                if len(newMCData) >= self.NClusters:
-                    self.microCluster[ts], self.clusters[ts], self.cluster_centers[ts] = self.updateModelMC(inData= newMCData , ts= ts)
-                else:
-                    self.updateMCluster(inMCluster=self.microCluster[ts-1], inXtAddMC= xtAddToMC, addToMC=pointsAddToMC, ts= ts)
+    #             if len(newMCData) >= self.NClusters:
+    #                 self.microCluster[ts], self.clusters[ts], self.cluster_centers[ts] = self.updateModelMC(inData= newMCData , ts= ts)
+    #             else:
+    #                 self.updateMCluster(inMCluster=self.microCluster[ts-1], inXtAddMC= xtAddToMC, addToMC=pointsAddToMC, ts= ts)
 
-            if not xtNewMC: 
-                self.updateMCluster(inMCluster=self.microCluster[ts-1], inXtAddMC= xtAddToMC, addToMC=pointsAddToMC, ts= ts)
+    #         if not xtNewMC: 
+    #             self.updateMCluster(inMCluster=self.microCluster[ts-1], inXtAddMC= xtAddToMC, addToMC=pointsAddToMC, ts= ts)
 
-            # remove non-unique values from the clusters
-            uniqueDict = {}
-            for mc in self.microCluster[ts]:
-                uniqueDict[mc] = self.microCluster[ts][mc]['Xt']
+    #         # remove non-unique values from the clusters
+    #         uniqueDict = {}
+    #         for mc in self.microCluster[ts]:
+    #             uniqueDict[mc] = self.microCluster[ts][mc]['Xt']
             
-            uniqueData = self.drop_non_unique(uniqueDict)
-            inData = np.vstack([value for value in uniqueData.values()])
+    #         uniqueData = self.drop_non_unique(uniqueDict)
+    #         inData = np.vstack([value for value in uniqueData.values()])
             
-            # update model after incrementing MCs
-            self.microCluster[ts], self.clusters[ts], self.cluster_centers[ts] = self.updateModelMC(inData= inData, ts= ts)
+    #         # update model after incrementing MCs
+    #         self.microCluster[ts], self.clusters[ts], self.cluster_centers[ts] = self.updateModelMC(inData= inData, ts= ts)
 
-            for mc in self.microCluster[ts]:
-                self.microCluster[ts][mc]['Step'] = 'Incrementality' 
+    #         for mc in self.microCluster[ts]:
+    #             self.microCluster[ts][mc]['Step'] = 'Incrementality' 
             
-            ## The additivity property 
-            '''
-            The additivity considers that if we have two disjoint Micro-Clusters MCA and MCB,  
-            the  union  of  these  two  groups  is equal to the sum of its parts
-            '''
-            # find the disjoint sets of the microclusters 
-            disjointMC = self.findDisjointMCs(self.microCluster[ts])
-            self.additivityMC(disjointMC= disjointMC, inMCluster= self.microCluster[ts], ts= ts)
-            # inData = np.vstack([self.microCluster[ts][mc]['Xt'] for mc in self.microCluster[ts].keys()])
+    #         ## The additivity property 
+    #         '''
+    #         The additivity considers that if we have two disjoint Micro-Clusters MCA and MCB,  
+    #         the  union  of  these  two  groups  is equal to the sum of its parts
+    #         '''
+    #         # find the disjoint sets of the microclusters 
+    #         disjointMC = self.findDisjointMCs(self.microCluster[ts])
+    #         self.additivityMC(disjointMC= disjointMC, inMCluster= self.microCluster[ts], ts= ts)
+    #         # inData = np.vstack([self.microCluster[ts][mc]['Xt'] for mc in self.microCluster[ts].keys()])
 
-            ## remove non-unique values from the clusters
-            uniqueDict = {}
-            for mc in self.microCluster[ts]:
-                uniqueDict[mc] = self.microCluster[ts][mc]['Xt']
+    #         ## remove non-unique values from the clusters
+    #         uniqueDict = {}
+    #         for mc in self.microCluster[ts]:
+    #             uniqueDict[mc] = self.microCluster[ts][mc]['Xt']
             
-            uniqueData = self.drop_non_unique(uniqueDict)
-            inData = np.vstack([value for value in uniqueData.values()])
+    #         uniqueData = self.drop_non_unique(uniqueDict)
+    #         inData = np.vstack([value for value in uniqueData.values()])
 
-            self.preds[ts] = self.classify(trainData= inData, trainLabel=inData[:,-1], testData=self.Y[ts])
-            t_end = time.time()
-            perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[ts], test= self.Y[ts][:,-1], \
-                                            dataset= self.dataset , method= self.method , \
-                                            classifier= self.classifier, tstart=t_start, tend=t_end)
-            self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.Y[ts][:,-1])
+    #         self.preds[ts] = self.classify(trainData= inData, trainLabel=inData[:,-1], testData=self.Y[ts])
+    #         t_end = time.time()
+    #         perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[ts], test= self.Y[ts][:,-1], \
+    #                                         dataset= self.dataset , method= self.method , \
+    #                                         classifier= self.classifier, tstart=t_start, tend=t_end)
+    #         self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.Y[ts][:,-1])
                 
-        total_end = time.time()
-        self.total_time = total_end - total_start
-        avg_metrics = cp.PerformanceMetrics(tstart= total_start, tend= total_end)
-        self.avg_perf_metric = avg_metrics.findAvePerfMetrics(total_time=self.total_time, perf_metrics= self.performance_metric)
-        return self.avg_perf_metric
+    #     total_end = time.time()
+    #     self.total_time = total_end - total_start
+    #     avg_metrics = cp.PerformanceMetrics(tstart= total_start, tend= total_end)
+    #     self.avg_perf_metric = avg_metrics.findAvePerfMetrics(total_time=self.total_time, perf_metrics= self.performance_metric)
+    #     return self.avg_perf_metric
 
 # test mclass
 # run_mclass = MClassification(classifier='1dcnn', method = 'kmeans', dataset='ton_iot_fridge', datasource='UNSW', graph=False).run()

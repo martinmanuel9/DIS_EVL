@@ -35,6 +35,7 @@ import os
 import uuid
 from pyspark.sql.functions import *
 from pyspark.sql.streaming import *
+import MClassStream as mcStream
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..','..')))
 from opendismodel.opendis.RangeCoordinates import * 
 from opendismodel.opendis.PduFactory import createPdu
@@ -114,7 +115,8 @@ class SparkStructuredStreaming:
         # feature extraction for Fridge 
         fridgeFeatures = FeatureSelection(tableName="fridge_table", dataFrame=expandedFridgeDF).extractFeature()
         
-
+        mclass = mcStream.StreamingMClassification(classifier="knn", method="kmeans", streamDF= fridgeFeatures, dataset="fridge", graph=False)
+        mclass.runTrainer()
         # ----------------------------------------------- 
         # Process data for the "garage" topic
         # -----------------------------------------------
