@@ -31,14 +31,13 @@ College of Engineering
 
 import numpy as np
 import pandas as pd
-from pyspark.sql import SparkSession
+from pyspark.streaming import StreamingContext
 from pyspark.sql.types import *
 from pyspark.sql.functions import *
 from pyspark.sql.streaming import *
 from pyspark.sql.types import *
-from pyspark.ml.feature import VectorAssembler
-from pyspark.ml import Pipeline
-from pyspark.mllib.clustering import StreamingKMeans
+from pyspark.ml.evaluation import ClusteringEvaluator
+from pyspark.mllib.clustering import StreamingKMeans, StreamingKMeansModel
 from pyspark.mllib.clustering import GaussianMixture
 from pyspark.ml.classification import MultilayerPerceptronClassifier
 from sklearn.neighbors import KNeighborsClassifier as KNN
@@ -88,6 +87,9 @@ class StreamingMClassification:
         self.microCluster = {}
         self.mode = mode
         self.initialStream = False
+        self.sparkContext = SparkContext.getOrCreate()
+        print('Sparkcontext:', self.sparkContext)
+        self.sil_score = {} #silhouette score
         self.setDataStream(inDF= self.streamDF)
         if self.mode == 'trainer':
             self.runTrainer()
@@ -126,30 +128,40 @@ class StreamingMClassification:
         minDistMC['Distances'] = distances
         minDistMC['MinDistIndex'] = minDistIndex   
         return minDistMC
-    
-    def find_silhoette_score(self, X, y):
+ 
+    def trainStreamKmeans(self, inData):
         """
-        Find Silhoette Scores allows us to get the optimal number of clusters for the data
+        train on streaming kmeans
         """
         if self.method == 'kmeans':
-            sil_score = {}
             for c in range(2, 11):
-                # kmeans_model = KMeans().getK(c).getSeed(1).getFeaturesCol("features").setPredictionCol("predictions")
-                random_seed = 42
-                kmeans_model = StreamingKMeans(k=c)
-                print(X)
-                kmeans_model.trainOn(X)
-                predictions = kmeans_model.predict(X)
-                score = silhouette_score(X, predictions, metric='euclidean')
-                sil_score[c] = score
-                print(f"Silhouette Score for {c} clusters: {score}")
-            optimal_cluster = max(sil_score, key=sil_score.get)
-            self.NClusters = optimal_cluster
+                kmeans_model = StreamingKMeans(k=c, decayFactor=0.1).setRandomCenters(2, 1.0, 0)
+            
+                # train the model 
+                training_query = (
+                    inData.writeStream
+                    .foreachBatch(lambda batch_df, batch_id: kmeans_model.trainOn(batch_df))
+                    .start()
+                )
+
+                # # predictions
+                # predictions_query = (
+                #     inData.writeStream
+                #     .foreachBatch(lambda batch_df, batch_id: self.process_batch(batch_df, kmeans_model, c))
+                #     .start()
+                # )
+            # TODO: need to figure out how to get the number of clusters on the streaming Kmeans
+            streamingKmeansModel = StreamingKMeansModel()
+            
+            self.NClusters = len(centers)
+            print(self.NClusters)
+
+                
 
     def cluster(self, X, y):
         if self.method == 'kmeans':
             if self.initialStream is False:
-                self.find_silhoette_score(X=X, y=y)
+                self.trainStreamKmeans(X=X, y=y)
                 kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X)  
             else:
                 kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X) #may not need to do this as we need to create a new cluster for the new data
@@ -475,16 +487,16 @@ class StreamingMClassification:
         return updatedMicroCluster, updatedClusters, updatedClusterCenters
       
 
-    def initLabelData(self, inData, inLabels):
-        self.cluster(X= inData, y= inLabels)
-        t_start = time.time()
-        # classify based on the clustered predictions (self.preds) done in the init step
-        self.preds[ts] = self.classify(trainData= inData , trainLabel= inLabels, testData= self.all_data_test[:np.shape(inData)[0]])
-        t_end = time.time()
-        perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[ts], test= self.all_data_test[:np.shape(self.preds[ts])[0]], \
-                                        dataset= self.dataset , method= self.method , \
-                                        classifier= self.classifier, tstart=t_start, tend=t_end)
-        self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.all_data_test[:np.shape(self.preds[ts])[0]][:,-1])
+    def initialTraining(self, inData):
+        self.trainStreamKmeans(inData)
+        # t_start = time.time()
+        # # classify based on the clustered predictions (self.preds) done in the init step
+        # self.preds[ts] = self.classify(trainData= inData , trainLabel= inLabels, testData= self.all_data_test[:np.shape(inData)[0]])
+        # t_end = time.time()
+        # perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[ts], test= self.all_data_test[:np.shape(self.preds[ts])[0]], \
+        #                                 dataset= self.dataset , method= self.method , \
+        #                                 classifier= self.classifier, tstart=t_start, tend=t_end)
+        # self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.all_data_test[:np.shape(self.preds[ts])[0]][:,-1])
 
 
     def findDisjointMCs(self, inMCluster):
@@ -584,7 +596,7 @@ class StreamingMClassification:
         """
         total_start = time.time()
 
-        self.initLabelData(inData= self.X, inLabels= self.y)
+        self.initialTraining(inData= self.all_data)
 
 
 
