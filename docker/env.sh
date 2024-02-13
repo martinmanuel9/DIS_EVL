@@ -50,14 +50,20 @@ else
     echo "Error executing CQL commands."
 fi
 
-# Rest of your script (assuming it's related to Spark and copying directories)
-# current_directory=$(pwd)
-# parent_directory=$(dirname "$current_directory")
-# echo "Directory to copy onto spark_master: $parent_directory"
 
-# if [ -d "$parent_directory" ]; then
-#     docker cp "$parent_directory" spark_master:/opt/bitnami/spark/tmp
-#     echo "Directory copied successfully."
-# else
-#     echo "Error: The directory $parent_directory does not exist."
-# fi
+# Ontology Section and Apache Jena Fuseki 
+# I need to load the owl file from ontology folder to the fuseki server
+# change directory to the ontology folder
+cd ../ontology
+
+current_directory=$(pwd)
+echo "Current directory: $current_directory"
+
+docker exec -i apache-jena mkdir -p capec_ontology
+docker cp capec_ontology.owl apache-jena:/jena-fuseki/capec_ontology/capec_ontology.owl
+
+cd ../docker
+
+current_directory=$(pwd)
+echo "Current directory: $current_directory"
+
