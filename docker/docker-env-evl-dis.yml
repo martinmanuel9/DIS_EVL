@@ -115,9 +115,11 @@ services:
 
   apache-jena:
     image: stain/jena-fuseki
-    container_name: apache-jena
+    container_name: jena
     ports:
       - "3030:3030"
+    environment:
+      - ADMIN_PASSWORD=secret
     networks:
       datapipeline:
         ipv4_address: 172.18.0.20

@@ -52,18 +52,37 @@ fi
 
 
 # Ontology Section and Apache Jena Fuseki 
-# I need to load the owl file from ontology folder to the fuseki server
-# change directory to the ontology folder
 cd ../ontology
 
-current_directory=$(pwd)
-echo "Current directory: $current_directory"
+CONTAINER_NAME="jena"
+OWL_FILE="capec_ontology.owl"
+TDB_LOADER="/jena-fuseki/tdbloader"
 
-docker exec -i apache-jena mkdir -p capec_ontology
-docker cp capec_ontology.owl apache-jena:/jena-fuseki/capec_ontology/capec_ontology.owl
+
+
+# docker exec -i jena mkdir -p capec_ontology
+# docker exec -i jena sh -c "cd capec_ontology && chmod 777 ." 
+# docker cp capec_ontology.owl jena:/jena-fuseki/capec_ontology/capec_ontology.owl
+
+# docker exec -it "$CONTAINER_NAME" /jena-fuseki/bin/s-put http://localhost:3030/$DATASET_NAME/data default "$OWL_FILE"
+
+# echo "OWL ontology loaded successfully into dataset: $DATASET_NAME."
+
+# Create a directory inside the container
+docker exec -i "$CONTAINER_NAME" mkdir -p /jena-fuseki/capec_ontology
+
+
+# Copy the .owl file into the container
+docker cp "$OWL_FILE" "$CONTAINER_NAME":/jena-fuseki
+
+# Set permissions on the directory for the file
+docker exec -i "$CONTAINER_NAME" chmod 777 /jena-fuseki/capec_ontology
+
+# Load the ontology file into the TDB dataset
+docker exec -i "$CONTAINER_NAME" "$TDB_LOADER" --loc=/jena-fuseki/tdb_dataset "$OWL_FILE"
+
+echo "Ontology loaded successfully into TDB dataset."
 
 cd ../docker
 
-current_directory=$(pwd)
-echo "Current directory: $current_directory"
 
