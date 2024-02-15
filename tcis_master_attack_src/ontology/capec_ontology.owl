@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="attack_files/capec_ontology.owl"
+         xmlns="attack_files/capec_ontology.owl#"
+         xmlns:owlr="http://www.lesfleursdunormal.fr/static/_downloads/owlready_ontology.owl#">
+
+<owl:Ontology rdf:about="attack_files/capec_ontology.owl"/>
+
+<owl:ObjectProperty rdf:about="#has_id">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#ID"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">id</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_name">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#Name"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">name</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_vulnerability">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#RelatedWeaknesses"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">vulnerability</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_countermeasures">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#Mitigations"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">countermeasure</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#work_against">
+  <rdfs:domain rdf:resource="#Mitigations"/>
+  <rdfs:range rdf:resource="#RelatedWeaknesses"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_prerequisites">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#Prerequisites"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">prerequisite</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#need_skills">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#SkillsRequired"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">skills</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#need_resources">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#ResourcesRequired"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">resource</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_method">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#ExecutionFlow"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">method</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_consequences">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#Consequences"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">consequence</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_severity">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#TypicalSeverity"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">severity</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_likelihood">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#LikelihoodOfAttack"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">likelihood</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:Class rdf:about="#Attack">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#ID">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Name">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#RelatedWeaknesses">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Mitigations">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Prerequisites">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#SkillsRequired">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#ResourcesRequired">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#ExecutionFlow">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Consequences">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#TypicalSeverity">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#LikelihoodOfAttack">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:NamedIndividual rdf:about="#abuse">
+  <rdf:type rdf:resource="#Attack"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#invoke">
+  <rdf:type rdf:resource="#Attack"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#exfiltration">
+  <rdf:type rdf:resource="#Attack"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#malicious_copy">
+  <rdf:type rdf:resource="#Attack"/>
+</owl:NamedIndividual>
+
+<owl:NamedIndividual rdf:about="#ransomware">
+  <rdf:type rdf:resource="#Attack"/>
+</owl:NamedIndividual>
+
+
+</rdf:RDF>

@@ -58,31 +58,18 @@ CONTAINER_NAME="jena"
 OWL_FILE="capec_ontology.owl"
 TDB_LOADER="/jena-fuseki/tdbloader"
 
-
-
-# docker exec -i jena mkdir -p capec_ontology
-# docker exec -i jena sh -c "cd capec_ontology && chmod 777 ." 
-# docker cp capec_ontology.owl jena:/jena-fuseki/capec_ontology/capec_ontology.owl
-
-# docker exec -it "$CONTAINER_NAME" /jena-fuseki/bin/s-put http://localhost:3030/$DATASET_NAME/data default "$OWL_FILE"
-
-# echo "OWL ontology loaded successfully into dataset: $DATASET_NAME."
-
 # Create a directory inside the container
 docker exec -i "$CONTAINER_NAME" mkdir -p /jena-fuseki/capec_ontology
 
-
 # Copy the .owl file into the container
-docker cp "$OWL_FILE" "$CONTAINER_NAME":/jena-fuseki
+docker cp "$OWL_FILE" "$CONTAINER_NAME":/jena-fuseki/capec_ontology
 
 # Set permissions on the directory for the file
 docker exec -i "$CONTAINER_NAME" chmod 777 /jena-fuseki/capec_ontology
 
 # Load the ontology file into the TDB dataset
-docker exec -i "$CONTAINER_NAME" "$TDB_LOADER" --loc=/jena-fuseki/tdb_dataset "$OWL_FILE"
+docker exec -i "$CONTAINER_NAME" /jena-fuseki/tdbloader --loc=/jena-fuseki/tdb_dataset /jena-fuseki/capec_ontology/capec_ontology.owl
 
 echo "Ontology loaded successfully into TDB dataset."
 
 cd ../docker
-
-

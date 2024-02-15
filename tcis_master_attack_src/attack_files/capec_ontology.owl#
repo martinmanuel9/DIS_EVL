@@ -1,0 +1,1637 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl"
+         xmlns="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#"
+         xmlns:owlr="http://www.lesfleursdunormal.fr/static/_downloads/owlready_ontology.owl#"
+         xmlns:cape="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#"
+         xmlns:cape2="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#">
+
+<owl:Ontology rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl"/>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#has_id">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#ID"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">id</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#has_name">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Name"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">name</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#has_vulnerability">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#RelatedWeaknesses"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">vulnerability</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#has_countermeasures">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Mitigations"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">countermeasure</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#work_against">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Mitigations"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#RelatedWeaknesses"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#has_prerequisites">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Prerequisites"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">prerequisite</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#need_skills">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#SkillsRequired"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">skills</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#need_resources">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#ResourcesRequired"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">resource</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#has_method">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#ExecutionFlow"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">method</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#has_consequences">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Consequences"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">consequence</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#has_severity">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#TypicalSeverity"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">severity</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#has_likelihood">
+  <rdfs:domain rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+  <rdfs:range rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#LikelihoodOfAttack"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">likelihood</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_id">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#ID"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">id</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_name">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#Name"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">name</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_vulnerability">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#RelatedWeaknesses"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">vulnerability</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_countermeasures">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#Mitigations"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">countermeasure</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#work_against">
+  <rdfs:domain rdf:resource="#Mitigations"/>
+  <rdfs:range rdf:resource="#RelatedWeaknesses"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_prerequisites">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#Prerequisites"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">prerequisite</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#need_skills">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#SkillsRequired"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">skills</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#need_resources">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#ResourcesRequired"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">resource</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_method">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#ExecutionFlow"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">method</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_consequences">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#Consequences"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">consequence</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_severity">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#TypicalSeverity"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">severity</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#has_likelihood">
+  <rdfs:domain rdf:resource="#Attack"/>
+  <rdfs:range rdf:resource="#LikelihoodOfAttack"/>
+  <owlr:python_name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">likelihood</owlr:python_name>
+</owl:ObjectProperty>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#ID">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Name">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#RelatedWeaknesses">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Mitigations">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Prerequisites">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#SkillsRequired">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#ResourcesRequired">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#ExecutionFlow">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Consequences">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#TypicalSeverity">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#LikelihoodOfAttack">
+  <rdfs:subClassOf rdf:resource="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Abuse">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Invoke">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Exfiltration">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Malicious_copy">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#Ransomware">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Attack">
+  <rdfs:subClassOf rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+</owl:Class>
+
+<owl:Class rdf:about="#ID">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Name">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#RelatedWeaknesses">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Mitigations">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Prerequisites">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#SkillsRequired">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#ResourcesRequired">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#ExecutionFlow">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#Consequences">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#TypicalSeverity">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<owl:Class rdf:about="#LikelihoodOfAttack">
+  <rdfs:subClassOf rdf:resource="#Attack"/>
+</owl:Class>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke1">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke2">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke3">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke4">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke5">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke6">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke7">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke8">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke9">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke10">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke11">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke12">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke13">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke14">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke15">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke16">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke17">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke18">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke19">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke20">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke21">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke22">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke23">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke24">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke25">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke26">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke27">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke28">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke29">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke30">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke31">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke32">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke33">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke34">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke35">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke36">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke37">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke38">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke39">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke40">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke41">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke42">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke43">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke44">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke45">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke46">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke47">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke48">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke49">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke50">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke51">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke52">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke53">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke54">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke55">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke56">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke57">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke58">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke59">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke60">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke61">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke62">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke63">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke64">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke65">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke66">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke67">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke68">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke69">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke70">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke71">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke72">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke73">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke74">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke75">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke76">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke77">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke78">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke79">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke80">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke81">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke82">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke83">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke84">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke85">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke86">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke87">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke88">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke89">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke90">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke91">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke92">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke93">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke94">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke95">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke96">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke97">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke98">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke99">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke100">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke101">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke102">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke103">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke104">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke105">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke106">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke107">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke108">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke109">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke110">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke111">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke112">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke113">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke114">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke115">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke116">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke117">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke118">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke119">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke120">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke121">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke122">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke123">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke124">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke125">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke126">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke127">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke128">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke129">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke130">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke131">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke132">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke133">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke134">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke135">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke136">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke137">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke138">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke139">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke140">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke141">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke142">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke143">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke144">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke145">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke146">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke147">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke148">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke149">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke150">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke151">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke152">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke153">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke154">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke155">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke156">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke157">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke158">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke159">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke160">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke161">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke162">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke163">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke164">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke165">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke166">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke167">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke168">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke169">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke170">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke171">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke172">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke173">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke174">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke175">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke176">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke177">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke178">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke179">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke180">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke181">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke182">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke183">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke184">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke185">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke186">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke187">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke188">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke189">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke190">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke191">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke192">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke193">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke194">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke195">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke196">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke197">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke198">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke199">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke200">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke201">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke202">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke203">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke204">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke205">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke206">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke207">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke208">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke209">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke210">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke211">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke212">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke213">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke214">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke215">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke216">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke217">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke218">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke219">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke220">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke221">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke222">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke223">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke224">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke225">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke226">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke227">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke228">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke229">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke230">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke231">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke232">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke233">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke234">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke235">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke236">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke237">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke238">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke239">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke240">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke241">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke242">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke243">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke244">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke245">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke246">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke247">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke248">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke249">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke250">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke251">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke252">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke253">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke254">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke255">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke256">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke257">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke258">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke259">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke260">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke261">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke262">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke263">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke264">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke265">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke266">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke267">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke268">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke269">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke270">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke271">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke272">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke273">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke274">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke275">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke276">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke277">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke278">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke279">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke280">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke281">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke282">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke283">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke284">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke285">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke286">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke287">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke288">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke289">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke290">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke291">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke292">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke293">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke294">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke295">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke296">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke297">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke298">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke299">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke300">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke301">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke302">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke303">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke304">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke305">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke306">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke307">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke308">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke309">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke310">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke311">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke312">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke313">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke314">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke315">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke316">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke317">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke318">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke319">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke320">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke321">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke322">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke323">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke324">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke325">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke326">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke327">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke328">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke329">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke330">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape:Invoke rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke331">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape:Invoke>
+
+<cape2:Attack rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#abuse">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape2:Attack>
+
+<cape2:Attack rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#invoke">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape2:Attack>
+
+<cape2:Attack rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#exfiltration">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape2:Attack>
+
+<cape2:Attack rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#malicious_copy">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape2:Attack>
+
+<cape2:Attack rdf:about="/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/home/avirtekdev/sicong_bau/host_bau/ivan/preprocessing/src/files/capec_ontology.owl#ransomware">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</cape2:Attack>
+
+<Attack rdf:about="#abuse">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</Attack>
+
+<Attack rdf:about="#invoke">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</Attack>
+
+<Attack rdf:about="#exfiltration">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</Attack>
+
+<Attack rdf:about="#malicious_copy">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</Attack>
+
+<Attack rdf:about="#ransomware">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+</Attack>
+
+
+</rdf:RDF>
