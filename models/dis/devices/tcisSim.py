@@ -42,7 +42,7 @@ import numpy as np
 import pandas as pd
 import random
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from evl import ton_iot_dis_datagen as ton
+#from evl import ton_iot_dis_datagen as ton
 from opendismodel.opendis.dis7 import * 
 from opendismodel.opendis.DataOutputStream import DataOutputStream
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -61,7 +61,7 @@ class TcisSim:
 
         if self.transmission == 'kafka' or self.transmission == 'kafka_pdu':
             # Kafka Producer
-            self.KAFKA_TOPIC = 'attack'
+            self.KAFKA_TOPIC = 'data_ivan_1'
             self.producer = kp.KafkaProducer('localhost:9092', self.KAFKA_TOPIC)
         
 
@@ -103,7 +103,6 @@ class TcisSim:
                 tcis.other_count = row['other_count']
                 tcis.label = row['label'].encode('utf-8')
                 
-
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
                 tcis.serialize(outputStream)
@@ -150,168 +149,138 @@ class TcisSim:
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('AttackData')
-                ET.SubElement(root, 'MotionStatus').text = str(self.attackTrain['Data'][0][i][0][3])
-                ET.SubElement(root, 'AttackStatus').text = str(self.attackTrain['Data'][0][i][0][4])
-                ET.SubElement(root, 'Attack').text = str(self.attackTrain['Data'][0][i][0][5])
-                ET.SubElement(root, 'Label').text = str(self.attackTrain['Data'][0][i][0][6])
+                ET.SubElement(root, 'connections_info').text = str(row['connections_info'])
+                ET.SubElement(root, 'nonpaged_pool').text = str(row['nonpaged_pool'])
+                ET.SubElement(root, 'pagefile').text = str(row['pagefile'])
+                ET.SubElement(root, 'paged_pool').text = str(row['paged_pool'])
+                ET.SubElement(root, 'num_handles').text = str(row['num_handles'])
+                ET.SubElement(root, 'nonpaged_pool').text = str(row['nonpaged_pool'])
+                ET.SubElement(root, 'pagefile').text = str(row['pagefile'])
+                ET.SubElement(root, 'paged_pool').text = str(row['paged_pool'])
+                ET.SubElement(root, 'peak_pagefile').text = str(row['peak_pagefile'])
+                ET.SubElement(root, 'peak_nonpaged_pool').text = str(row['peak_nonpaged_pool'])
+                ET.SubElement(root, 'read_count').text = str(row['read_count'])
+                ET.SubElement(root, 'user').text = str(row['user'])
+                ET.SubElement(root, 'system').text = str(row['system'])
+                ET.SubElement(root, 'nice').text = str(row['nice'])
+                ET.SubElement(root, 'wset').text = str(row['wset'])
+                ET.SubElement(root, 'private').text = str(row['private'])
+                ET.SubElement(root, 'cnt').text = str(row['cnt'])
+                ET.SubElement(root, 'num_page_faults').text = str(row['num_page_faults'])
+                ET.SubElement(root, 'vms').text = str(row['vms'])
+                ET.SubElement(root, 'memory_percent').text = str(row['memory_percent'])
+                ET.SubElement(root, 'rss').text = str(row['rss'])
+                ET.SubElement(root, 'read_bytes').text = str(row['read_bytes'])
+                ET.SubElement(root, 'write_bytes').text = str(row['write_bytes'])
+                ET.SubElement(root, 'write_count').text = str(row['write_count'])
+                ET.SubElement(root, 'ionice').text = str(row['ionice'])
+                ET.SubElement(root, 'other_count').text = str(row['other_count'])
+                ET.SubElement(root, 'label').text = str(row['label'])
 
-                # Create XML string
                 xml_data = ET.tostring(root, encoding='utf8')
 
                 self.producer.produce_message(xml_data)
 
                 print("Sent {} PDU: {} bytes".format("AttackData", len(xml_data))
                     + "\n Attack Data Sent:"
-                    + "\n  Motion Status : {}".format(self.attackTrain['Data'][0][i][0][3])
-                    + "\n  Attack Status  : {}".format(self.attackTrain['Data'][0][i][0][4])
-                    + "\n  Attack        : {}".format(self.attackTrain['Data'][0][i][0][5])
-                    + "\n  Label         : {}\n".format(self.attackTrain['Data'][0][i][0][6])
+                    + " connections_info: {}\n".format(tcis.connections_info)
+                    + " num_handles: {}\n".format(tcis.num_handles)
+                    + " nonpaged_pool: {}\n".format(tcis.nonpaged_pool)
+                    + " pagefile: {}\n".format(tcis.pagefile)
+                    + " paged_pool: {}\n".format(tcis.paged_pool)
+                    + " peak_pagefile: {}\n".format(tcis.peak_pagefile)
+                    + " peak_nonpaged_pool: {}\n".format(tcis.peak_nonpaged_pool)
+                    + " read_count: {}\n".format(tcis.read_count)
+                    + " user: {}\n".format(tcis.user)
+                    + " system: {}\n".format(tcis.system)
+                    + " nice: {}\n".format(tcis.nice)
+                    + " wset: {}\n".format(tcis.wset)
+                    + " private: {}\n".format(tcis.private)
+                    + " cnt: {}\n".format(tcis.cnt)
+                    + " num_page_faults: {}\n".format(tcis.num_page_faults)
+                    + " vms: {}\n".format(tcis.vms)
+                    + " memory_percent: {}\n".format(tcis.memory_percent)
+                    + " rss: {}\n".format(tcis.rss)
+                    + " read_bytes: {}\n".format(tcis.read_bytes)
+                    + " write_bytes: {}\n".format(tcis.write_bytes)
+                    + " write_count: {}\n".format(tcis.write_count)
+                    + " ionice: {}\n".format(tcis.ionice)
+                    + " other_count: {}\n".format(tcis.other_count)
+                    + " Attack: {}\n".format(tcis.label.decode('utf-8'))
+                    + " Label : {}\n".format('TCIS computer')
                     )
                 
                 time.sleep(random.uniform(0, 2))
 
             if self.transmission == 'kafka_pdu':
-                attackTrainPdu = Environment()
-                attackTrainPdu.motion_status = self.attackTrain['Data'][0][i][0][3] # motion status
-                attackTrainPdu.attack_status = self.attackTrain['Data'][0][i][0][4].encode() #light status
-                attackTrainPdu.attack = self.attackTrain['Data'][0][i][0][5].encode()
-                attackTrainPdu.label = self.attackTrain['Data'][0][i][0][6]
-
+                tcis = TCIS()
+                
+                tcis.connections_info = row['connections_info'] 
+                tcis.num_handles = row['num_handles']
+                tcis.nonpaged_pool = row['nonpaged_pool']
+                tcis.pagefile = row['pagefile'] 
+                tcis.paged_pool = row['paged_pool']
+                tcis.peak_pagefile = row['peak_pagefile']
+                tcis.peak_nonpaged_pool = row['peak_nonpaged_pool']
+                tcis.read_count = row['read_count'] 
+                tcis.user = row['user'] 
+                tcis.system = row['system']
+                tcis.nice = row['nice']
+                tcis.wset = row['wset']
+                tcis.private = row['private']
+                tcis.cnt = row['cnt']
+                tcis.num_page_faults = row['num_page_faults']
+                tcis.vms =row['vms'] 
+                tcis.memory_percent = row['memory_percent'] 
+                tcis.rss =row['rss']
+                tcis.read_bytes = row['read_bytes']
+                tcis.write_bytes = row['write_bytes'] 
+                tcis.write_count = row['write_count'] 
+                tcis.ionice = row['ionice']
+                tcis.other_count = row['other_count']
+                tcis.label = row['label'].encode('utf-8')
+                
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
-                attackTrainPdu.serialize(outputStream)
+                tcis.serialize(outputStream)
                 data = memoryStream.getvalue()
 
                 self.producer.produce_message(data)
 
-                print("Sent {} PDU: {} bytes".format(attackTrainPdu.__class__.__name__, len(data)) 
-                    + "\n Attack Data Sent:"
-                    + "\n  Motion Status : {}".format(attackTrainPdu.motion_status)
-                    + "\n  Attack Status  : {}".format(attackTrainPdu.light_status.decode('utf-8'))
-                    + "\n  Attack        : {}".format(attackTrainPdu.attack.decode('utf-8'))
-                    + "\n  Label         : {}\n".format(attackTrainPdu.label)
-                    )
-
-                time.sleep(random.uniform(0, 2))
-
-    def sendAttackTest(self):
-        columnNames = self.attackTest['Dataframe'].columns
-        # print(self.lightTest['Dataframe'].head())
-        for i in range(len(self.attackTrain['Data'][0])):
-            if self.transmission == 'pdu':
-                attackTrainPdu = Environment()
-                attackTrainPdu.label = self.attackTrain['Data'][0][i][0][3] 
-                attackTrainPdu.connections_info = self.attackTrain['Data'][0][i][0][4] 
-                attackTrainPdu.num_handles = self.attackTrain['Data'][0][i][0][5]
-                attackTrainPdu.nonpaged_pool = self.attackTrain['Data'][0][i][0][6]
-                attackTrainPdu.pagefile = self.attackTrain['Data'][0][i][0][7] 
-                attackTrainPdu.paged_pool = self.attackTrain['Data'][0][i][0][8]
-                attackTrainPdu.peak_pagefile = self.attackTrain['Data'][0][i][0][9]
-                attackTrainPdu.peak_nonpaged_pool = self.attackTrain['Data'][0][i][0][10]
-                attackTrainPdu.read_count = self.attackTrain['Data'][0][i][0][11] 
-                attackTrainPdu.user = self.attackTrain['Data'][0][i][0][12] 
-                attackTrainPdu.system = self.attackTrain['Data'][0][i][0][13]
-                attackTrainPdu.nice = self.attackTrain['Data'][0][i][0][14]
-                attackTrainPdu.wset = self.attackTrain['Data'][0][i][0][15]
-                attackTrainPdu.private = self.attackTrain['Data'][0][i][0][16]
-                attackTrainPdu.cnt = self.attackTrain['Data'][0][i][0][17]
-                attackTrainPdu.num_page_faults = self.attackTrain['Data'][0][i][0][18]
-                attackTrainPdu.vms = self.attackTrain['Data'][0][i][0][19] 
-                attackTrainPdu.memory_percent = self.attackTrain['Data'][0][i][0][20] 
-                attackTrainPdu.rss = self.attackTrain['Data'][0][i][0][21]
-                attackTrainPdu.read_bytes = self.attackTrain['Data'][0][i][0][22]
-                attackTrainPdu.write_bytes = self.attackTrain['Data'][0][i][0][23] 
-                attackTrainPdu.write_count = self.attackTrain['Data'][0][i][0][24] 
-                attackTrainPdu.ionice = self.attackTrain['Data'][0][i][0][25]
-                attackTrainPdu.other_count = self.attackTrain['Data'][0][i][0][26]
-
-                memoryStream = BytesIO()
-                outputStream = DataOutputStream(memoryStream)
-                attackTrainPdu.serialize(outputStream)
-                data = memoryStream.getvalue()
-
-                self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
-
-                print("Sent {} PDU: {} bytes".format(attackTrainPdu.__class__.__name__, len(data)) 
-                    + "\n Attack Data Sent:"
-                    + " connections_info: {}\n".format(pdu.connections_info)
-                    + " num_handles: {}\n".format(pdu.num_handles)
-                    + " nonpaged_pool: {}\n".format(pdu.nonpaged_pool)
-                    + " pagefile: {}\n".format(pdu.pagefile)
-                    + " paged_pool: {}\n".format(pdu.paged_pool)
-                    + " peak_pagefile: {}\n".format(pdu.peak_pagefile)
-                    + " peak_nonpaged_pool: {}\n".format(pdu.peak_nonpaged_pool)
-                    + " read_count: {}\n".format(pdu.read_count)
-                    + " user: {}\n".format(pdu.user)
-                    + " system: {}\n".format(pdu.system)
-                    + " nice: {}\n".format(pdu.nice)
-                    + " wset: {}\n".format(pdu.wset)
-                    + " private: {}\n".format(pdu.private)
-                    + " cnt: {}\n".format(pdu.cnt)
-                    + " num_page_faults: {}\n".format(pdu.num_page_faults)
-                    + " vms: {}\n".format(pdu.vms)
-                    + " memory_percent: {}\n".format(pdu.memory_percent)
-                    + " rss: {}\n".format(pdu.rss)
-                    + " read_bytes: {}\n".format(pdu.read_bytes)
-                    + " write_bytes: {}\n".format(pdu.write_bytes)
-                    + " write_count: {}\n".format(pdu.write_count)
-                    + " ionice: {}\n".format(pdu.ionice)
-                    + " other_count: {}\n".format(pdu.other_count)
-                    + " Attack: {}\n".format(pdu.label.decode('utf-8'))
-                    + " Label : {}\n".format('TCIS computer')
-                    )
-                time.sleep(random.uniform(0, 2))
-            
-            if self.transmission == 'kafka':
-                # Create an XML element for each row in the dataframe
-                root = ET.Element('AttackData')
-                ET.SubElement(root, 'MotionStatus').text = str(self.lightTest['Data'][0][i][0][3])
-                ET.SubElement(root, 'AttackStatus').text = str(self.lightTest['Data'][0][i][0][4])
-                ET.SubElement(root, 'Attack').text = str(self.lightTest['Data'][0][i][0][5])
-                ET.SubElement(root, 'Label').text = str(self.lightTest['Data'][0][i][0][6])
-
-                # Create XML string
-                xml_data = ET.tostring(root, encoding='utf8')
-
-                self.producer.produce_message(xml_data)
-
-                print("Sent {} PDU: {} bytes".format("LightData", len(xml_data))
-                    + "\n Light Data Sent:"
-                    + "\n  Motion Status : {}".format(self.lightTest['Data'][0][i][0][3])
-                    + "\n  Light Status  : {}".format(self.lightTest['Data'][0][i][0][4])
-                    + "\n  Attack        : {}".format(self.lightTest['Data'][0][i][0][5])
-                    + "\n  Label         : {}\n".format(self.lightTest['Data'][0][i][0][6])
-                    )
-                
-                time.sleep(random.uniform(0, 2))
-
-            if self.transmission == 'kafka_pdu':
-                lightPdu = Light()
-                lightPdu.motion_status = self.lightTest['Data'][0][i][0][3] # motion status
-                lightPdu.light_status = self.lightTest['Data'][0][i][0][4].encode() #light status
-                lightPdu.attack = self.lightTest['Data'][0][i][0][5].encode()
-                lightPdu.label = self.lightTest['Data'][0][i][0][6]
-
-                memoryStream = BytesIO()
-                outputStream = DataOutputStream(memoryStream)
-                lightPdu.serialize(outputStream)
-                data = memoryStream.getvalue()
-
-                self.producer.produce_message(data) 
-
                 print("Sent {} PDU: {} bytes".format(tcis.__class__.__name__, len(data)) 
                     + "\n Attack Data Sent:"
-                    + "\n  Motion Status : {}".format(tcis.motion_status)
-                    + "\n  Attack Status  : {}".format(tcis.light_status.decode('utf-8'))
-                    + "\n  Attack        : {}".format(tcis.attack.decode('utf-8'))
-                    + "\n  Label         : {}\n".format(tcis.label)
+                    + " connections_info: {}\n".format(tcis.connections_info)
+                    + " num_handles: {}\n".format(tcis.num_handles)
+                    + " nonpaged_pool: {}\n".format(tcis.nonpaged_pool)
+                    + " pagefile: {}\n".format(tcis.pagefile)
+                    + " paged_pool: {}\n".format(tcis.paged_pool)
+                    + " peak_pagefile: {}\n".format(tcis.peak_pagefile)
+                    + " peak_nonpaged_pool: {}\n".format(tcis.peak_nonpaged_pool)
+                    + " read_count: {}\n".format(tcis.read_count)
+                    + " user: {}\n".format(tcis.user)
+                    + " system: {}\n".format(tcis.system)
+                    + " nice: {}\n".format(tcis.nice)
+                    + " wset: {}\n".format(tcis.wset)
+                    + " private: {}\n".format(tcis.private)
+                    + " cnt: {}\n".format(tcis.cnt)
+                    + " num_page_faults: {}\n".format(tcis.num_page_faults)
+                    + " vms: {}\n".format(tcis.vms)
+                    + " memory_percent: {}\n".format(tcis.memory_percent)
+                    + " rss: {}\n".format(tcis.rss)
+                    + " read_bytes: {}\n".format(tcis.read_bytes)
+                    + " write_bytes: {}\n".format(tcis.write_bytes)
+                    + " write_count: {}\n".format(tcis.write_count)
+                    + " ionice: {}\n".format(tcis.ionice)
+                    + " other_count: {}\n".format(tcis.other_count)
+                    + " Attack: {}\n".format(tcis.label.decode('utf-8'))
+                    + " Label : {}\n".format('TCIS computer')
                     )
-                
+
                 time.sleep(random.uniform(0, 2))
 
 
 if __name__ == '__main__':
     df = pd.read_csv('~/DIS_EVL/data/attack_dis_sim.csv')
     TcisSim = TcisSim(transmission= 'pdu')
-    # TcisSim = TcisSim(transmission= 'kafka_pdu')
+    #TcisSim = TcisSim(transmission= 'kafka_pdu')
     TcisSim.sendAttack(df)

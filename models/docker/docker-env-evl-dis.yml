@@ -64,7 +64,7 @@ services:
         ipv4_address: 172.18.0.3
 
   kafka:
-    image: "bitnami/kafka:latest"
+    image: "bitnami/kafka:3.3.2"
     container_name: kafka
     hostname: kafka
     ports:
