@@ -2,7 +2,8 @@ import pandas as pd
 from owlready2 import *
 import os
 
-os.chdir('tcis_master_attack_src')
+
+# os.chdir('tcis_master_attack_src')
 capec = pd.read_csv('./attack_files/3000.csv')
 capec = capec.fillna(' ')
 
