@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # MySQL Configuration
-MYSQL_CONTAINER_NAME="mysql"
+MYSQL_CONTAINER_NAME="mysql_osaids"
 MYSQL_USER="root"
 MYSQL_PASSWORD="secret"
 MYSQL_DATABASE="dis"

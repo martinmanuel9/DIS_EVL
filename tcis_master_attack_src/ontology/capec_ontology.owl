@@ -34,8 +34,8 @@
 </owl:ObjectProperty>
 
 <owl:ObjectProperty rdf:about="#work_against">
-  <rdfs:range rdf:resource="#RelatedWeaknesses"/>
   <rdfs:domain rdf:resource="#Mitigations"/>
+  <rdfs:range rdf:resource="#RelatedWeaknesses"/>
 </owl:ObjectProperty>
 
 <owl:ObjectProperty rdf:about="#has_prerequisites">
