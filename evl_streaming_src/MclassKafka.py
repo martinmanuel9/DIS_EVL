@@ -33,10 +33,6 @@ College of Engineering
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import datagen_synthetic as cbdg
-import ton_iot_datagen as ton_iot
-import bot_iot_datagen as bot_iot
-import unsw_nb15_datagen as unsw
 from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture as GMM
 from sklearn.neural_network import MLPClassifier
@@ -44,7 +40,7 @@ from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-from keras.preprocessing.sequence import pad_sequences
+# from keras.preprocessing.sequence import pad_sequences
 # from keras_preprocessing.sequence import pad_sequences
 from sklearn.svm import SVC, SVR
 import classifier_performance as cp
@@ -56,8 +52,9 @@ from matplotlib import patches as mpatches
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 matplotlib_axes_logger.setLevel('ERROR')
 from confluent_kafka import Consumer, KafkaError
-import dis.KafkaConsumer as kc
-
+import os
+import sys
+import dis.KafkaConsumer as KafkaConsumer
 
 class MClassStreamKafka(): 
     def __init__(self, 
@@ -89,9 +86,12 @@ class MClassStreamKafka():
         self.all_data = {}
         self.all_data_test = {}
         
-    def receiveKafkaTopics(self):
-        messages = kc.KafkaConsumer().receiveKafkaMessages()
-            
+    def getTrainData(self):
+        """
+        Get the training data from the Kafka topics
+        """
+        trainData = KafkaConsumer.KafkaConsumer.kafka_train_data
+        print(trainData)
         
 
     def findClosestMC(self, x, MC_Centers):
@@ -575,8 +575,8 @@ class MClassStreamKafka():
         3. save models under models based on topic
         """
         total_start = time.time()
-        # TODO: Need to fix initLabelData as topics no longer need initial. We just need to a quick training reference
-        self.initLabelData
+        self.getTrainData()
+        total_end = time.time()
 
     def mclass_stream_run(self):
         """
@@ -666,7 +666,7 @@ class MClassStreamKafka():
                                                     dataset= self.dataset , method= self.method , \
                                                     classifier= self.classifier, tstart=t_start, tend=t_end)
                     self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.X[ts+1][:,-1])
-              
+
                 elif self.datasource == 'UNSW':
                     self.preds[ts] = self.classify(trainData= inData, trainLabel=inData[:,-1], testData=self.Y[ts])
                     t_end = time.time()
@@ -680,6 +680,7 @@ class MClassStreamKafka():
         avg_metrics = cp.PerformanceMetrics(tstart= total_start, tend= total_end)
         self.avg_perf_metric = avg_metrics.findAvePerfMetrics(total_time=self.total_time, perf_metrics= self.performance_metric)
         return self.avg_perf_metric
+
 
 # test mclass
 train_mclass_stream = MClassStreamKafka(classifier='knn', cluster_method = 'kmeans', graph=False).trainer()
