@@ -582,7 +582,7 @@ class StreamingMClassification:
                     unique_dict[key] = value
 
         
-         # Convert tuples back into numpy arrays
+        # Convert tuples back into numpy arrays
         for key, value in unique_dict.items():
             if isinstance(value, tuple):
                 unique_dict[key] = np.array(value)

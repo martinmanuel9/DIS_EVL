@@ -56,23 +56,19 @@ from matplotlib import patches as mpatches
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 matplotlib_axes_logger.setLevel('ERROR')
 from confluent_kafka import Consumer, KafkaError
-import KafkaConsumer as kc
+import dis.KafkaConsumer as kc
 
 
 class MClassStreamKafka(): 
     def __init__(self, 
                 classifier,
-                dataset,
-                method,
-                datasource,
+                cluster_method,
                 graph = True): 
         """
         """
         self.classifier = classifier
-        self.dataset = dataset
-        self.datasource = datasource
         self.NClusters = 0
-        self.method = method
+        self.method = cluster_method
         self.cluster_centers ={}
         self.graph = graph
         self.preds = {}
@@ -92,7 +88,6 @@ class MClassStreamKafka():
         self.Yinit = {}
         self.all_data = {}
         self.all_data_test = {}
-        self.receiveKafkaTopics()
         
     def receiveKafkaTopics(self):
         messages = kc.KafkaConsumer().receiveKafkaMessages()
@@ -136,40 +131,26 @@ class MClassStreamKafka():
             optimal_cluster = max(sil_score, key=sil_score.get)
             self.NClusters = optimal_cluster
 
-    def cluster(self, X, y, ts):
-        if self.datasource == 'synthetic':
-            if self.method == 'kmeans':
-                if ts == 0:
-                    self.find_silhoette_score(X=X[ts], y=y, ts=ts)
-                    kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X[ts])  
-                else:
-                    kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X[ts]) #may not need to do this as we need to create a new cluster for the new data
-                # computes cluster centers and radii of cluster for initial ts
-                self.microCluster[ts] = self.create_centroid(inCluster = kmeans_model, fitCluster = kmeans_model.fit_predict(X[ts]), x= X[ts] , y= y)
-                self.clusters[ts] = kmeans_model.predict(X[ts]) # gets the cluster labels for the data
-                self.cluster_centers[ts] = kmeans_model.cluster_centers_
-            elif self.method == 'gmm':
-                gmm_model = GMM(n_components=self.NClusters)
-                gmm_model.fit(y) 
-                self.clusters[ts] = gmm_model.predict(self.Y[ts+1])
-                self.cluster_centers[ts] = self.clusters[ts]  
-        elif self.datasource == 'UNSW':
-            if self.method == 'kmeans':
-                if ts == 0:
-                    self.find_silhoette_score(X=self.all_data, y=self.all_data[:,-1], ts=ts)
-                    kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X)  
-                else:
-                    kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X) #may not need to do this as we need to create a new cluster for the new data
-                # computes cluster centers and radii of cluster for initial ts
-                self.microCluster[ts] = self.create_centroid(inCluster = kmeans_model, fitCluster = kmeans_model.fit_predict(X), x= X , y= y)
-                self.clusters[ts] = kmeans_model.predict(X) # gets the cluster labels for the data
-                self.cluster_centers[ts] = kmeans_model.cluster_centers_
+    def cluster(self, inData):
+        """
+        We cluster the data either through kmeans or gmm 
+        """       
+        if self.method == 'kmeans':
+            if ts == 0:
+                self.find_silhoette_score(X=self.all_data, y=self.all_data[:,-1], ts=ts)
+                kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X)  
+            else:
+                kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X) #may not need to do this as we need to create a new cluster for the new data
+            # computes cluster centers and radii of cluster for initial ts
+            self.microCluster[ts] = self.create_centroid(inCluster = kmeans_model, fitCluster = kmeans_model.fit_predict(X), x= X , y= y)
+            self.clusters[ts] = kmeans_model.predict(X) # gets the cluster labels for the data
+            self.cluster_centers[ts] = kmeans_model.cluster_centers_
 
-            elif self.method == 'gmm':
-                gmm_model = GMM(n_components=self.NClusters)
-                gmm_model.fit(y) 
-                self.clusters[ts] = gmm_model.predict(self.Y[ts+1])
-                self.cluster_centers[ts] = self.clusters[ts] 
+        elif self.method == 'gmm':
+            gmm_model = GMM(n_components=self.NClusters)
+            gmm_model.fit(y) 
+            self.clusters[ts] = gmm_model.predict(self.Y[ts+1])
+            self.cluster_centers[ts] = self.clusters[ts] 
             
         # for each of the clusters, find the labels of the data samples in the clusters
         # then look at the labels from the initially labeled data that are in the same
@@ -484,28 +465,17 @@ class MClassStreamKafka():
         updatedClusters = updatedModel.predict(inData)
         updatedClusterCenters = updatedModel.cluster_centers_
         return updatedMicroCluster, updatedClusters, updatedClusterCenters
-      
 
     def initLabelData(self, ts, inData, inLabels):
         self.cluster(X= inData, y= inLabels, ts=ts )
         t_start = time.time()
-        if self.datasource == 'synthetic':
-            # classify based on the clustered predictions (self.preds) done in the init step
-            self.preds[ts] = self.classify(trainData= inData[ts] , trainLabel= inLabels[:,-1], testData=self.X[ts+1])
-            t_end = time.time()
-            perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[ts], test= self.X[ts][:,-1], \
-                                            dataset= self.dataset , method= self.method , \
-                                            classifier= self.classifier, tstart=t_start, tend=t_end)
-            self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.X[ts+1][:,-1])
-        elif self.datasource == 'UNSW':
-             # classify based on the clustered predictions (self.preds) done in the init step
-            
-            self.preds[ts] = self.classify(trainData= inData , trainLabel= inLabels, testData= self.all_data_test[:np.shape(inData)[0]])
-            t_end = time.time()
-            perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[ts], test= self.all_data_test[:np.shape(self.preds[ts])[0]], \
-                                            dataset= self.dataset , method= self.method , \
-                                            classifier= self.classifier, tstart=t_start, tend=t_end)
-            self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.all_data_test[:np.shape(self.preds[ts])[0]][:,-1])
+        # classify based on the clustered predictions (self.preds) done in the init step
+        self.preds[ts] = self.classify(trainData= inData , trainLabel= inLabels, testData= self.all_data_test[:np.shape(inData)[0]])
+        t_end = time.time()
+        perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[ts], test= self.all_data_test[:np.shape(self.preds[ts])[0]], \
+                                        dataset= self.dataset , method= self.method , \
+                                        classifier= self.classifier, tstart=t_start, tend=t_end)
+        self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.all_data_test[:np.shape(self.preds[ts])[0]][:,-1])
 
 
     def findDisjointMCs(self, inMCluster):
@@ -589,24 +559,26 @@ class MClassStreamKafka():
                     value = tuple(map(tuple, value))
                 if value not in duplicates:
                     unique_dict[key] = value
-
-        
-         # Convert tuples back into numpy arrays
+                    
+        # Convert tuples back into numpy arrays
         for key, value in unique_dict.items():
             if isinstance(value, tuple):
                 unique_dict[key] = np.array(value)
 
-        return unique_dict2
+        return unique_dict
     
     def trainer(self):
         """
         Kafka stteaming Micro-Cluster classification to train model first
+        1. get all the data from the kafka topics
+        2. train models
+        3. save models under models based on topic
         """
         total_start = time.time()
-        
+        # TODO: Need to fix initLabelData as topics no longer need initial. We just need to a quick training reference
         self.initLabelData
 
-    def run(self):
+    def mclass_stream_run(self):
         """
         Micro-Cluster Classification
         1. The Algo takes an initial set of labeled data T and builds a set of labeled MCs (this is the first labeled data) -- complete 
@@ -710,6 +682,7 @@ class MClassStreamKafka():
         return self.avg_perf_metric
 
 # test mclass
-# run_mclass = MClassification(classifier='1dcnn', method = 'kmeans', dataset='ton_iot_fridge', datasource='UNSW', graph=False).run()
-# print(run_mclass) # ton_iot_fridge UG_2C_2D
+train_mclass_stream = MClassStreamKafka(classifier='knn', cluster_method = 'kmeans', graph=False).trainer()
+print(train_mclass_stream) 
 #%%
+ 
