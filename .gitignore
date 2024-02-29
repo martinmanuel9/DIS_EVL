@@ -11,3 +11,5 @@ models/dis/devices/__pycache__/**
 models/dis/devices/__pycache__
 models/spark-streaming/scripts/__pycache__/**
 models/spark-streaming/scripts/__pycache__
+evl_streaming_src/dis/__pycache__/**
+evl_streaming_src/__pycache__/** 

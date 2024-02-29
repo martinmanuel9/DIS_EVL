@@ -52,9 +52,13 @@ from matplotlib import patches as mpatches
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
 matplotlib_axes_logger.setLevel('ERROR')
 from confluent_kafka import Consumer, KafkaError
-import os
 import sys
-import dis.KafkaConsumer as KafkaConsumer
+import os
+current_directory = os.getcwd()
+os.chdir(current_directory + '/evl_streaming_src')
+updatedDirectory = os.getcwd()
+sys.path.append(updatedDirectory)
+from dis_sims import KafkaConsumer
 
 class MClassStreamKafka(): 
     def __init__(self, 
