@@ -173,7 +173,7 @@ class ThermostatSim:
                     + "\n  Attack             : {}".format(thermostatPdu.attack.decode('utf-8'))
                     + "\n  Label              : {}".format(thermostatPdu.label)
                     )
-                 
+                
                 time.sleep(5)
 
             if self.transmission == 'kafka':
@@ -222,7 +222,7 @@ class ThermostatSim:
                     + "\n  Attack             : {}".format(thermostatPdu.attack.decode('utf-8'))
                     + "\n  Label              : {}".format(thermostatPdu.label)
                     )
-                 
+                
                 time.sleep(5)
 
 # if __name__ == '__main__':

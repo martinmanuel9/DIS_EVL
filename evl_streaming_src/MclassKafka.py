@@ -55,10 +55,10 @@ from confluent_kafka import Consumer, KafkaError
 import sys
 import os
 current_directory = os.getcwd()
-os.chdir(current_directory + '/evl_streaming_src')
+# os.chdir(current_directory + '/evl_streaming_src')
 updatedDirectory = os.getcwd()
-sys.path.append(updatedDirectory)
-from dis_sims import KafkaConsumer
+sys.path.append(current_directory)
+from dis_sims import KafkaConsumer as kc
 
 class MClassStreamKafka(): 
     def __init__(self, 
@@ -94,8 +94,14 @@ class MClassStreamKafka():
         """
         Get the training data from the Kafka topics
         """
-        trainData = KafkaConsumer.KafkaConsumer.kafka_train_data
-        print(trainData)
+        trainData = kc.KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
+                                    group_id="dis",
+                                    topic=[ "gps"],
+                                    transmission="kafka_pdu",
+                                    mode="train",
+                                    verbose="true"
+                                    )
+        print(trainData.kafka_train_data)
         
 
     def findClosestMC(self, x, MC_Centers):
@@ -688,6 +694,6 @@ class MClassStreamKafka():
 
 # test mclass
 train_mclass_stream = MClassStreamKafka(classifier='knn', cluster_method = 'kmeans', graph=False).trainer()
-print(train_mclass_stream) 
+
 #%%
  

@@ -43,7 +43,8 @@ from opendismodel.opendis.PduFactory import createPdu
 from opendismodel.opendis.RangeCoordinates import *
 from io import BytesIO
 import pandas as pd
-
+import pyarrow as pa
+import pyarrow.parquet as pq
 
 class KafkaConsumer:
     def __init__(self, bootstrap_servers, group_id, topic, transmission, mode, verbose):
@@ -62,6 +63,8 @@ class KafkaConsumer:
         self.verbose = verbose
         self.kafka_train_data = {topic: pd.DataFrame() for topic in self.topic}
         
+        
+        
     
     def on_message(self, msg):
         if msg.error():
@@ -78,7 +81,7 @@ class KafkaConsumer:
                         if pdu.pduType == 1: # PduTypeDecoders.EntityStatePdu:
                             # Aggregate GPS data
                             gps_data = {
-                                "pdu_id": pdu.entityID.entityID,
+                                "pdu_id": pdu.pduType,
                                 "pdu_name": pduTypeName,
                                 "longitude": pdu.entityLocation.x,
                                 "latitude": pdu.entityLocation.y,
@@ -93,7 +96,7 @@ class KafkaConsumer:
                             
                             if self.verbose == "true":
                                 print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
-                                        + " Id          : {}\n".format(pdu.entityID.entityID)
+                                        + " PDU_Id      : {}\n".format(pdu.pduType)
                                         + " Longitude   : {:.3f} degrees\n".format(pdu.entityLocation.x)
                                         + " Latitude    : {:.3f} degrees\n".format(pdu.entityLocation.y)
                                         + " Altitude    : {:.3f} meters\n".format(pdu.entityLocation.z)
@@ -103,20 +106,28 @@ class KafkaConsumer:
                                         + " Attack      : {}\n".format(pdu.attack)
                                         + " Label       : {}\n".format(pdu.label)
                                         )
-                                
-                            if self.mode == "train":
+                            
+                            if self.kafka_train_data["gps"].empty:
+                                print("GPS DataFrame is empty before concatenation")
+                                self.kafka_train_data["gps"] = gps_df
+                            else:
+                                print("GPS DataFrame is not empty before concatenation")
+                                print("Shape before concatenation:", self.kafka_train_data["gps"].shape)
                                 self.kafka_train_data["gps"] = pd.concat([self.kafka_train_data["gps"], gps_df], ignore_index=True)
+                                print("Shape after concatenation:", self.kafka_train_data["gps"].shape)
+                            print(self.kafka_train_data["gps"])
                             
                             if self.mode == "test":
                                 return gps_df
                         
                         elif pdu.pduType == 73: # Light
                             light_data = {
-                                "pdu_id": pdu.entityID.entityID,
+                                "pdu_id": pdu.pduType,
                                 "pdu_name": pduTypeName,
                                 "light_status": pdu.light_status,
                                 "attack": pdu.attack,
                                 "label": pdu.label
+                                
                             }
                             light_df = pd.DataFrame([light_data])
                             
@@ -129,15 +140,19 @@ class KafkaConsumer:
                                     )
                             
                             if self.mode == "train":
-                                self.kafka_train_data["light"] = pd.concat([self.kafka_train_data["light"], light_df], ignore_index=True)
+                                if self.kafka_train_data['light'].empty:
+                                    self.kafka_train_data["light"] = light_df
+                                else:
+                                    self.kafka_train_data["light"] = pd.concat([self.kafka_train_data["light"], light_df], ignore_index=True)
                             
                             if self.mode == "test":
                                 return light_df
                         
                         elif pdu.pduType == 70:  # environment
                             weather_data = {
-                                "pdu_id": pdu.entityID.entityID,
+                                "pdu_id": pdu.pduType,
                                 "pdu_name": pduTypeName,
+                                "device": pdu.device,
                                 "temperature": pdu.temperature,
                                 "pressure": pdu.pressure,
                                 "humidity": pdu.humidity,
@@ -161,14 +176,17 @@ class KafkaConsumer:
                                         )
                                 
                             if self.mode == "train":
-                                self.kafka_train_data["weather"] = pd.concat([self.kafka_train_data["weather"], weather_df], ignore_index=True)
+                                if self.kafka_train_data['weather'].empty:
+                                    self.kafka_train_data["weather"] = weather_df
+                                else:
+                                    self.kafka_train_data["weather"] = pd.concat([self.kafka_train_data["weather"], weather_df], ignore_index=True)
                                 
                             if self.mode == "test":
                                 return weather_df
                             
                         elif pdu.pduType == 71: # modbus
                             modbus_data = {
-                                "pdu_id": pdu.entityID.entityID,
+                                "pdu_id": pdu.pduType,
                                 "pdu_name": pduTypeName,
                                 "fc1": pdu.fc1,
                                 "fc2": pdu.fc2,
@@ -190,13 +208,16 @@ class KafkaConsumer:
                                     )
                             
                             if self.mode == "train":
-                                self.kafka_train_data["modbus"] = pd.concat([self.kafka_train_data["modbus"], modbus_df], ignore_index=True)
+                                if self.kafka_train_data['modbus'].empty:
+                                    self.kafka_train_data["modbus"] = modbus_df
+                                else:
+                                    self.kafka_train_data["modbus"] = pd.concat([self.kafka_train_data["modbus"], modbus_df], ignore_index=True)
                             if self.mode == "test":
                                 return modbus_df
                         
                         elif pdu.pduType == 72: # garage
                             garage_data = {
-                                "pdu_id": pdu.entityID.entityID,
+                                "pdu_id": pdu.pduType,
                                 "pdu_name": pduTypeName,
                                 "door_state": pdu.door_state,
                                 "sphone": pdu.sphone,
@@ -214,14 +235,17 @@ class KafkaConsumer:
                                     )
                             
                             if self.mode == "train":
-                                self.kafka_train_data["garage"] = pd.concat([self.kafka_train_data["garage"], garage_df], ignore_index=True)
+                                if self.kafka_train_data['garage'].empty:
+                                    self.kafka_train_data["garage"] = garage_df
+                                else:
+                                    self.kafka_train_data["garage"] = pd.concat([self.kafka_train_data["garage"], garage_df], ignore_index=True)
                             if self.mode == "test":
                                 return garage_df
                         
                         else: 
                             pduData = {
-                                "pdu": ["pdu_id", "pdu_name", "attack", "label"],
-                                "value": [pdu.entityID.entityID, pduTypeName]
+                                "pdu_id": pdu.pduType,
+                                "pdu_name": pduTypeName
                             }
                             pduDf = pd.DataFrame(pduData)
                             if self.verbose == "true":
@@ -242,13 +266,22 @@ class KafkaConsumer:
             else:
                 logging.error("Received message is not a byte-like object.")
 
-    def consume_messages(self):
+    def consume_messages(self, timeout = 60):
+        last_message_time = time.time()
         try:
             while True:
                 msg = self.consumer.poll(1.0)
                 if msg is None:
                     continue
                 self.on_message(msg)
+                last_message_time = time.time() # update last message time
+                if time.time() - last_message_time > timeout:
+                    table = pa.Table.from_pandas(self.kafka_train_data)
+                    parquet_file_path = "../datasets"
+                    pq.write_table(table, parquet_file_path)
+                    print("Timeout: No messages received in the last {} seconds".format(timeout))
+                    self.consumer.close()
+                    last_message_time = time.time() # reset last message time
         except KeyboardInterrupt:
             pass
         except Exception as e:
@@ -266,7 +299,7 @@ def main():
             parser = argparse.ArgumentParser(description="Kafka Consumer")
             parser.add_argument("--bootstrap_servers", default="172.18.0.4:9092", help="Bootstrap servers")
             parser.add_argument("--group_id", default="dis", help="Group ID")
-            parser.add_argument("--topic", nargs="+", default=["fridge", "garage", "gps", "light","modbus", "thermostat", "weather"], help="Topic")
+            parser.add_argument("--topic", nargs="+", default=["fridge", "garage", "gps", "light", "modbus", "thermostat", "weather"], help="Topic")
             parser.add_argument("--transmission", choices = ["kafka","kafka_pdu"], default="kafka_pdu", help="Transmission option")
             parser.add_argument("--mode", choices=["train", "test"], default="train", help="Mode: train or test")
             parser.add_argument("--verbose", choices=["false", "true"], default="false", help="Enable verbose mode")

@@ -37,7 +37,7 @@ import devices.gpsSim as gpsSim
 import devices.lightSim as lightSim
 import devices.modbusSim as modbusSim
 import devices.weatherSim as weatherSim
-
+import devices.thermostatSim as thermostatSim
 class DeviceTrain():
     def __init__(self, transmission):
         self.transmission = transmission
@@ -52,6 +52,7 @@ class DeviceTrain():
             lightTrain = lightSim.LightSim(transmission=self.transmission)
             modbusTrain = modbusSim.ModbusSim(transmission=self.transmission)
             weatherTrain = weatherSim.WeatherSim(transmission=self.transmission)
+            thermnostatTrain = thermostatSim.ThermostatSim(transmission=self.transmission)
 
             # Create threads for each simulation and add them to the list
             threads.append(threading.Thread(target=fridgeTrain.sendFridgeTrain))
@@ -60,6 +61,7 @@ class DeviceTrain():
             threads.append(threading.Thread(target=lightTrain.sendLightTrain))
             threads.append(threading.Thread(target=modbusTrain.sendModbusTrain))
             threads.append(threading.Thread(target=weatherTrain.sendWeatherTrain))
+            threads.append(threading.Thread(target=thermnostatTrain.sendThermostatTrain))
 
             # Start all threads
             for thread in threads:
@@ -83,6 +85,7 @@ class DeviceTrain():
             lightTest = lightSim.LightSim(transmission=self.transmission)
             modbusTest = modbusSim.ModbusSim(transmission=self.transmission)
             weatherTest = weatherSim.WeatherSim(transmission=self.transmission)
+            thermostatTest = thermostatSim.ThermostatSim(transmission=self.transmission)
 
             # Create threads for each simulation and add them to the list
             threads.append(threading.Thread(target=fridgeTest.sendFridgeTest))
@@ -91,6 +94,7 @@ class DeviceTrain():
             threads.append(threading.Thread(target=lightTest.sendLightTest))
             threads.append(threading.Thread(target=modbusTest.sendModbusTest))
             threads.append(threading.Thread(target=weatherTest.sendWeatherTest))
+            threads.append(threading.Thread(target=thermostatTest.sendThermostatTest))
 
             # Start all threads
             for thread in threads:
