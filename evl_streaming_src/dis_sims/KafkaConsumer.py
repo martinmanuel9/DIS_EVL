@@ -62,6 +62,7 @@ class KafkaConsumer:
         self.mode = mode
         self.verbose = verbose
         self.kafka_train_data = {topic: pd.DataFrame() for topic in self.topic}
+        print(self.kafka_train_data)
         
         
         
@@ -141,10 +142,14 @@ class KafkaConsumer:
                             
                             if self.mode == "train":
                                 if self.kafka_train_data['light'].empty:
+                                    print("Light DataFrame is empty before concatenation")
                                     self.kafka_train_data["light"] = light_df
                                 else:
+                                    print("Light DataFrame is not empty before concatenation")
+                                    print("Shape before concatenation:", self.kafka_train_data["light"].shape)
                                     self.kafka_train_data["light"] = pd.concat([self.kafka_train_data["light"], light_df], ignore_index=True)
-                            
+                                    print("Shape after concatenation:", self.kafka_train_data["light"].shape)
+                                print(self.kafka_train_data["light"])
                             if self.mode == "test":
                                 return light_df
                         
@@ -177,9 +182,14 @@ class KafkaConsumer:
                                 
                             if self.mode == "train":
                                 if self.kafka_train_data['weather'].empty:
+                                    print("Weather DataFrame is empty before concatenation")
                                     self.kafka_train_data["weather"] = weather_df
                                 else:
+                                    print("Weather DataFrame is not empty before concatenation")
+                                    print("Shape before concatenation:", self.kafka_train_data["weather"].shape)
                                     self.kafka_train_data["weather"] = pd.concat([self.kafka_train_data["weather"], weather_df], ignore_index=True)
+                                    print("Shape after concatenation:", self.kafka_train_data["weather"].shape)
+                                print(self.kafka_train_data["weather"])
                                 
                             if self.mode == "test":
                                 return weather_df
@@ -209,9 +219,14 @@ class KafkaConsumer:
                             
                             if self.mode == "train":
                                 if self.kafka_train_data['modbus'].empty:
+                                    print("Modbus DataFrame is empty before concatenation")
                                     self.kafka_train_data["modbus"] = modbus_df
                                 else:
+                                    print("Modbus DataFrame is not empty before concatenation")
+                                    print("Shape before concatenation:", self.kafka_train_data["modbus"].shape)
                                     self.kafka_train_data["modbus"] = pd.concat([self.kafka_train_data["modbus"], modbus_df], ignore_index=True)
+                                    print("Shape after concatenation:", self.kafka_train_data["modbus"].shape)
+                                print(self.kafka_train_data["modbus"])
                             if self.mode == "test":
                                 return modbus_df
                         
@@ -236,9 +251,14 @@ class KafkaConsumer:
                             
                             if self.mode == "train":
                                 if self.kafka_train_data['garage'].empty:
+                                    print("Garage DataFrame is empty before concatenation")
                                     self.kafka_train_data["garage"] = garage_df
                                 else:
+                                    print("Garage DataFrame is not empty before concatenation")
+                                    print("Shape before concatenation:", self.kafka_train_data["garage"].shape)
                                     self.kafka_train_data["garage"] = pd.concat([self.kafka_train_data["garage"], garage_df], ignore_index=True)
+                                    print("Shape after concatenation:", self.kafka_train_data["garage"].shape)
+                                print(self.kafka_train_data["garage"])
                             if self.mode == "test":
                                 return garage_df
                         
@@ -288,31 +308,60 @@ class KafkaConsumer:
             logging.error(f"Error consuming message: {e}")
 
     def close(self):
+        print("closed consumer")
         self.consumer.close()
+        
+    def train(self, verbose):
+        logging.basicConfig(level=logging.INFO)
+        self.consumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
+                            group_id="dis",
+                            topic=["fridge", "garage", "gps", "light", "modbus", "thermostat", "weather"],
+                            transmission="kafka_pdu",
+                            mode="test",
+                            verbose=verbose
+                            )
+        self.consumer.consume_messages()
+
+            
+    def test(self, verbose):
+        try:
+            while True:
+                logging.basicConfig(level=logging.INFO)
+                consumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
+                                    group_id="dis",
+                                    topic=["fridge", "garage", "gps", "light", "modbus", "thermostat", "weather"],
+                                    transmission="kafka_pdu",
+                                    mode="test",
+                                    verbose= verbose
+                                    )
+                consumer.consume_messages()
+                time.sleep(1)  # delay of 1 second
+
+        except KeyboardInterrupt:
+            consumer.close()
 
 
+# def main():
+#     try:
+#         while True:
+#             logging.basicConfig(level=logging.INFO)
+#             parser = argparse.ArgumentParser(description="Kafka Consumer Training")
+#             parser.add_argument("--bootstrap_servers", default="172.18.0.4:9092", help="Bootstrap servers")
+#             parser.add_argument("--group_id", default="dis", help="Group ID")
+#             parser.add_argument("--topic", nargs="+", default=["fridge", "garage", "gps", "light", "modbus", "thermostat", "weather"], help="Topic")
+#             parser.add_argument("--transmission", choices = ["kafka","kafka_pdu"], default="kafka_pdu", help="Transmission option")
+#             parser.add_argument("--mode", choices=["train", "test"], default="train", help="Mode: train or test")
+#             parser.add_argument("--verbose", choices=["false", "true"], default="false", help="Enable verbose mode")
 
-def main():
-    try:
-        while True:
-            logging.basicConfig(level=logging.INFO)
-            parser = argparse.ArgumentParser(description="Kafka Consumer")
-            parser.add_argument("--bootstrap_servers", default="172.18.0.4:9092", help="Bootstrap servers")
-            parser.add_argument("--group_id", default="dis", help="Group ID")
-            parser.add_argument("--topic", nargs="+", default=["fridge", "garage", "gps", "light", "modbus", "thermostat", "weather"], help="Topic")
-            parser.add_argument("--transmission", choices = ["kafka","kafka_pdu"], default="kafka_pdu", help="Transmission option")
-            parser.add_argument("--mode", choices=["train", "test"], default="train", help="Mode: train or test")
-            parser.add_argument("--verbose", choices=["false", "true"], default="false", help="Enable verbose mode")
+#             args = parser.parse_args() 
 
-            args = parser.parse_args() 
+#             consumer = KafkaConsumer(args.bootstrap_servers, args.group_id, args.topic, args.transmission, args.mode, args.verbose)
+#             consumer.consume_messages()
+#             time.sleep(1)  # delay of 1 second
 
-            consumer = KafkaConsumer(args.bootstrap_servers, args.group_id, args.topic, args.transmission, args.mode, args.verbose)
-            consumer.consume_messages()
-            time.sleep(1)  # delay of 1 second
+#     except KeyboardInterrupt:
+#         consumer.close()
 
-    except KeyboardInterrupt:
-        consumer.close()
-
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
     

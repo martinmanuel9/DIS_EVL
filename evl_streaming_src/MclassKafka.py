@@ -94,14 +94,11 @@ class MClassStreamKafka():
         """
         Get the training data from the Kafka topics
         """
-        trainData = kc.KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                    group_id="dis",
-                                    topic=[ "gps"],
-                                    transmission="kafka_pdu",
-                                    mode="train",
-                                    verbose="true"
-                                    )
-        print(trainData.kafka_train_data)
+        kafkaConsumer = kc.KafkaConsumer
+        kafkaConsumer.train(self, verbose="true")
+        
+        # close the Kafka Consumer
+        kafkaConsumer.close(self)
         
 
     def findClosestMC(self, x, MC_Centers):
