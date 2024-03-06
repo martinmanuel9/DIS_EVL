@@ -95,10 +95,10 @@ class MClassStreamKafka():
         Get the training data from the Kafka topics
         """
         kafkaConsumer = kc.KafkaConsumer
-        kafkaConsumer.train(self, verbose="true")
+        kafkaConsumer.train(self, verbose="false")
         
-        # close the Kafka Consumer
-        kafkaConsumer.close(self)
+        # # close the Kafka Consumer
+        # kafkaConsumer.close(self)
         
 
     def findClosestMC(self, x, MC_Centers):

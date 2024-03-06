@@ -79,7 +79,7 @@ class TON_IoT_Datagen():
     def fridge_data(self):
         fridge_dataset = pd.read_csv('Train_Test_IoT_Fridge.csv')
         mapping = [{'col': 'temp_condition', 'mapping' : {"low": 1, "high": 2}}, 
-                   {'col': 'type', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomware': 5, 'scanning': 6, 'xss': 7 }}] 
+                {'col': 'type', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomware': 5, 'scanning': 6, 'xss': 7 }}] 
         fridgeMapped = OrdinalEncoder(cols=['temp_condition', 'type'], mapping=mapping).fit(fridge_dataset).transform(fridge_dataset)
         complete_fridge_dataset = fridge_dataset[['ts','date','time','fridge_temperature','temp_condition','type','label']]
         complete_fridge_dataset['ts'] = pd.to_numeric(complete_fridge_dataset['ts'])
