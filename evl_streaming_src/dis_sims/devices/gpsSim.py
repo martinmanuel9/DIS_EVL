@@ -65,13 +65,13 @@ class GPSSim:
         gpsDataset = ton.TON_IoT_Datagen(dataset = 'gps')
         self.gpsTrain, self.gpsTest = gpsDataset.create_dataset(train_stepsize=gpsDataset.gpsTrainStepsize, test_stepsize=gpsDataset.gpsTestStepsize, 
                                         train= gpsDataset.completeGPSTrainSet, test = gpsDataset.completeGPSTestSet)
-
+        
         self.gps = GPS()
 
     def sendGPSTrain(self):
         columnNames = self.gpsTrain['Dataframe'].columns
         # print(self.gpsTrain['Dataframe'].head())
-        for i in range(len(self.gpsTrain['Data'][0])):
+        for i in range(len(self.gpsTrain['Dataframe'])):
             """Sending via PDU and UDP Protocol via Open DIS """
             if self.transmission == 'pdu':
                 gpsPDU = EntityStatePdu()
@@ -80,8 +80,8 @@ class GPSSim:
                 gpsPDU.entityID.applicationID = 23
                 gpsPDU.marking.setString('Igor3d')
 
-                gpsLocation = self.gps.llarpy2ecef(np.deg2rad(self.gpsTrain['Data'][0][i][0][3]),   # longitude (radians)   
-                                            np.deg2rad(self.gpsTrain['Data'][0][i][0][4]), # latitude (radians)
+                gpsLocation = self.gps.llarpy2ecef(np.deg2rad(self.gpsTrain['Dataframe']['longitude'][i]),   # longitude (radians)   
+                                            np.deg2rad(self.gpsTrain['Dataframe']['latitude'][i]), # latitude (radians)
                                             1,               # altitude (meters)
                                             0,               # roll (radians)
                                             0,               # pitch (radians)
@@ -110,8 +110,8 @@ class GPSSim:
                 gpsPDU.entityOrientation.psi = float(round(rad2deg(body[3]),3))
                 gpsPDU.entityOrientation.theta = float(round(rad2deg(body[4]),3))
                 gpsPDU.entityOrientation.phi = float(round(rad2deg(body[5]),3))
-                gpsPDU.attack = self.gpsTrain['Data'][0][i][0][5].encode('utf-8')
-                gpsPDU.label = self.gpsTrain['Data'][0][i][0][6] 
+                gpsPDU.attack = self.gpsTrain['Dataframe']['type'][i].encode('utf-8')
+                gpsPDU.label = self.gpsTrain['Dataframe']['label'][i] 
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -137,10 +137,10 @@ class GPSSim:
             if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("GPSData")
-                ET.SubElement(root, "Longitude").text = str(self.gpsTrain['Data'][0][i][0][3])
-                ET.SubElement(root, "Latitude").text = str(self.gpsTrain['Data'][0][i][0][4])
-                ET.SubElement(root, "Attack").text = str(self.gpsTrain['Data'][0][i][0][5])
-                ET.SubElement(root, "Label").text = str(self.gpsTrain['Data'][0][i][0][6])
+                ET.SubElement(root, "Longitude").text = str(self.gpsTrain['Dataframe']['longitude'][i])
+                ET.SubElement(root, "Latitude").text = str(self.gpsTrain['Dataframe']['latitude'][i])
+                ET.SubElement(root, "Attack").text = str(self.gpsTrain['Dataframe']['type'][i])
+                ET.SubElement(root, "Label").text = str(self.gpsTrain['Dataframe']['label'][i])
 
                 # Convert the XML element to a string
                 xml_data = ET.tostring(root, encoding='utf8')
@@ -151,14 +151,14 @@ class GPSSim:
 
                 print( "Sent {} PDU: {} bytes".format("GPSData", len(xml_data))  
                     + "\n GPS Data Sent:"
-                    + "\n  Longitude   : {} degrees".format(self.gpsTrain['Data'][0][i][0][3]) 
-                    + "\n  Latitude    : {} degrees".format(self.gpsTrain['Data'][0][i][0][4])
+                    + "\n  Longitude   : {} degrees".format(self.gpsTrain['Dataframe']['longitude'][i]) 
+                    + "\n  Latitude    : {} degrees".format(self.gpsTrain['Dataframe']['latitude'][i])
                     + "\n  Altitude    : 1 meters"
                     + "\n  Roll        : 0 degrees"
                     + "\n  Pitch       : 0 degrees"
                     + "\n  Yaw         : 0 degrees"
-                    + "\n  Attack      : {}".format(self.gpsTrain['Data'][0][i][0][5])
-                    + "\n  Label       : {}\n".format(self.gpsTrain['Data'][0][i][0][6])
+                    + "\n  Attack      : {}".format(self.gpsTrain['Dataframe']['type'][i])
+                    + "\n  Label       : {}\n".format(self.gpsTrain['Dataframe']['label'][i])
                     )
 
                 time.sleep(random.uniform(0, 4))
@@ -170,8 +170,8 @@ class GPSSim:
                 gpsPDU.entityID.applicationID = 23
                 gpsPDU.marking.setString('Igor3d')
 
-                gpsLocation = self.gps.llarpy2ecef(np.deg2rad(self.gpsTrain['Data'][0][i][0][3]),   # longitude (radians)   
-                                            np.deg2rad(self.gpsTrain['Data'][0][i][0][4]), # latitude (radians)
+                gpsLocation = self.gps.llarpy2ecef(np.deg2rad(self.gpsTrain['Dataframe']['longitude'][i]),   # longitude (radians)   
+                                            np.deg2rad(self.gpsTrain['Dataframe']['latitude'][i]), # latitude (radians)
                                             1,               # altitude (meters)
                                             0,               # roll (radians)
                                             0,               # pitch (radians)
@@ -206,8 +206,8 @@ class GPSSim:
                 gpsPDU.roll = gpsPDU.entityOrientation.psi
                 gpsPDU.pitch = gpsPDU.entityOrientation.theta
                 gpsPDU.yaw = gpsPDU.entityOrientation.phi
-                gpsPDU.attack = self.gpsTrain['Data'][0][i][0][5].encode('utf-8')
-                gpsPDU.label = self.gpsTrain['Data'][0][i][0][6] 
+                gpsPDU.attack = self.gpsTrain['Dataframe']['type'][i].encode('utf-8')
+                gpsPDU.label = self.gpsTrain['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -234,7 +234,7 @@ class GPSSim:
     def sendGPSTest(self):
         columnNames = self.gpsTest['Dataframe'].columns
         # print(self.gpsTest['Dataframe'].head())
-        for i in range(len(self.gpsTest['Data'][0])):
+        for i in range(len(self.gpsTest['Dataframe'])):
             """Sending via PDU and UDP Protocol via Open DIS """
             if self.transmission == 'pdu':
                 gpsPDU = EntityStatePdu()
@@ -243,8 +243,8 @@ class GPSSim:
                 gpsPDU.entityID.applicationID = 23
                 gpsPDU.marking.setString('Igor3d')
 
-                gpsLocation = self.gps.llarpy2ecef(np.deg2rad(self.gpsTest['Data'][0][i][0][3]),   # longitude (radians)   
-                                            np.deg2rad(self.gpsTest['Data'][0][i][0][4]), # latitude (radians)
+                gpsLocation = self.gps.llarpy2ecef(np.deg2rad(self.gpsTest['Dataframe']['longitude'][i]),   # longitude (radians)   
+                                            np.deg2rad(self.gpsTest['Dataframe']['latitude'][i]), # latitude (radians)
                                             1,               # altitude (meters)
                                             0,               # roll (radians)
                                             0,               # pitch (radians)
@@ -273,8 +273,8 @@ class GPSSim:
                 gpsPDU.entityOrientation.psi = float(round(rad2deg(body[3]),3))
                 gpsPDU.entityOrientation.theta = float(round(rad2deg(body[4]),3))
                 gpsPDU.entityOrientation.phi = float(round(rad2deg(body[5]),3))
-                gpsPDU.attack = self.gpsTrain['Data'][0][i][0][5].encode('utf-8')
-                gpsPDU.label = self.gpsTrain['Data'][0][i][0][6] 
+                gpsPDU.attack = self.gpsTrain['Dataframe']['type'][i].encode('utf-8')
+                gpsPDU.label = self.gpsTrain['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -300,10 +300,10 @@ class GPSSim:
             if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("GPSData")
-                ET.SubElement(root, "Longitude").text = str(self.gpsTest['Data'][0][i][0][3])
-                ET.SubElement(root, "Latitude").text = str(self.gpsTest['Data'][0][i][0][4])
-                ET.SubElement(root, "Attack").text = str(self.gpsTest['Data'][0][i][0][5])
-                ET.SubElement(root, "Label").text = str(self.gpsTest['Data'][0][i][0][6])
+                ET.SubElement(root, "Longitude").text = str(self.gpsTest['Dataframe']['longitude'][i])
+                ET.SubElement(root, "Latitude").text = str(self.gpsTest['Dataframe']['latitude'][i])
+                ET.SubElement(root, "Attack").text = str(self.gpsTest['Dataframe']['type'][i])
+                ET.SubElement(root, "Label").text = str(self.gpsTest['Dataframe']['label'][i])
 
                 # Convert the XML element to a string
                 xml_data = ET.tostring(root, encoding='utf8')
@@ -313,14 +313,14 @@ class GPSSim:
 
                 print( "Sent {} PDU: {} bytes".format("GPSData", len(xml_data))  
                     + "\n GPS Data Sent:"
-                    + "\n  Longitude   : {} degrees".format(self.gpsTest['Data'][0][i][0][3]) 
-                    + "\n  Latitude    : {} degrees".format(self.gpsTest['Data'][0][i][0][4])
+                    + "\n  Longitude   : {} degrees".format(self.gpsTest['Dataframe']['longitude'][i]) 
+                    + "\n  Latitude    : {} degrees".format(self.gpsTest['Dataframe']['latitude'][i])
                     + "\n  Altitude    : 1 meters"
                     + "\n  Roll        : 0 degrees"
                     + "\n  Pitch       : 0 degrees"
                     + "\n  Yaw         : 0 degrees"
-                    + "\n  Attack      : {}".format(self.gpsTest['Data'][0][i][0][5])
-                    + "\n  Label       : {}\n".format(self.gpsTest['Data'][0][i][0][6])
+                    + "\n  Attack      : {}".format(self.gpsTest['Dataframe']['type'][i])
+                    + "\n  Label       : {}\n".format(self.gpsTest['Dataframe']['label'][i])
                     )
                 
                 time.sleep(random.uniform(0, 4))
@@ -332,8 +332,8 @@ class GPSSim:
                 gpsPDU.entityID.applicationID = 23
                 gpsPDU.marking.setString('Igor3d')
 
-                gpsLocation = self.gps.llarpy2ecef(np.deg2rad(self.gpsTest['Data'][0][i][0][3]),   # longitude (radians)   
-                                            np.deg2rad(self.gpsTest['Data'][0][i][0][4]), # latitude (radians)
+                gpsLocation = self.gps.llarpy2ecef(np.deg2rad(self.gpsTest['Dataframe']['longitude'][i]),   # longitude (radians)   
+                                            np.deg2rad(self.gpsTest['Dataframe']['latitude'][i]), # latitude (radians)
                                             1,               # altitude (meters)
                                             0,               # roll (radians)
                                             0,               # pitch (radians)
@@ -362,8 +362,8 @@ class GPSSim:
                 gpsPDU.entityOrientation.psi = float(round(rad2deg(body[3]),3))
                 gpsPDU.entityOrientation.theta = float(round(rad2deg(body[4]),3))
                 gpsPDU.entityOrientation.phi = float(round(rad2deg(body[5]),3))
-                gpsPDU.attack = self.gpsTrain['Data'][0][i][0][5].encode('utf-8')
-                gpsPDU.label = self.gpsTrain['Data'][0][i][0][6] 
+                gpsPDU.attack = self.gpsTrain['Dataframe']['type'][i].encode('utf-8')
+                gpsPDU.label = self.gpsTrain['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)

@@ -528,10 +528,6 @@ class KafkaConsumer:
             for thread in threads:
                 thread.join()
                 
-            time.sleep(5)  # idle time of 5 seconds
-            for thread in threads:
-                thread.join()
-                
             
             print("testing complete\n")
             self.consumer.close()  # close the Kafka consumer connection

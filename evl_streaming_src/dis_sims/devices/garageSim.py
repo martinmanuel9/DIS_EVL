@@ -66,17 +66,19 @@ class GarageSim:
         garageDataset = ton.TON_IoT_Datagen(dataset= 'garage')
         self.garageTrain, self.garageTest = garageDataset.create_dataset(train_stepsize=garageDataset.garageTrainStepsize, test_stepsize=garageDataset.garageTestStepsize, 
                                         train= garageDataset.completeGarageTrainSet, test = garageDataset.completeGarageTestSet)
+        
+        # print(self.garageTrain['Dataframe'].head())
 
     def sendGarageTrain(self):
         columnNames = self.garageTrain['Dataframe'].columns
         # print(self.garageTrain['Dataframe'].head())
-        for i in range(len(self.garageTrain['Data'][0])):
+        for i in range(len(self.garageTrain['Dataframe'])):
             if self.transmission == 'pdu':
                 garagePdu = Garage() 
-                garagePdu.door_state = self.garageTrain['Data'][0][i][0][3].encode('utf-8')
-                garagePdu.sphone = self.garageTrain['Data'][0][i][0][4]
-                garagePdu.attack = self.garageTrain['Data'][0][i][0][5].encode('utf-8')
-                garagePdu.label = self.garageTrain['Data'][0][i][0][6]
+                garagePdu.door_state = self.garageTrain['Dataframe']['door_state'][i].encode('utf-8')
+                garagePdu.sphone = self.garageTrain['Dataframe']['sphone_signal'][i]
+                garagePdu.attack = self.garageTrain['Dataframe']['type'][i].encode('utf-8')
+                garagePdu.label = self.garageTrain['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -99,10 +101,10 @@ class GarageSim:
             if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("GarageData")
-                ET.SubElement(root, "DoorState").text = str(self.garageTrain['Data'][0][i][0][3])
-                ET.SubElement(root, "Sphone").text = str(self.garageTrain['Data'][0][i][0][4])
-                ET.SubElement(root, "Attack").text = str(self.garageTrain['Data'][0][i][0][5])
-                ET.SubElement(root, "Label").text = str(self.garageTrain['Data'][0][i][0][6])
+                ET.SubElement(root, "DoorState").text = str(self.garageTrain['Dataframe']['door_state'][i])
+                ET.SubElement(root, "Sphone").text = str(self.garageTrain['Dataframe']['sphone_signal'][i])
+                ET.SubElement(root, "Attack").text = str(self.garageTrain['Dataframe']['type'][i])
+                ET.SubElement(root, "Label").text = str(self.garageTrain['Dataframe']['label'][i])
 
                 # Convert the XML element to a string
                 xml_data = ET.tostring(root, encoding='utf8')
@@ -112,20 +114,20 @@ class GarageSim:
 
                 print("Sent {} PDU: {} bytes".format("GarageData", len(xml_data)) 
                     + "\n Garage Data Sent:"
-                    + "\n  Door State     : {}".format(self.garageTrain['Data'][0][i][0][3])
-                    + "\n  Sphone         : {}".format(self.garageTrain['Data'][0][i][0][4])
-                    + "\n  Attack         : {}".format(self.garageTrain['Data'][0][i][0][5])
-                    + "\n  Label          : {}\n".format(self.garageTrain['Data'][0][i][0][6])
+                    + "\n  Door State     : {}".format(self.garageTrain['Dataframe']['door_state'][i])
+                    + "\n  Sphone         : {}".format(self.garageTrain['Dataframe']['sphone_signal'][i])
+                    + "\n  Attack         : {}".format(self.garageTrain['Dataframe']['type'][i])
+                    + "\n  Label          : {}\n".format(self.garageTrain['Dataframe']['label'][i])
                     )
                 
                 time.sleep(random.uniform(0, 3))
 
             if self.transmission == 'kafka_pdu':
                 garagePdu = Garage() 
-                garagePdu.door_state = self.garageTrain['Data'][0][i][0][3].encode('utf-8')
-                garagePdu.sphone = self.garageTrain['Data'][0][i][0][4]
-                garagePdu.attack = self.garageTrain['Data'][0][i][0][5].encode('utf-8')
-                garagePdu.label = self.garageTrain['Data'][0][i][0][6]
+                garagePdu.door_state = self.garageTrain['Dataframe']['door_state'][i].encode('utf-8')
+                garagePdu.sphone = self.garageTrain['Dataframe']['sphone_signal'][i]
+                garagePdu.attack = self.garageTrain['Dataframe']['type'][i].encode('utf-8')
+                garagePdu.label = self.garageTrain['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -148,13 +150,13 @@ class GarageSim:
     def sendGarageTest(self):
         columnNames = self.garageTest['Dataframe'].columns
         # print(self.garageTest['Dataframe'].head())
-        for i in range(len(self.garageTest['Data'][0])):
+        for i in range(len(self.garageTest['Dataframe'])):
             if self.transmission == 'pdu':
                 garagePdu = Garage() 
-                garagePdu.door_state = self.garageTest['Data'][0][i][0][3].encode('utf-8')
-                garagePdu.sphone = self.garageTest['Data'][0][i][0][4]
-                garagePdu.attack = self.garageTest['Data'][0][i][0][5].encode('utf-8')
-                garagePdu.label = self.garageTest['Data'][0][i][0][6]
+                garagePdu.door_state = self.garageTest['Dataframe']['door_state'][i].encode('utf-8')
+                garagePdu.sphone = self.garageTest['Dataframe']['sphone_signal'][i]
+                garagePdu.attack = self.garageTest['Dataframe']['type'][i].encode('utf-8')
+                garagePdu.label = self.garageTest['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -176,10 +178,10 @@ class GarageSim:
             if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("GarageData")
-                ET.SubElement(root, "DoorState").text = str(self.garageTest['Data'][0][i][0][3])
-                ET.SubElement(root, "Sphone").text = str(self.garageTest['Data'][0][i][0][4])
-                ET.SubElement(root, "Attack").text = str(self.garageTest['Data'][0][i][0][5])
-                ET.SubElement(root, "Label").text = str(self.garageTest['Data'][0][i][0][6])
+                ET.SubElement(root, "DoorState").text = str(self.garageTest['Dataframe']['door_state'][i])
+                ET.SubElement(root, "Sphone").text = str(self.garageTest['Dataframe']['sphone_signal'][i])
+                ET.SubElement(root, "Attack").text = str(self.garageTest['Dataframe']['type'][i])
+                ET.SubElement(root, "Label").text = str(self.garageTest['Dataframe']['label'][i])
 
                 # Convert the XML element to a string
                 xml_data = ET.tostring(root, encoding='utf8')
@@ -189,20 +191,20 @@ class GarageSim:
 
                 print("Sent {} PDU: {} bytes".format("GarageData", len(xml_data))
                     + "\n Garage Data Sent:"
-                    + "\n  Door State     : {}".format(self.garageTest['Data'][0][i][0][3])
-                    + "\n  Sphone         : {}".format(self.garageTest['Data'][0][i][0][4])
-                    + "\n  Attack         : {}".format(self.garageTest['Data'][0][i][0][5])
-                    + "\n  Label          : {}".format(self.garageTest['Data'][0][i][0][6])
+                    + "\n  Door State     : {}".format(self.garageTest['Dataframe']['door_state'][i])
+                    + "\n  Sphone         : {}".format(self.garageTest['Dataframe']['sphone_signal'][i])
+                    + "\n  Attack         : {}".format(self.garageTest['Dataframe']['type'][i])
+                    + "\n  Label          : {}".format(self.garageTest['Dataframe']['label'][i])
                     )
                 
                 time.sleep(random.uniform(0, 3))
             
             if self.transmission == 'kafka_pdu':
                 garagePdu = Garage() 
-                garagePdu.door_state = self.garageTest['Data'][0][i][0][3].encode('utf-8')
-                garagePdu.sphone = self.garageTest['Data'][0][i][0][4]
-                garagePdu.attack = self.garageTest['Data'][0][i][0][5].encode('utf-8')
-                garagePdu.label = self.garageTest['Data'][0][i][0][6]
+                garagePdu.door_state = self.garageTest['Dataframe']['door_state'][i].encode('utf-8')
+                garagePdu.sphone = self.garageTest['Dataframe']['sphone_signal'][i]
+                garagePdu.attack = self.garageTest['Dataframe']['type'][i].encode('utf-8')
+                garagePdu.label = self.garageTest['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)

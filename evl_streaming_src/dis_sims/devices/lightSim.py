@@ -70,13 +70,13 @@ class LightSim:
     def sendLightTrain(self):
         columnNames = self.lightTrain['Dataframe'].columns
         # print(self.lightTrain['Dataframe'].head())
-        for i in range(len(self.lightTrain['Data'][0])):
+        for i in range(len(self.lightTrain['Dataframe'])):
             if self.transmission == 'pdu':
                 lightTrainPdu = Light()
-                lightTrainPdu.motion_status = self.lightTrain['Data'][0][i][0][3] # motion status
-                lightTrainPdu.light_status = self.lightTrain['Data'][0][i][0][4].encode() #light status
-                lightTrainPdu.attack = self.lightTrain['Data'][0][i][0][5].encode()
-                lightTrainPdu.label = self.lightTrain['Data'][0][i][0][6]
+                lightTrainPdu.motion_status = self.lightTrain['Dataframe']['motion_status'][i] # motion status
+                lightTrainPdu.light_status = self.lightTrain['Dataframe']['light_status'][i].encode() #light status
+                lightTrainPdu.attack = self.lightTrain['Dataframe']['type'][i].encode()
+                lightTrainPdu.label = self.lightTrain['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -98,10 +98,10 @@ class LightSim:
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('LightData')
-                ET.SubElement(root, 'MotionStatus').text = str(self.lightTrain['Data'][0][i][0][3])
-                ET.SubElement(root, 'LightStatus').text = str(self.lightTrain['Data'][0][i][0][4])
-                ET.SubElement(root, 'Attack').text = str(self.lightTrain['Data'][0][i][0][5])
-                ET.SubElement(root, 'Label').text = str(self.lightTrain['Data'][0][i][0][6])
+                ET.SubElement(root, 'MotionStatus').text = str(self.lightTrain['Dataframe']['motion_status'][i])
+                ET.SubElement(root, 'LightStatus').text = str(self.lightTrain['Dataframe']['light_status'][i])
+                ET.SubElement(root, 'Attack').text = str(self.lightTrain['Dataframe']['type'][i])
+                ET.SubElement(root, 'Label').text = str(self.lightTrain['Dataframe']['label'][i])
 
                 # Create XML string
                 xml_data = ET.tostring(root, encoding='utf8')
@@ -110,20 +110,20 @@ class LightSim:
 
                 print("Sent {} PDU: {} bytes".format("LightData", len(xml_data))
                     + "\n Light Data Sent:"
-                    + "\n  Motion Status : {}".format(self.lightTrain['Data'][0][i][0][3])
-                    + "\n  Light Status  : {}".format(self.lightTrain['Data'][0][i][0][4])
-                    + "\n  Attack        : {}".format(self.lightTrain['Data'][0][i][0][5])
-                    + "\n  Label         : {}\n".format(self.lightTrain['Data'][0][i][0][6])
+                    + "\n  Motion Status : {}".format(self.lightTrain['Dataframe']['motion_status'][i])
+                    + "\n  Light Status  : {}".format(self.lightTrain['Dataframe']['light_status'][i])
+                    + "\n  Attack        : {}".format(self.lightTrain['Dataframe']['type'][i])
+                    + "\n  Label         : {}\n".format(self.lightTrain['Dataframe']['label'][i])
                     )
                 
                 time.sleep(random.uniform(0, 2))
 
             if self.transmission == 'kafka_pdu':
                 lightTrainPdu = Light()
-                lightTrainPdu.motion_status = self.lightTrain['Data'][0][i][0][3] # motion status
-                lightTrainPdu.light_status = self.lightTrain['Data'][0][i][0][4].encode() #light status
-                lightTrainPdu.attack = self.lightTrain['Data'][0][i][0][5].encode()
-                lightTrainPdu.label = self.lightTrain['Data'][0][i][0][6]
+                lightTrainPdu.motion_status = self.lightTrain['Dataframe']['motion_status'][i] # motion status
+                lightTrainPdu.light_status = self.lightTrain['Dataframe']['light_status'][i].encode() #light status
+                lightTrainPdu.attack = self.lightTrain['Dataframe']['type'][i].encode()
+                lightTrainPdu.label = self.lightTrain['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -148,10 +148,10 @@ class LightSim:
         for i in range(len(self.lightTrain['Data'][0])):
             if self.transmission == 'pdu':
                 lightPdu = Light()
-                lightPdu.motion_status = self.lightTest['Data'][0][i][0][3] # motion status
-                lightPdu.light_status = self.lightTest['Data'][0][i][0][4].encode() #light status
-                lightPdu.attack = self.lightTest['Data'][0][i][0][5].encode()
-                lightPdu.label = self.lightTest['Data'][0][i][0][6]
+                lightPdu.motion_status = self.lightTest['Dataframe']['motion_status'][i] # motion status
+                lightPdu.light_status = self.lightTest['Dataframe']['light_status'][i].encode() #light status
+                lightPdu.attack = self.lightTest['Dataframe']['type'][i].encode()
+                lightPdu.label = self.lightTest['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -172,10 +172,10 @@ class LightSim:
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('LightData')
-                ET.SubElement(root, 'MotionStatus').text = str(self.lightTest['Data'][0][i][0][3])
-                ET.SubElement(root, 'LightStatus').text = str(self.lightTest['Data'][0][i][0][4])
-                ET.SubElement(root, 'Attack').text = str(self.lightTest['Data'][0][i][0][5])
-                ET.SubElement(root, 'Label').text = str(self.lightTest['Data'][0][i][0][6])
+                ET.SubElement(root, 'MotionStatus').text = str(self.lightTest['Dataframe']['motion_status'][i])
+                ET.SubElement(root, 'LightStatus').text = str(self.lightTest['Dataframe']['light_status'][i])
+                ET.SubElement(root, 'Attack').text = str(self.lightTest['Dataframe']['type'][i])
+                ET.SubElement(root, 'Label').text = str(self.lightTest['Dataframe']['label'][i])
 
                 # Create XML string
                 xml_data = ET.tostring(root, encoding='utf8')
@@ -184,20 +184,20 @@ class LightSim:
 
                 print("Sent {} PDU: {} bytes".format("LightData", len(xml_data))
                     + "\n Light Data Sent:"
-                    + "\n  Motion Status : {}".format(self.lightTest['Data'][0][i][0][3])
-                    + "\n  Light Status  : {}".format(self.lightTest['Data'][0][i][0][4])
-                    + "\n  Attack        : {}".format(self.lightTest['Data'][0][i][0][5])
-                    + "\n  Label         : {}\n".format(self.lightTest['Data'][0][i][0][6])
+                    + "\n  Motion Status : {}".format(self.lightTest['Dataframe']['motion_status'][i])
+                    + "\n  Light Status  : {}".format(self.lightTest['Dataframe']['light_status'][i])
+                    + "\n  Attack        : {}".format(self.lightTest['Dataframe']['type'][i])
+                    + "\n  Label         : {}\n".format(self.lightTest['Dataframe']['label'][i])
                     )
                 
                 time.sleep(random.uniform(0, 2))
 
             if self.transmission == 'kafka_pdu':
                 lightPdu = Light()
-                lightPdu.motion_status = self.lightTest['Data'][0][i][0][3] # motion status
-                lightPdu.light_status = self.lightTest['Data'][0][i][0][4].encode() #light status
-                lightPdu.attack = self.lightTest['Data'][0][i][0][5].encode()
-                lightPdu.label = self.lightTest['Data'][0][i][0][6]
+                lightPdu.motion_status = self.lightTest['Dataframe']['motion_status'][i] # motion status
+                lightPdu.light_status = self.lightTest['Dataframe']['light_status'][i].encode() #light status
+                lightPdu.attack = self.lightTest['Dataframe']['type'][i].encode()
+                lightPdu.label = self.lightTest['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -217,6 +217,6 @@ class LightSim:
                 time.sleep(random.uniform(0, 2))
 
 
-# if __name__ == '__main__':
-#     LightSim = LightSim(transmission= 'kafka_pdu')
-#     LightSim.sendLightTrain()
+if __name__ == '__main__':
+    LightSim = LightSim(transmission= 'kafka_pdu')
+    LightSim.sendLightTest()

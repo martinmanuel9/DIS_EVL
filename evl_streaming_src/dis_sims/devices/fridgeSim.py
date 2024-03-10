@@ -66,21 +66,25 @@ class FridgeSim:
         fridgeDataset = ton.TON_IoT_Datagen(dataset='fridge')
         self.fridgeTrain, self.fridgeTest = fridgeDataset.create_dataset(train_stepsize=fridgeDataset.fridgeTrainStepsize, test_stepsize=fridgeDataset.fridgeTestStepsize, 
                                         train= fridgeDataset.completeFridgeTrainSet, test = fridgeDataset.completeFridgeTestSet)
-
+        
+        # print(self.fridgeTrain['Dataframe'].head())
+        # print(self.fridgeTrain['Dataframe']['fridge_temperature'][0])
+        # print(len(self.fridgeTrain['Dataframe']))
+        
 
     def sendFridgeTrain(self ):
         columnNames = self.fridgeTrain['Dataframe'].columns
         # print(self.fridgeTrain['Dataframe'].head())
-        for i in range(len(self.fridgeTrain['Data'][0])):
+        for i in range(len(self.fridgeTrain['Dataframe'])):
             """Sending via PDU and UDP Protocol via Open DIS """
             if self.transmission == 'pdu':
                 fridgeEnvPdu = Environment()
                 device = "Fridge"
                 fridgeEnvPdu.device = device.encode('utf-8')
-                fridgeEnvPdu.temperature = self.fridgeTrain['Data'][0][i][0][3] # fridge 
-                fridgeEnvPdu.condition = self.fridgeTrain['Data'][0][i][0][4].encode('utf-8')
-                fridgeEnvPdu.attack = self.fridgeTrain['Data'][0][i][0][5].encode('utf-8') # attack
-                fridgeEnvPdu.label = int(self.fridgeTrain['Data'][0][i][0][6])  #label
+                fridgeEnvPdu.temperature = self.fridgeTrain['Dataframe']['fridge_temperature'][i] # fridge 
+                fridgeEnvPdu.condition = self.fridgeTrain['Dataframe']['temp_condition'][i].encode('utf-8')
+                fridgeEnvPdu.attack = self.fridgeTrain['Dataframe']['type'][i].encode('utf-8') # attack
+                fridgeEnvPdu.label = int(self.fridgeTrain['Dataframe']['label'][i])  #label
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -104,10 +108,10 @@ class FridgeSim:
             if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("FridgeData")
-                ET.SubElement(root, "FridgeTempRow").text = str(self.fridgeTrain['Data'][0][i][0][3])
-                ET.SubElement(root, "FridgeTempCondition").text = str(self.fridgeTrain['Data'][0][i][0][4])
-                ET.SubElement(root, "Attack").text = str(self.fridgeTrain['Data'][0][i][0][5])
-                ET.SubElement(root, "Label").text = str(self.fridgeTrain['Data'][0][i][0][6])
+                ET.SubElement(root, "FridgeTempRow").text = str(self.fridgeTrain['Dataframe']['fridge_temperature'][i])
+                ET.SubElement(root, "FridgeTempCondition").text = str(self.fridgeTrain['Dataframe']['temp_condition'][i])
+                ET.SubElement(root, "Attack").text = str(self.fridgeTrain['Dataframe']['type'][i])
+                ET.SubElement(root, "Label").text = str(self.fridgeTrain['Dataframe']['label'][i])
 
                 # Convert the XML element to a string
                 xml_data = ET.tostring(root, encoding='utf-8')
@@ -117,10 +121,10 @@ class FridgeSim:
 
                 print("Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
                     + "\n Fridge Data Sent:"
-                    + "\n Temperature     : {}".format(self.fridgeTrain['Data'][0][i][0][3])
-                    + "\n Temp Condition  : {}".format(self.fridgeTrain['Data'][0][i][0][4])
-                    + "\n Attack          : {}".format(self.fridgeTrain['Data'][0][i][0][5])
-                    + "\n Label           : {}\n".format(self.fridgeTrain['Data'][0][i][0][6])
+                    + "\n Temperature     : {}".format(self.fridgeTrain['Dataframe']['fridge_temperature'][i])
+                    + "\n Temp Condition  : {}".format(self.fridgeTrain['Dataframe']['temp_condition'][i])
+                    + "\n Attack          : {}".format(self.fridgeTrain['Dataframe']['type'][i])
+                    + "\n Label           : {}\n".format(self.fridgeTrain['Dataframe']['label'][i])
                     )
                 
                 time.sleep(2)
@@ -130,10 +134,10 @@ class FridgeSim:
                 fridgeEnvPdu = Environment()
                 device = "Fridge"
                 fridgeEnvPdu.device = device.encode('utf-8')
-                fridgeEnvPdu.temperature = self.fridgeTrain['Data'][0][i][0][3] # fridge 
-                fridgeEnvPdu.condition = self.fridgeTrain['Data'][0][i][0][4].encode('utf-8')
-                fridgeEnvPdu.attack = self.fridgeTrain['Data'][0][i][0][5].encode('utf-8') # attack
-                fridgeEnvPdu.label = int(self.fridgeTrain['Data'][0][i][0][6])  #label
+                fridgeEnvPdu.temperature = self.fridgeTrain['Dataframe']['fridge_temperature'][i] # fridge 
+                fridgeEnvPdu.condition = self.fridgeTrain['Dataframe']['temp_condition'][i].encode('utf-8')
+                fridgeEnvPdu.attack = self.fridgeTrain['Dataframe']['type'][i].encode('utf-8') # attack
+                fridgeEnvPdu.label = int(self.fridgeTrain['Dataframe']['label'][i])  #label
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -157,16 +161,16 @@ class FridgeSim:
     def sendFridgeTest(self):
         columnNames = self.fridgeTest['Dataframe'].columns
         # print(self.fridgeTest['Dataframe'].head())
-        for i in range(len(self.fridgeTest['Data'][0])):
+        for i in range(len(self.fridgeTest['Dataframe'])):
             """Sending via PDU and UDP Protocol via Open DIS """
             if self.transmission == 'pdu':
                 fridgeEnvPdu = Environment()
                 device = "Fridge"
                 fridgeEnvPdu.device = device.encode('utf-8')
-                fridgeEnvPdu.temperature = self.fridgeTest['Data'][0][i][0][3] # fridge row  
-                fridgeEnvPdu.condition = self.fridgeTest['Data'][0][i][0][4].encode('utf-8')
-                fridgeEnvPdu.attack = self.fridgeTest['Data'][0][i][0][5].encode('utf-8') # attack
-                fridgeEnvPdu.label = int(self.fridgeTest['Data'][0][i][0][6])  #label
+                fridgeEnvPdu.temperature = self.fridgeTest['Dataframe']['fridge_temperature'][i] # fridge row  
+                fridgeEnvPdu.condition = self.fridgeTest['Dataframe']['temp_condition'][i].encode('utf-8')
+                fridgeEnvPdu.attack = self.fridgeTest['Dataframe']['type'][i].encode('utf-8') # attack
+                fridgeEnvPdu.label = int(self.fridgeTest['Dataframe']['label'][i])  #label
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -190,10 +194,10 @@ class FridgeSim:
             if self.transmission == 'kafka':
                 # Create an XML element for the data
                 root = ET.Element("FridgeData")
-                ET.SubElement(root, "FridgeTempRow").text = str(self.fridgeTest['Data'][0][i][0][3])
-                ET.SubElement(root, "FridgeTempCondition").text = str(self.fridgeTest['Data'][0][i][0][4])
-                ET.SubElement(root, "Attack").text = str(self.fridgeTest['Data'][0][i][0][5])
-                ET.SubElement(root, "Label").text = str(self.fridgeTest['Data'][0][i][0][6])
+                ET.SubElement(root, "FridgeTempRow").text = str(self.fridgeTest['Dataframe']['fridge_temperature'][i])
+                ET.SubElement(root, "FridgeTempCondition").text = str(self.fridgeTest['Dataframe']['temp_condition'][i])
+                ET.SubElement(root, "Attack").text = str(self.fridgeTest['Dataframe']['type'][i])
+                ET.SubElement(root, "Label").text = str(self.fridgeTest['Dataframe']['label'][i])
 
                 # Convert the XML element to a string
                 xml_data = ET.tostring(root, encoding='utf-8')
@@ -203,10 +207,10 @@ class FridgeSim:
 
                 print("Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
                     + "\n Fridge Data Sent:"
-                    + "\n Temperature     : {}".format(self.fridgeTest['Data'][0][i][0][3])
-                    + "\n Temp Condition  : {}".format(self.fridgeTest['Data'][0][i][0][4])
-                    + "\n Attack          : {}".format(self.fridgeTest['Data'][0][i][0][5])
-                    + "\n Label           : {}\n".format(self.fridgeTest['Data'][0][i][0][6])
+                    + "\n Temperature     : {}".format(self.fridgeTest['Dataframe']['fridge_temperature'][i])
+                    + "\n Temp Condition  : {}".format(self.fridgeTest['Dataframe']['temp_condition'][i])
+                    + "\n Attack          : {}".format(self.fridgeTest['Dataframe']['type'][i])
+                    + "\n Label           : {}\n".format(self.fridgeTest['Dataframe']['label'][i])
                     )
                 
                 time.sleep(2)
@@ -216,10 +220,10 @@ class FridgeSim:
                 fridgeEnvPdu = Environment()
                 device = "Fridge"
                 fridgeEnvPdu.device = device.encode('utf-8')
-                fridgeEnvPdu.temperature = self.fridgeTest['Data'][0][i][0][3] # fridge 
-                fridgeEnvPdu.condition = self.fridgeTest['Data'][0][i][0][4].encode('utf-8')
-                fridgeEnvPdu.attack = self.fridgeTest['Data'][0][i][0][5].encode('utf-8') # attack
-                fridgeEnvPdu.label = int(self.fridgeTest['Data'][0][i][0][6])  #label
+                fridgeEnvPdu.temperature = self.fridgeTest['Dataframe']['fridge_temperature'][i] # fridge 
+                fridgeEnvPdu.condition = self.fridgeTest['Dataframe']['temp_condition'][i].encode('utf-8')
+                fridgeEnvPdu.attack = self.fridgeTest['Dataframe']['type'][i].encode('utf-8') # attack
+                fridgeEnvPdu.label = int(self.fridgeTest['Dataframe']['label'][i])  #label
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
