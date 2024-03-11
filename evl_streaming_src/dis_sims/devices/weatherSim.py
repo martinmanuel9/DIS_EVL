@@ -69,16 +69,16 @@ class WeatherSim:
         columnNames = self.weatherTrain['Dataframe'].columns
         # print(self.weatherTrain['Dataframe'].head())
         # print( self.weatherTrain['Dataframe'][self.weatherTrain['Dataframe']['label'].isnull()])
-        for i in range((len(self.weatherTrain['Data'][0]))):
+        for i in range((len(self.weatherTrain['Dataframe']))):
             if self.transmission == 'pdu':
                 weatherPdu = Environment()
                 device = "Weather"
                 weatherPdu.device = device.encode('utf-8') # device
-                weatherPdu.temperature = self.weatherTrain['Data'][0][i][0][3] # tempeature
-                weatherPdu.pressure = self.weatherTrain['Data'][0][i][0][4] # pressure
-                weatherPdu.humidity = self.weatherTrain['Data'][0][i][0][5] # humidity 
-                weatherPdu.attack = self.weatherTrain['Data'][0][i][0][6].encode('utf-8')
-                weatherPdu.label = self.weatherTrain['Data'][0][i][0][7] 
+                weatherPdu.temperature = self.weatherTrain['Dataframe']['temperature'][i] # tempeature
+                weatherPdu.pressure = self.weatherTrain['Dataframe']['pressure'][i] # pressure
+                weatherPdu.humidity = self.weatherTrain['Dataframe']['humidity'][i] # humidity 
+                weatherPdu.attack = self.weatherTrain['Dataframe']['type'][i].encode('utf-8')
+                weatherPdu.label = self.weatherTrain['Dataframe']['label'][i] 
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -103,11 +103,11 @@ class WeatherSim:
             elif self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('WeatherData')
-                ET.SubElement(root, 'Temperature').text = str(self.weatherTrain['Data'][0][i][0][3])
-                ET.SubElement(root, 'Pressure').text = str(self.weatherTrain['Data'][0][i][0][4])
-                ET.SubElement(root, 'Humidity').text = str(self.weatherTrain['Data'][0][i][0][5])
-                ET.SubElement(root, 'Attack').text = str(self.weatherTrain['Data'][0][i][0][6])
-                ET.SubElement(root, 'Label').text = str(self.weatherTrain['Data'][0][i][0][7])
+                ET.SubElement(root, 'Temperature').text = str(self.weatherTrain['Dataframe']['temperature'][i])
+                ET.SubElement(root, 'Pressure').text = str(self.weatherTrain['Dataframe']['pressure'][i])
+                ET.SubElement(root, 'Humidity').text = str(self.weatherTrain['Dataframe']['humidity'][i])
+                ET.SubElement(root, 'Attack').text = str(self.weatherTrain['Dataframe']['type'][i])
+                ET.SubElement(root, 'Label').text = str(self.weatherTrain['Dataframe']['label'][i])
 
                 # Convert XML element to string
                 xml_data = ET.tostring(root, encoding='utf8', method='xml')
@@ -117,24 +117,23 @@ class WeatherSim:
 
                 print("Sent {} PDU: {} bytes".format("WeatherData", len(xml_data))
                     + "\n Weather Data Sent:"
-                    + "\n  Temperature     : {}".format(self.weatherTrain['Data'][0][i][0][3])
-                    + "\n  Pressure        : {}".format(self.weatherTrain['Data'][0][i][0][4])
-                    + "\n  Humidity        : {}".format(self.weatherTrain['Data'][0][i][0][5])
-                    + "\n  Attack          : {}".format(self.weatherTrain['Data'][0][i][0][6])
-                    + "\n  Label           : {}".format(self.weatherTrain['Data'][0][i][0][7])
+                    + "\n  Temperature     : {}".format(self.weatherTrain['Dataframe']['temperature'][i])
+                    + "\n  Pressure        : {}".format(self.weatherTrain['Dataframe']['pressure'][i])
+                    + "\n  Humidity        : {}".format(self.weatherTrain['Dataframe']['humidity'][i])
+                    + "\n  Attack          : {}".format(self.weatherTrain['Dataframe']['type'][i])
+                    + "\n  Label           : {}".format(self.weatherTrain['Dataframe']['label'][i])
                     )
-                  
                 time.sleep(7)
 
             elif self.transmission == 'kafka_pdu':
                 weatherPdu = Environment()
                 device = "Weather"
                 weatherPdu.device = device.encode('utf-8') # device
-                weatherPdu.temperature = self.weatherTrain['Data'][0][i][0][3] # tempeature
-                weatherPdu.pressure = self.weatherTrain['Data'][0][i][0][4] # pressure
-                weatherPdu.humidity = self.weatherTrain['Data'][0][i][0][5] # humidity 
-                weatherPdu.attack = self.weatherTrain['Data'][0][i][0][6].encode('utf-8')
-                weatherPdu.label = self.weatherTrain['Data'][0][i][0][7] 
+                weatherPdu.temperature = self.weatherTrain['Dataframe']['temperature'][i] # tempeature
+                weatherPdu.pressure = self.weatherTrain['Dataframe']['pressure'][i] # pressure
+                weatherPdu.humidity = self.weatherTrain['Dataframe']['humidity'][i] # humidity 
+                weatherPdu.attack = self.weatherTrain['Dataframe']['type'][i].encode('utf-8')
+                weatherPdu.label = self.weatherTrain['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -158,16 +157,16 @@ class WeatherSim:
     def sendWeatherTest(self ):
         columnNames = self.weatherTest['Dataframe'].columns
         # print(self.weatherTrain['Dataframe'].head())
-        for i in range((len(self.weatherTrain['Data'][0]))):
+        for i in range((len(self.weatherTrain['Dataframe']))):
             if self.transmission == 'pdu':
                 weatherPdu = Environment()
                 device = "Weather"
                 weatherPdu.device = device.encode('utf-8') # device
-                weatherPdu.temperature = self.weatherTest['Data'][0][i][0][3] # tempeature
-                weatherPdu.pressure = self.weatherTest['Data'][0][i][0][4] # pressure
-                weatherPdu.humidity = self.weatherTest['Data'][0][i][0][5] # humidity 
-                weatherPdu.attack = self.weatherTest['Data'][0][i][0][6].encode('utf-8')
-                weatherPdu.label = self.weatherTest['Data'][0][i][0][7]
+                weatherPdu.temperature = self.weatherTest['Dataframe']['temperature'][i] # tempeature
+                weatherPdu.pressure = self.weatherTest['Dataframe']['pressure'][i] # pressure
+                weatherPdu.humidity = self.weatherTest['Dataframe']['humidity'][i] # humidity 
+                weatherPdu.attack = self.weatherTest['Dataframe']['type'][i].encode('utf-8')
+                weatherPdu.label = self.weatherTest['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -191,11 +190,11 @@ class WeatherSim:
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('WeatherData')
-                ET.SubElement(root, 'Temperature').text = str(self.weatherTest['Data'][0][i][0][3])
-                ET.SubElement(root, 'Pressure').text = str(self.weatherTest['Data'][0][i][0][4])
-                ET.SubElement(root, 'Humidity').text = str(self.weatherTest['Data'][0][i][0][5])
-                ET.SubElement(root, 'Attack').text = str(self.weatherTest['Data'][0][i][0][6])
-                ET.SubElement(root, 'Label').text = str(self.weatherTest['Data'][0][i][0][7])
+                ET.SubElement(root, 'Temperature').text = str(self.weatherTest['Dataframe']['temperature'][i])
+                ET.SubElement(root, 'Pressure').text = str(self.weatherTest['Dataframe']['pressure'][i])
+                ET.SubElement(root, 'Humidity').text = str(self.weatherTest['Dataframe']['humidity'][i])
+                ET.SubElement(root, 'Attack').text = str(self.weatherTest['Dataframe']['type'][i])
+                ET.SubElement(root, 'Label').text = str(self.weatherTest['Dataframe']['label'][i])
 
                 # Convert XML element to string
                 xml_data = ET.tostring(root, encoding='utf8', method='xml')
@@ -205,11 +204,11 @@ class WeatherSim:
 
                 print("Sent {} PDU: {} bytes".format("WeatherData", len(xml_data))
                     + "\n Weather Data Sent:"
-                    + "\n  Temperature     : {}".format(self.weatherTrain['Data'][0][i][0][3])
-                    + "\n  Pressure        : {}".format(self.weatherTrain['Data'][0][i][0][4])
-                    + "\n  Humidity        : {}".format(self.weatherTrain['Data'][0][i][0][5])
-                    + "\n  Attack          : {}".format(self.weatherTrain['Data'][0][i][0][6])
-                    + "\n  Label           : {}".format(self.weatherTrain['Data'][0][i][0][7])
+                    + "\n  Temperature     : {}".format(self.weatherTrain['Dataframe']['temperature'][i])
+                    + "\n  Pressure        : {}".format(self.weatherTrain['Dataframe']['pressure'][i])
+                    + "\n  Humidity        : {}".format(self.weatherTrain['Dataframe']['humidity'][i])
+                    + "\n  Attack          : {}".format(self.weatherTrain['Dataframe']['type'][i])
+                    + "\n  Label           : {}".format(self.weatherTrain['Dataframe']['label'][i])
                     )
                 time.sleep(7)
 
@@ -217,11 +216,11 @@ class WeatherSim:
                 weatherPdu = Environment()
                 device = "Weather"
                 weatherPdu.device = device.encode('utf-8') # device
-                weatherPdu.temperature = self.weatherTest['Data'][0][i][0][3] # tempeature
-                weatherPdu.pressure = self.weatherTest['Data'][0][i][0][4] # pressure
-                weatherPdu.humidity = self.weatherTest['Data'][0][i][0][5] # humidity 
-                weatherPdu.attack = self.weatherTest['Data'][0][i][0][6].encode('utf-8')
-                weatherPdu.label = self.weatherTest['Data'][0][i][0][7]
+                weatherPdu.temperature = self.weatherTest['Dataframe']['temperature'][i] # tempeature
+                weatherPdu.pressure = self.weatherTest['Dataframe']['pressure'][i] # pressure
+                weatherPdu.humidity = self.weatherTest['Dataframe']['humidity'][i] # humidity 
+                weatherPdu.attack = self.weatherTest['Dataframe']['type'][i].encode('utf-8')
+                weatherPdu.label = self.weatherTest['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)

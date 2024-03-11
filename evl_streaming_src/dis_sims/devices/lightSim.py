@@ -145,7 +145,7 @@ class LightSim:
     def sendLightTest(self):
         columnNames = self.lightTest['Dataframe'].columns
         # print(self.lightTest['Dataframe'].head())
-        for i in range(len(self.lightTrain['Data'][0])):
+        for i in range(len(self.lightTrain['Dataframe'])):
             if self.transmission == 'pdu':
                 lightPdu = Light()
                 lightPdu.motion_status = self.lightTest['Dataframe']['motion_status'][i] # motion status
@@ -217,6 +217,6 @@ class LightSim:
                 time.sleep(random.uniform(0, 2))
 
 
-if __name__ == '__main__':
-    LightSim = LightSim(transmission= 'kafka_pdu')
-    LightSim.sendLightTest()
+# if __name__ == '__main__':
+#     LightSim = LightSim(transmission= 'kafka_pdu')
+#     LightSim.sendLightTest()

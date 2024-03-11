@@ -69,15 +69,15 @@ class ModbusSim:
     def sendModbusTrain(self):
         columnNames = self.modbusTrain['Dataframe'].columns
         # print(self.modbusTrain['Dataframe'].head())
-        for i in range(len(self.modbusTrain['Data'][0])):
+        for i in range(len(self.modbusTrain['Dataframe'])):
             if self.transmission == 'pdu':
                 modbusPdu = Modbus() 
-                modbusPdu.fc1 = self.modbusTrain['Data'][0][i][0][3]
-                modbusPdu.fc2 = self.modbusTrain['Data'][0][i][0][4]
-                modbusPdu.fc3 = self.modbusTrain['Data'][0][i][0][5]
-                modbusPdu.fc4 = self.modbusTrain['Data'][0][i][0][6]
-                modbusPdu.attack = self.modbusTrain['Data'][0][i][0][7].encode()
-                modbusPdu.label = self.modbusTrain['Data'][0][i][0][8]
+                modbusPdu.fc1 = self.modbusTrain['Dataframe']['FC1_Read_Input_Register'][i]
+                modbusPdu.fc2 = self.modbusTrain['Dataframe']['FC2_Read_Discrete_Value'][i]
+                modbusPdu.fc3 = self.modbusTrain['Dataframe']['FC3_Read_Holding_Register'][i]
+                modbusPdu.fc4 = self.modbusTrain['Dataframe']['FC4_Read_Coil'][i]
+                modbusPdu.attack = self.modbusTrain['Dataframe']['type'][i].encode()
+                modbusPdu.label = self.modbusTrain['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -101,12 +101,12 @@ class ModbusSim:
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('Modbus')
-                ET.SubElement(root, 'fc1').text = str(self.modbusTrain['Data'][0][i][0][3])
-                ET.SubElement(root, 'fc2').text = str(self.modbusTrain['Data'][0][i][0][4])
-                ET.SubElement(root, 'fc3').text = str(self.modbusTrain['Data'][0][i][0][5])
-                ET.SubElement(root, 'fc4').text = str(self.modbusTrain['Data'][0][i][0][6])
-                ET.SubElement(root, 'attack').text = str(self.modbusTrain['Data'][0][i][0][7])
-                ET.SubElement(root, 'label').text = str(self.modbusTrain['Data'][0][i][0][8])
+                ET.SubElement(root, 'fc1').text = str(self.modbusTrain['Dataframe']['FC1_Read_Input_Register'][i])
+                ET.SubElement(root, 'fc2').text = str(self.modbusTrain['Dataframe']['FC2_Read_Discrete_Value'][i])
+                ET.SubElement(root, 'fc3').text = str(self.modbusTrain['Dataframe']['FC3_Read_Holding_Register'][i])
+                ET.SubElement(root, 'fc4').text = str(self.modbusTrain['Dataframe']['FC4_Read_Coil'][i])
+                ET.SubElement(root, 'attack').text = str(self.modbusTrain['Dataframe']['type'][i])
+                ET.SubElement(root, 'label').text = str(self.modbusTrain['Dataframe']['label'][i])
 
                 # Create XML string
                 xml_data = ET.tostring(root, encoding = 'utf8')
@@ -115,24 +115,24 @@ class ModbusSim:
 
                 print("Sent {} PDU: {} bytes".format("ModbusData", len(xml_data)) 
                     + "\n Modbus Data Sent:"
-                    + "\n  FC1            : {}".format(self.modbusTrain['Data'][0][i][0][3])
-                    + "\n  FC2            : {}".format(self.modbusTrain['Data'][0][i][0][4])
-                    + "\n  FC3            : {}".format(self.modbusTrain['Data'][0][i][0][5])
-                    + "\n  FC4            : {}".format(self.modbusTrain['Data'][0][i][0][6])
-                    + "\n  Attack         : {}".format(self.modbusTrain['Data'][0][i][0][7])
-                    + "\n  Label          : {}\n".format(self.modbusTrain['Data'][0][i][0][8])
+                    + "\n  FC1            : {}".format(self.modbusTrain['Dataframe']['FC1_Read_Input_Register'][i])
+                    + "\n  FC2            : {}".format(self.modbusTrain['Dataframe']['FC2_Read_Discrete_Value'][i])
+                    + "\n  FC3            : {}".format(self.modbusTrain['Dataframe']['FC3_Read_Holding_Register'][i])
+                    + "\n  FC4            : {}".format(self.modbusTrain['Dataframe']['FC4_Read_Coil'][i])
+                    + "\n  Attack         : {}".format(self.modbusTrain['Dataframe']['type'][i])
+                    + "\n  Label          : {}\n".format(self.modbusTrain['Dataframe']['label'][i])
                     ) 
                     
                 time.sleep(random.uniform(0, 3))
 
             if self.transmission == 'kafka_pdu':
                 modbusPdu = Modbus() 
-                modbusPdu.fc1 = self.modbusTrain['Data'][0][i][0][3]
-                modbusPdu.fc2 = self.modbusTrain['Data'][0][i][0][4]
-                modbusPdu.fc3 = self.modbusTrain['Data'][0][i][0][5]
-                modbusPdu.fc4 = self.modbusTrain['Data'][0][i][0][6]
-                modbusPdu.attack = self.modbusTrain['Data'][0][i][0][7].encode()
-                modbusPdu.label = self.modbusTrain['Data'][0][i][0][8]
+                modbusPdu.fc1 = self.modbusTrain['Dataframe']['FC1_Read_Input_Register'][i]
+                modbusPdu.fc2 = self.modbusTrain['Dataframe']['FC2_Read_Discrete_Value'][i]
+                modbusPdu.fc3 = self.modbusTrain['Dataframe']['FC3_Read_Holding_Register'][i]
+                modbusPdu.fc4 = self.modbusTrain['Dataframe']['FC4_Read_Coil'][i]
+                modbusPdu.attack = self.modbusTrain['Dataframe']['type'][i].encode()
+                modbusPdu.label = self.modbusTrain['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -156,15 +156,15 @@ class ModbusSim:
     def sendModbusTest(self ):
         columnNames = self.modbusTest['Dataframe'].columns
         # print(self.modbumodbusTestsTrain['Dataframe'].head())
-        for i in range(len(self.modbusTrain['Data'][0])):
+        for i in range(len(self.modbusTrain['Dataframe'])):
             if self.transmission == 'pdu':
                 modbusPdu = Modbus() 
-                modbusPdu.fc1 = self.modbusTest['Data'][0][i][0][3]
-                modbusPdu.fc2 = self.modbusTest['Data'][0][i][0][4]
-                modbusPdu.fc3 = self.modbusTest['Data'][0][i][0][5]
-                modbusPdu.fc4 = self.modbusTest['Data'][0][i][0][6]
-                modbusPdu.attack = self.modbusTest['Data'][0][i][0][7].encode()
-                modbusPdu.label = self.modbusTest['Data'][0][i][0][8]
+                modbusPdu.fc1 = self.modbusTest['Dataframe']['FC1_Read_Input_Register'][i]
+                modbusPdu.fc2 = self.modbusTest['Dataframe']['FC2_Read_Discrete_Value'][i]
+                modbusPdu.fc3 = self.modbusTest['Dataframe']['FC3_Read_Holding_Register'][i]
+                modbusPdu.fc4 = self.modbusTest['Dataframe']['FC4_Read_Coil'][i]
+                modbusPdu.attack = self.modbusTest['Dataframe']['type'][i].encode()
+                modbusPdu.label = self.modbusTest['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -188,12 +188,12 @@ class ModbusSim:
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
                 root = ET.Element('Modbus')
-                ET.SubElement(root, 'fc1').text = str(self.modbusTest['Data'][0][i][0][3])
-                ET.SubElement(root, 'fc2').text = str(self.modbusTest['Data'][0][i][0][4])
-                ET.SubElement(root, 'fc3').text = str(self.modbusTest['Data'][0][i][0][5])
-                ET.SubElement(root, 'fc4').text = str(self.modbusTest['Data'][0][i][0][6])
-                ET.SubElement(root, 'attack').text = str(self.modbusTest['Data'][0][i][0][7])
-                ET.SubElement(root, 'label').text = str(self.modbusTest['Data'][0][i][0][8])
+                ET.SubElement(root, 'fc1').text = str(self.modbusTest['Dataframe']['FC1_Read_Input_Register'][i])
+                ET.SubElement(root, 'fc2').text = str(self.modbusTest['Dataframe']['FC2_Read_Discrete_Value'][i])
+                ET.SubElement(root, 'fc3').text = str(self.modbusTest['Dataframe']['FC3_Read_Holding_Register'][i])
+                ET.SubElement(root, 'fc4').text = str(self.modbusTest['Dataframe']['FC4_Read_Coil'][i])
+                ET.SubElement(root, 'attack').text = str(self.modbusTest['Dataframe']['type'][i])
+                ET.SubElement(root, 'label').text = str(self.modbusTest['Dataframe']['label'][i])
 
                 # Create XML string
                 xml_data = ET.tostring(root, encoding = 'utf8')
@@ -202,24 +202,24 @@ class ModbusSim:
 
                 print("Sent {} PDU: {} bytes".format("ModbusData", len(xml_data)) 
                     + "\n Modbus Data Sent:"
-                    + "\n  FC1            : {}".format(self.modbusTest['Data'][0][i][0][3])
-                    + "\n  FC2            : {}".format(self.modbusTest['Data'][0][i][0][4])
-                    + "\n  FC3            : {}".format(self.modbusTest['Data'][0][i][0][5])
-                    + "\n  FC4            : {}".format(self.modbusTest['Data'][0][i][0][6])
-                    + "\n  Attack         : {}".format(self.modbusTest['Data'][0][i][0][7])
-                    + "\n  Label          : {}\n".format(self.modbusTest['Data'][0][i][0][8])
+                    + "\n  FC1            : {}".format(self.modbusTest['Dataframe']['FC1_Read_Input_Register'][i])
+                    + "\n  FC2            : {}".format(self.modbusTest['Dataframe']['FC2_Read_Discrete_Value'][i])
+                    + "\n  FC3            : {}".format(self.modbusTest['Dataframe']['FC3_Read_Holding_Register'][i])
+                    + "\n  FC4            : {}".format(self.modbusTest['Dataframe']['FC4_Read_Coil'][i])
+                    + "\n  Attack         : {}".format(self.modbusTest['Dataframe']['type'][i])
+                    + "\n  Label          : {}\n".format(self.modbusTest['Dataframe']['label'][i])
                     ) 
                 
                 time.sleep(random.uniform(0, 3))
 
             if self.transmission == 'kafka_pdu':
                 modbusPdu = Modbus() 
-                modbusPdu.fc1 = self.modbusTest['Data'][0][i][0][3]
-                modbusPdu.fc2 = self.modbusTest['Data'][0][i][0][4]
-                modbusPdu.fc3 = self.modbusTest['Data'][0][i][0][5]
-                modbusPdu.fc4 = self.modbusTest['Data'][0][i][0][6]
-                modbusPdu.attack = self.modbusTest['Data'][0][i][0][7].encode()
-                modbusPdu.label = self.modbusTest['Data'][0][i][0][8]
+                modbusPdu.fc1 = self.modbusTest['Dataframe']['FC1_Read_Input_Register'][i]
+                modbusPdu.fc2 = self.modbusTest['Dataframe']['FC2_Read_Discrete_Value'][i]
+                modbusPdu.fc3 = self.modbusTest['Dataframe']['FC3_Read_Holding_Register'][i]
+                modbusPdu.fc4 = self.modbusTest['Dataframe']['FC4_Read_Coil'][i]
+                modbusPdu.attack = self.modbusTest['Dataframe']['type'][i].encode()
+                modbusPdu.label = self.modbusTest['Dataframe']['label'][i]
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)

@@ -68,15 +68,15 @@ class ThermostatSim:
     def sendThermostatTrain(self):
         columnNames = self.thermoTrain['Dataframe'].columns
         # print(self.thermoTrain['Dataframe'].head())
-        for i in range(len(self.thermoTrain['Data'][0])):
+        for i in range(len(self.thermoTrain['Dataframe'])):
             if self.transmission == 'pdu':
                 thermostatPdu = Environment()
                 device = "Thermostat"
                 thermostatPdu.device = device.encode('utf-8') # device 
-                thermostatPdu.temperature = self.thermoTrain['Data'][0][i][0][3] # temperature
-                thermostatPdu.temp_status = self.thermoTrain['Data'][0][i][0][4] #temp status
-                thermostatPdu.attack = self.thermoTrain['Data'][0][i][0][5].encode('utf-8') # attack
-                thermostatPdu.label = self.thermoTrain['Data'][0][i][0][6]
+                thermostatPdu.temperature = self.thermoTrain['Dataframe']['current_temperature'][i] # temperature
+                thermostatPdu.temp_status = self.thermoTrain['Dataframe']['thermostat_status'][i] #temp status
+                thermostatPdu.attack = self.thermoTrain['Dataframe']['type'][i].encode('utf-8') # attack
+                thermostatPdu.label = self.thermoTrain['Dataframe']['label'][i]
             
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -99,10 +99,10 @@ class ThermostatSim:
             if self.transmission == 'kafka':
                 #create an xml element for data
                 root = ET.Element('ThermostatData')
-                ET.SubElement(root, 'Temperature').text = str(self.thermoTrain['Data'][0][i][0][3])
-                ET.SubElement(root, 'TempStatus').text = str(self.thermoTrain['Data'][0][i][0][4])
-                ET.SubElement(root, 'Attack').text = str(self.thermoTrain['Data'][0][i][0][5])
-                ET.SubElement(root, 'Label').text = str(self.thermoTrain['Data'][0][i][0][6])
+                ET.SubElement(root, 'Temperature').text = str(self.thermoTrain['Dataframe']['current_temperature'][i])
+                ET.SubElement(root, 'TempStatus').text = str(self.thermoTrain['Dataframe']['thermostat_status'][i])
+                ET.SubElement(root, 'Attack').text = str(self.thermoTrain['Dataframe']['type'][i])
+                ET.SubElement(root, 'Label').text = str(self.thermoTrain['Dataframe']['label'][i])
 
                 #create a new XML file with the results
                 xml_data = ET.tostring(root, encoding='utf8')
@@ -110,10 +110,10 @@ class ThermostatSim:
 
                 print("Sent {} PDU: {} bytes".format("ThermostatData", len(xml_data))
                     + "\n Thermostat Data Sent:"
-                    + "\n  Temperature        : {}".format(self.thermoTest['Data'][0][i][0][3])
-                    + "\n  Temp Status        : {}".format(self.thermoTest['Data'][0][i][0][4])
-                    + "\n  Attack             : {}".format(self.thermoTest['Data'][0][i][0][5])
-                    + "\n  Label              : {}\n".format(self.thermoTest['Data'][0][i][0][6])
+                    + "\n  Temperature        : {}".format(self.thermoTest['Dataframe']['current_temperature'][i])
+                    + "\n  Temp Status        : {}".format(self.thermoTest['Dataframe']['thermostat_status'][i])
+                    + "\n  Attack             : {}".format(self.thermoTest['Dataframe']['type'][i])
+                    + "\n  Label              : {}\n".format(self.thermoTest['Dataframe']['label'][i])
                     ) 
                 
                 time.sleep(5)
@@ -122,10 +122,10 @@ class ThermostatSim:
                 thermostatPdu = Environment()
                 device = "Thermostat"
                 thermostatPdu.device = device.encode('utf-8') # device 
-                thermostatPdu.temperature = self.thermoTrain['Data'][0][i][0][3] # temperature
-                thermostatPdu.temp_status = self.thermoTrain['Data'][0][i][0][4] #temp status
-                thermostatPdu.attack = self.thermoTrain['Data'][0][i][0][5].encode('utf-8') # attack
-                thermostatPdu.label = self.thermoTrain['Data'][0][i][0][6]
+                thermostatPdu.temperature = self.thermoTrain['Dataframe']['current_temperature'][i] # temperature
+                thermostatPdu.temp_status = self.thermoTrain['Dataframe']['thermostat_status'][i] #temp status
+                thermostatPdu.attack = self.thermoTrain['Dataframe']['type'][i].encode('utf-8') # attack
+                thermostatPdu.label = self.thermoTrain['Dataframe']['label'][i]
             
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -148,15 +148,15 @@ class ThermostatSim:
     def sendThermostatTest(self ):
         columnNames = self.thermoTest['Dataframe'].columns
         # print(self.thermoTest['Dataframe'].head())
-        for i in range(len(self.thermoTrain['Data'][0])):
+        for i in range(len(self.thermoTrain['Dataframe'])):
             if self.transmission == 'pdu':
                 thermostatPdu = Environment()
                 device = "Thermostat"
                 thermostatPdu.device = device.encode('utf-8') # device 
-                thermostatPdu.temperature = self.thermoTest['Data'][0][i][0][3] # temperature
-                thermostatPdu.temp_status = self.thermoTest['Data'][0][i][0][4] #temp status
-                thermostatPdu.attack = self.thermoTest['Data'][0][i][0][5].encode('utf-8') # attack
-                thermostatPdu.label = self.thermoTest['Data'][0][i][0][6]
+                thermostatPdu.temperature = self.thermoTest['Dataframe']['current_temperature'][i] # temperature
+                thermostatPdu.temp_status = self.thermoTest['Dataframe']['thermostat_status'][i] #temp status
+                thermostatPdu.attack = self.thermoTest['Dataframe']['type'][i].encode('utf-8') # attack
+                thermostatPdu.label = self.thermoTest['Dataframe']['label'][i]
             
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -179,10 +179,10 @@ class ThermostatSim:
             if self.transmission == 'kafka':
                 #create an xml element for data
                 root = ET.Element('ThermostatData')
-                ET.SubElement(root, 'Temperature').text = str(self.thermoTest['Data'][0][i][0][3])
-                ET.SubElement(root, 'TempStatus').text = str(self.thermoTest['Data'][0][i][0][4])
-                ET.SubElement(root, 'Attack').text = str(self.thermoTest['Data'][0][i][0][5])
-                ET.SubElement(root, 'Label').text = str(self.thermoTest['Data'][0][i][0][6])
+                ET.SubElement(root, 'Temperature').text = str(self.thermoTest['Dataframe']['current_temperature'][i])
+                ET.SubElement(root, 'TempStatus').text = str(self.thermoTest['Dataframe']['thermostat_status'][i])
+                ET.SubElement(root, 'Attack').text = str(self.thermoTest['Dataframe']['type'][i])
+                ET.SubElement(root, 'Label').text = str(self.thermoTest['Dataframe']['label'][i])
 
                 #create a new XML file with the results
                 xml_data = ET.tostring(root, encoding='utf8')
@@ -190,10 +190,10 @@ class ThermostatSim:
 
                 print("Sent {} PDU: {} bytes".format("ThermostatData", len(xml_data))
                     + "\n Thermostat Data Sent:"
-                    + "\n  Temperature        : {}".format(self.thermoTest['Data'][0][i][0][3])
-                    + "\n  Temp Status        : {}".format(self.thermoTest['Data'][0][i][0][4])
-                    + "\n  Attack             : {}".format(self.thermoTest['Data'][0][i][0][5])
-                    + "\n  Label              : {}\n".format(self.thermoTest['Data'][0][i][0][6])
+                    + "\n  Temperature        : {}".format(self.thermoTest['Dataframe']['current_temperature'][i])
+                    + "\n  Temp Status        : {}".format(self.thermoTest['Dataframe']['thermostat_status'][i])
+                    + "\n  Attack             : {}".format(self.thermoTest['Dataframe']['type'][i])
+                    + "\n  Label              : {}\n".format(self.thermoTest['Dataframe']['label'][i])
                     ) 
                 
                 time.sleep(5)
@@ -202,10 +202,10 @@ class ThermostatSim:
                 thermostatPdu = Environment()
                 device = "Thermostat"
                 thermostatPdu.device = device.encode('utf-8') # device 
-                thermostatPdu.temperature = self.thermoTest['Data'][0][i][0][3] # temperature
-                thermostatPdu.temp_status = self.thermoTest['Data'][0][i][0][4] #temp status
-                thermostatPdu.attack = self.thermoTest['Data'][0][i][0][5].encode('utf-8') # attack
-                thermostatPdu.label = self.thermoTest['Data'][0][i][0][6]
+                thermostatPdu.temperature = self.thermoTest['Dataframe']['current_temperature'][i] # temperature
+                thermostatPdu.temp_status = self.thermoTest['Dataframe']['thermostat_status'][i] #temp status
+                thermostatPdu.attack = self.thermoTest['Dataframe']['type'][i].encode('utf-8') # attack
+                thermostatPdu.label = self.thermoTest['Dataframe']['label'][i]
             
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
@@ -227,4 +227,4 @@ class ThermostatSim:
 
 # if __name__ == '__main__':
 #     thermostat = ThermostatSim(transmission= 'kafka_pdu')
-#     thermostat.sendThermostatTrain()
+#     thermostat.sendThermostatTest()

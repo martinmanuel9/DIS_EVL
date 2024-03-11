@@ -67,10 +67,6 @@ class FridgeSim:
         self.fridgeTrain, self.fridgeTest = fridgeDataset.create_dataset(train_stepsize=fridgeDataset.fridgeTrainStepsize, test_stepsize=fridgeDataset.fridgeTestStepsize, 
                                         train= fridgeDataset.completeFridgeTrainSet, test = fridgeDataset.completeFridgeTestSet)
         
-        # print(self.fridgeTrain['Dataframe'].head())
-        # print(self.fridgeTrain['Dataframe']['fridge_temperature'][0])
-        # print(len(self.fridgeTrain['Dataframe']))
-        
 
     def sendFridgeTrain(self ):
         columnNames = self.fridgeTrain['Dataframe'].columns
