@@ -47,8 +47,9 @@ import KafkaProducer as kp
 import xml.etree.ElementTree as ET
 
 class GPSSim:
-    def __init__(self, transmission):
+    def __init__(self, transmission, speed):
         self.transmission = transmission
+        self.speed = speed
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
@@ -132,7 +133,8 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
 
-                time.sleep(random.uniform(0, 4))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 4))
 
             if self.transmission == 'kafka':
                 # Create an XML element for the data
@@ -161,7 +163,8 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(self.gpsTrain['Dataframe']['label'][i])
                     )
 
-                time.sleep(random.uniform(0, 4))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 4))
             
             if self.transmission == 'kafka_pdu':
                 gpsPDU = EntityStatePdu()
@@ -229,7 +232,8 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
 
-                time.sleep(random.uniform(0, 4))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 4))
 
     def sendGPSTest(self):
         columnNames = self.gpsTest['Dataframe'].columns
@@ -295,7 +299,8 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
                 
-                time.sleep(random.uniform(0, 4))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 4))
 
             if self.transmission == 'kafka':
                 # Create an XML element for the data
@@ -323,7 +328,8 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(self.gpsTest['Dataframe']['label'][i])
                     )
                 
-                time.sleep(random.uniform(0, 4))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 4))
             
             if self.transmission == 'kafka_pdu':
                 gpsPDU = EntityStatePdu()
@@ -384,7 +390,8 @@ class GPSSim:
                     + "\n  Label       : {}\n".format(gpsPDU.label)
                     )
                 
-                time.sleep(random.uniform(0, 4))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 4))
 
 # if __name__ == '__main__':
 #     gpsSim = GPSSim(transmission= 'kafka_pdu')

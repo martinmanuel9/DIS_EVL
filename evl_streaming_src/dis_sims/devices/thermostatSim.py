@@ -46,8 +46,9 @@ import KafkaProducer as kp
 import xml.etree.ElementTree as ET
 
 class ThermostatSim:
-    def __init__(self, transmission):
+    def __init__(self, transmission, speed):
         self.transmission = transmission
+        self.speed = speed
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
@@ -94,7 +95,8 @@ class ThermostatSim:
                     + "\n  Label              : {}".format(thermostatPdu.label)
                     )
                 
-                time.sleep(5)
+                if self.speed == 'slow':
+                    time.sleep(5)
 
             if self.transmission == 'kafka':
                 #create an xml element for data
@@ -116,7 +118,8 @@ class ThermostatSim:
                     + "\n  Label              : {}\n".format(self.thermoTest['Dataframe']['label'][i])
                     ) 
                 
-                time.sleep(5)
+                if self.speed == 'slow':
+                    time.sleep(5)
 
             if self.transmission == 'kafka_pdu':
                 thermostatPdu = Environment()
@@ -143,7 +146,8 @@ class ThermostatSim:
                     + "\n  Label              : {}".format(thermostatPdu.label)
                     )
                 
-                time.sleep(5)
+                if self.speed == 'slow':
+                    time.sleep(5)
 
     def sendThermostatTest(self ):
         columnNames = self.thermoTest['Dataframe'].columns
@@ -174,7 +178,8 @@ class ThermostatSim:
                     + "\n  Label              : {}".format(thermostatPdu.label)
                     )
                 
-                time.sleep(5)
+                if self.speed == 'slow':
+                    time.sleep(5)
 
             if self.transmission == 'kafka':
                 #create an xml element for data
@@ -196,7 +201,8 @@ class ThermostatSim:
                     + "\n  Label              : {}\n".format(self.thermoTest['Dataframe']['label'][i])
                     ) 
                 
-                time.sleep(5)
+                if self.speed == 'slow':
+                    time.sleep(5)
             
             if self.transmission == 'kafka_pdu':
                 thermostatPdu = Environment()
@@ -223,7 +229,8 @@ class ThermostatSim:
                     + "\n  Label              : {}".format(thermostatPdu.label)
                     )
                 
-                time.sleep(5)
+                if self.speed == 'slow':
+                    time.sleep(5)
 
 # if __name__ == '__main__':
 #     thermostat = ThermostatSim(transmission= 'kafka_pdu')

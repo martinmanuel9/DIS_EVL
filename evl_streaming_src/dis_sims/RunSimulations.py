@@ -39,20 +39,21 @@ import devices.modbusSim as modbusSim
 import devices.weatherSim as weatherSim
 import devices.thermostatSim as thermostatSim
 class DeviceTrain():
-    def __init__(self, transmission):
+    def __init__(self, transmission, speed):
         self.transmission = transmission
+        self.speed = speed
 
     def runTrainingData(self):
         try:
             threads = []
 
-            fridgeTrain = fridgeSim.FridgeSim(transmission=self.transmission)
-            garageTrain = garageSim.GarageSim(transmission=self.transmission)
-            gpsTrain = gpsSim.GPSSim(transmission=self.transmission)
-            lightTrain = lightSim.LightSim(transmission=self.transmission)
-            modbusTrain = modbusSim.ModbusSim(transmission=self.transmission)
-            weatherTrain = weatherSim.WeatherSim(transmission=self.transmission)
-            thermnostatTrain = thermostatSim.ThermostatSim(transmission=self.transmission)
+            fridgeTrain = fridgeSim.FridgeSim(transmission=self.transmission, speed = self.speed)
+            garageTrain = garageSim.GarageSim(transmission=self.transmission, speed = self.speed)
+            gpsTrain = gpsSim.GPSSim(transmission=self.transmission, speed= self.speed)
+            lightTrain = lightSim.LightSim(transmission=self.transmission, speed= self.speed)
+            modbusTrain = modbusSim.ModbusSim(transmission=self.transmission, speed= self.speed)
+            weatherTrain = weatherSim.WeatherSim(transmission=self.transmission, speed= self.speed)
+            thermnostatTrain = thermostatSim.ThermostatSim(transmission=self.transmission, speed= self.speed)
 
             # Create threads for each simulation and add them to the list
             threads.append(threading.Thread(target=fridgeTrain.sendFridgeTrain))
@@ -79,13 +80,13 @@ class DeviceTrain():
     def runTestData(self):
         try:
             threads = []
-            fridgeTest = fridgeSim.FridgeSim(transmission=self.transmission)
-            garageTest = garageSim.GarageSim(transmission=self.transmission)
-            gpsTest = gpsSim.GPSSim(transmission=self.transmission)
-            lightTest = lightSim.LightSim(transmission=self.transmission)
-            modbusTest = modbusSim.ModbusSim(transmission=self.transmission)
-            weatherTest = weatherSim.WeatherSim(transmission=self.transmission)
-            thermostatTest = thermostatSim.ThermostatSim(transmission=self.transmission)
+            fridgeTest = fridgeSim.FridgeSim(transmission=self.transmission, speed= self.speed)
+            garageTest = garageSim.GarageSim(transmission=self.transmission, speed= self.speed)
+            gpsTest = gpsSim.GPSSim(transmission=self.transmission, speed= self.speed)
+            lightTest = lightSim.LightSim(transmission=self.transmission, speed= self.speed)
+            modbusTest = modbusSim.ModbusSim(transmission=self.transmission, speed= self.speed)
+            weatherTest = weatherSim.WeatherSim(transmission=self.transmission, speed= self.speed)
+            thermostatTest = thermostatSim.ThermostatSim(transmission=self.transmission, speed= self.speed)
 
             # Create threads for each simulation and add them to the list
             threads.append(threading.Thread(target=fridgeTest.sendFridgeTest))
@@ -113,10 +114,11 @@ def main():
     parser = argparse.ArgumentParser(description="Run Devices")
     parser.add_argument("--transmission", choices=["pdu", "kafka", "kafka_pdu"], default="kafka_pdu", help="Transmission option")
     parser.add_argument("--mode", choices=["train", "test"], default="train", help="Mode: train or test")
+    parser.add_argument("--speed", choices=["fast", "slow"], default="fast", help="Speed: fast or slow")
 
     args = parser.parse_args()
 
-    deviceTrain = DeviceTrain(transmission=args.transmission)
+    deviceTrain = DeviceTrain(transmission=args.transmission, speed = args.speed)
 
     if args.mode == "train":
         deviceTrain.runTrainingData()

@@ -46,8 +46,9 @@ import KafkaProducer as kp
 import xml.etree.ElementTree as ET
 
 class WeatherSim:
-    def __init__(self, transmission):
+    def __init__(self, transmission, speed):
         self.transmission = transmission
+        self.speed = speed
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
@@ -98,7 +99,8 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
 
-                time.sleep(7)
+                if self.speed == 'slow':
+                    time.sleep(7)
 
             elif self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -123,7 +125,9 @@ class WeatherSim:
                     + "\n  Attack          : {}".format(self.weatherTrain['Dataframe']['type'][i])
                     + "\n  Label           : {}".format(self.weatherTrain['Dataframe']['label'][i])
                     )
-                time.sleep(7)
+                
+                if self.speed == 'slow':
+                    time.sleep(7)
 
             elif self.transmission == 'kafka_pdu':
                 weatherPdu = Environment()
@@ -152,7 +156,8 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
 
-                time.sleep(7)
+                if self.speed == 'slow':
+                    time.sleep(7)
 
     def sendWeatherTest(self ):
         columnNames = self.weatherTest['Dataframe'].columns
@@ -185,7 +190,8 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
                 
-                time.sleep(7)
+                if self.speed == 'slow':
+                    time.sleep(7)
 
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -210,7 +216,8 @@ class WeatherSim:
                     + "\n  Attack          : {}".format(self.weatherTrain['Dataframe']['type'][i])
                     + "\n  Label           : {}".format(self.weatherTrain['Dataframe']['label'][i])
                     )
-                time.sleep(7)
+                if self.speed == 'slow':
+                    time.sleep(7)
 
             if self.transmission == 'kafka_pdu':
                 weatherPdu = Environment()
@@ -239,7 +246,8 @@ class WeatherSim:
                     + "\n  Label           : {}\n".format(weatherPdu.label)
                     )
                 
-                time.sleep(7)
+                if self.speed == 'slow':
+                    time.sleep(7)
 
 
 # if __name__ == '__main__':

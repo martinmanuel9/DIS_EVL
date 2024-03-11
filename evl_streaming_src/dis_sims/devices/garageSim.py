@@ -48,8 +48,9 @@ import xml.etree.ElementTree as ET
 
 class GarageSim:
 
-    def __init__(self, transmission):
+    def __init__(self, transmission, speed):
         self.transmission = transmission
+        self.speed = speed
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
@@ -94,8 +95,8 @@ class GarageSim:
                     + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
-                
-                time.sleep(random.uniform(0, 3))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 3))
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -120,7 +121,8 @@ class GarageSim:
                     + "\n  Label          : {}\n".format(self.garageTrain['Dataframe']['label'][i])
                     )
                 
-                time.sleep(random.uniform(0, 3))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 3))
 
             if self.transmission == 'kafka_pdu':
                 garagePdu = Garage() 
@@ -144,7 +146,8 @@ class GarageSim:
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
                 
-                time.sleep(random.uniform(0, 3))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 3))
 
 
     def sendGarageTest(self):
@@ -172,7 +175,9 @@ class GarageSim:
                     + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
-                time.sleep(random.uniform(0, 3))
+                
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 3))
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -197,7 +202,8 @@ class GarageSim:
                     + "\n  Label          : {}".format(self.garageTest['Dataframe']['label'][i])
                     )
                 
-                time.sleep(random.uniform(0, 3))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 3))
             
             if self.transmission == 'kafka_pdu':
                 garagePdu = Garage() 
@@ -220,7 +226,9 @@ class GarageSim:
                     + "\n  Attack         : {}".format(garagePdu.attack.decode('utf-8'))
                     + "\n  Label          : {}\n".format(garagePdu.label)
                     )
-                time.sleep(random.uniform(0, 3))
+                
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 3))
 
 
 # if __name__ == "__main__":

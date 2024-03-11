@@ -48,8 +48,9 @@ import xml.etree.ElementTree as ET
 
 
 class FridgeSim:
-    def __init__(self, transmission):
+    def __init__(self, transmission, speed):
         self.transmission = transmission
+        self.speed = speed
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
@@ -98,7 +99,8 @@ class FridgeSim:
                     + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
                 )
                 
-                time.sleep(2)
+                if self.speed == 'slow':
+                    time.sleep(2)
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -123,7 +125,8 @@ class FridgeSim:
                     + "\n Label           : {}\n".format(self.fridgeTrain['Dataframe']['label'][i])
                     )
                 
-                time.sleep(2)
+                if self.speed == 'slow':
+                    time.sleep(2)
             
             if self.transmission == 'kafka_pdu':
                 # send pdu via kafka
@@ -152,7 +155,8 @@ class FridgeSim:
                     + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
                 )
                 
-                time.sleep(2)
+                if self.speed == 'slow':
+                    time.sleep(2)
 
     def sendFridgeTest(self):
         columnNames = self.fridgeTest['Dataframe'].columns
@@ -183,8 +187,8 @@ class FridgeSim:
                     + "\n  Attack       : {}".format(fridgeEnvPdu.attack.decode('utf-8'))
                     + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
                 )
-                
-                time.sleep(2)
+                if self.speed == 'slow':
+                    time.sleep(2)
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
@@ -208,8 +212,8 @@ class FridgeSim:
                     + "\n Attack          : {}".format(self.fridgeTest['Dataframe']['type'][i])
                     + "\n Label           : {}\n".format(self.fridgeTest['Dataframe']['label'][i])
                     )
-                
-                time.sleep(2)
+                if self.speed == 'slow':
+                    time.sleep(2)
 
             if self.transmission == 'kafka_pdu':
                 # send pdu via kafka
@@ -236,8 +240,8 @@ class FridgeSim:
                     + "\n  Attack       : {}".format(fridgeEnvPdu.attack.decode('utf-8'))
                     + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
                 )
-                
-                time.sleep(2)
+                if self.speed == 'slow':
+                    time.sleep(2)
                 
 
 

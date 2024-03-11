@@ -48,8 +48,9 @@ import xml.etree.ElementTree as ET
 
 class LightSim:
 
-    def __init__(self, transmission):
+    def __init__(self, transmission, speed):
         self.transmission = transmission
+        self.speed = speed
         self.UDP_PORT = 3001
         self.DESTINATION_ADDRESS = "127.0.0.1"
 
@@ -93,7 +94,8 @@ class LightSim:
                     + "\n  Label         : {}\n".format(lightTrainPdu.label)
                     )
 
-                time.sleep(random.uniform(0, 2))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 2))
             
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -116,7 +118,8 @@ class LightSim:
                     + "\n  Label         : {}\n".format(self.lightTrain['Dataframe']['label'][i])
                     )
                 
-                time.sleep(random.uniform(0, 2))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 2))
 
             if self.transmission == 'kafka_pdu':
                 lightTrainPdu = Light()
@@ -140,7 +143,8 @@ class LightSim:
                     + "\n  Label         : {}\n".format(lightTrainPdu.label)
                     )
 
-                time.sleep(random.uniform(0, 2))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 2))
 
     def sendLightTest(self):
         columnNames = self.lightTest['Dataframe'].columns
@@ -167,7 +171,9 @@ class LightSim:
                     + "\n  Attack        : {}".format(lightPdu.attack.decode('utf-8'))
                     + "\n  Label         : {}\n".format(lightPdu.label)
                     )
-                time.sleep(random.uniform(0, 2))
+                
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 2))
             
             if self.transmission == 'kafka':
                 # Create an XML element for each row in the dataframe
@@ -190,7 +196,8 @@ class LightSim:
                     + "\n  Label         : {}\n".format(self.lightTest['Dataframe']['label'][i])
                     )
                 
-                time.sleep(random.uniform(0, 2))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 2))
 
             if self.transmission == 'kafka_pdu':
                 lightPdu = Light()
@@ -214,7 +221,8 @@ class LightSim:
                     + "\n  Label         : {}\n".format(lightPdu.label)
                     )
                 
-                time.sleep(random.uniform(0, 2))
+                if self.speed == 'slow':
+                    time.sleep(random.uniform(0, 2))
 
 
 # if __name__ == '__main__':
