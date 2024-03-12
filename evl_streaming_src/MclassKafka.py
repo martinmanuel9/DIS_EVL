@@ -95,7 +95,7 @@ class MClassStreamKafka():
         Get the training data from the Kafka topics
         """
         kafkaConsumer = kc.KafkaConsumer
-        kafkaConsumer.train(self, verbose="false")
+        kafkaConsumer.train(self, verbose="true")
         
         # # close the Kafka Consumer
         # kafkaConsumer.close(self)

@@ -106,14 +106,9 @@ class KafkaConsumer:
                                         )
                             
                             if self.kafka_train_data["gps"].empty:
-                                print("GPS DataFrame is empty before concatenation")
                                 self.kafka_train_data["gps"] = gps_df
                             else:
-                                print("GPS DataFrame is not empty before concatenation")
-                                print("Shape before concatenation:", self.kafka_train_data["gps"].shape)
                                 self.kafka_train_data["gps"] = pd.concat([self.kafka_train_data["gps"], gps_df], ignore_index=True)
-                                print("Shape after concatenation:", self.kafka_train_data["gps"].shape)
-                            print(self.kafka_train_data["gps"])
                             
                             if self.mode == "test":
                                 return gps_df
@@ -138,32 +133,13 @@ class KafkaConsumer:
                                     )
                             
                             if self.kafka_train_data['light'].empty:
-                                print("Light DataFrame is empty before concatenation")
                                 self.kafka_train_data["light"] = light_df
                             else:
-                                print("Light DataFrame is not empty before concatenation")
-                                print("Shape before concatenation:", self.kafka_train_data["light"].shape)
                                 self.kafka_train_data["light"] = pd.concat([self.kafka_train_data["light"], light_df], ignore_index=True)
-                                print("Shape after concatenation:", self.kafka_train_data["light"].shape)
-                            print(self.kafka_train_data["light"])
                             if self.mode == "test":
                                 return light_df
                         
                         elif pdu.pduType == 70:  # environment
-                            # environment_data = {
-                            #     "pdu_id": pdu.pduType,
-                            #     "pdu_name": pduTypeName,
-                            #     "device": pdu.device,
-                            #     "temperature": pdu.temperature,
-                            #     "pressure": pdu.pressure,
-                            #     "humidity": pdu.humidity,
-                            #     "condition": pdu.condition,
-                            #     "temp_status": pdu.temp_status,
-                            #     "attack": pdu.attack,
-                            #     "label": pdu.label
-                            # }
-                            # environment_data = pd.DataFrame([environment_data])
-                            print(pdu.device)
                             if pdu.device == "Fridge":
                                 fridge_data = {
                                     "pdu_id": pdu.pduType,
@@ -220,42 +196,27 @@ class KafkaConsumer:
                             
                             if pdu.device == "Fridge":
                                 if self.kafka_train_data['fridge'].empty:
-                                    print("Fridge DataFrame is empty before concatenation")
                                     self.kafka_train_data["fridge"] = fridge_df
                                 else:
-                                    print("fridge DataFrame is not empty before concatenation")
-                                    print("Shape before concatenation:", self.kafka_train_data["fridge"].shape)
                                     self.kafka_train_data["fridge"] = pd.concat([self.kafka_train_data["fridge"], fridge_df], ignore_index=True)
-                                    print("Shape after concatenation:", self.kafka_train_data["fridge"].shape)
-                                print(self.kafka_train_data["fridge"])
                                 
                                 if self.mode == "test":
                                     return fridge_df
                             
                             if pdu.device == "Thermostat":
                                 if self.kafka_train_data['thermostat'].empty:
-                                    print("Weather DataFrame is empty before concatenation")
                                     self.kafka_train_data["thermostat"] = thermostat_df
                                 else:
-                                    print("Weather DataFrame is not empty before concatenation")
-                                    print("Shape before concatenation:", self.kafka_train_data["thermostat"].shape)
                                     self.kafka_train_data["thermostat"] = pd.concat([self.kafka_train_data["thermostat"], thermostat_df], ignore_index=True)
-                                    print("Shape after concatenation:", self.kafka_train_data["thermostat"].shape)
-                                print(self.kafka_train_data["thermostat"])
                                 
                                 if self.mode == "test":
                                     return thermostat_df
                             
                             if pdu.device == "Weather":
                                 if self.kafka_train_data['weather'].empty:
-                                    print("Weather DataFrame is empty before concatenation")
                                     self.kafka_train_data["weather"] = weather_df
                                 else:
-                                    print("Weather DataFrame is not empty before concatenation")
-                                    print("Shape before concatenation:", self.kafka_train_data["weather"].shape)
                                     self.kafka_train_data["weather"] = pd.concat([self.kafka_train_data["weather"], weather_df], ignore_index=True)
-                                    print("Shape after concatenation:", self.kafka_train_data["weather"].shape)
-                                print(self.kafka_train_data["weather"])
                                 
                                 if self.mode == "test":
                                     return weather_df
@@ -284,14 +245,9 @@ class KafkaConsumer:
                                     )
                             
                             if self.kafka_train_data['modbus'].empty:
-                                print("Modbus DataFrame is empty before concatenation")
                                 self.kafka_train_data["modbus"] = modbus_df
                             else:
-                                print("Modbus DataFrame is not empty before concatenation")
-                                print("Shape before concatenation:", self.kafka_train_data["modbus"].shape)
                                 self.kafka_train_data["modbus"] = pd.concat([self.kafka_train_data["modbus"], modbus_df], ignore_index=True)
-                                print("Shape after concatenation:", self.kafka_train_data["modbus"].shape)
-                            print(self.kafka_train_data["modbus"])
                             if self.mode == "test":
                                 return modbus_df
                         
@@ -315,14 +271,9 @@ class KafkaConsumer:
                                     )
                             
                             if self.kafka_train_data['garage'].empty:
-                                print("Garage DataFrame is empty before concatenation")
                                 self.kafka_train_data["garage"] = garage_df
                             else:
-                                print("Garage DataFrame is not empty before concatenation")
-                                print("Shape before concatenation:", self.kafka_train_data["garage"].shape)
                                 self.kafka_train_data["garage"] = pd.concat([self.kafka_train_data["garage"], garage_df], ignore_index=True)
-                                print("Shape after concatenation:", self.kafka_train_data["garage"].shape)
-                            print(self.kafka_train_data["garage"])
                             if self.mode == "test":
                                 return garage_df
                         
@@ -350,30 +301,29 @@ class KafkaConsumer:
             else:
                 logging.error("Received message is not a byte-like object.")
 
-    def consume_messages(self, timeout = 60):
+    def consume_messages(self, timeout = 10):
         last_message_time = time.time()
+        # messages = []
         try:
             while True:
                 msg = self.consumer.poll(1.0)
                 if msg is None:
                     continue
                 self.on_message(msg)
+                # messages.append(msg)
                 last_message_time = time.time() # update last message time
                 if time.time() - last_message_time > timeout:
                     table = pa.Table.from_pandas(self.kafka_train_data)
                     parquet_file_path = "../datasets"
                     pq.write_table(table, parquet_file_path)
                     print("Timeout: No messages received in the last {} seconds".format(timeout))
-                    self.consumer.close()
+                    # self.consumer.close()
                     last_message_time = time.time() # reset last message time
         except KeyboardInterrupt:
             pass
         except Exception as e:
             logging.error(f"Error consuming message: {e}")
-
-    # def close(self):
-    #     print("closed consumer")
-    #     self.consumer.close()
+            
         
     def train(self, verbose):
         try:
@@ -443,15 +393,16 @@ class KafkaConsumer:
             # wait for all threads to finish
             for thread in threads:
                 thread.join()
-                
-            time.sleep(5)  # idle time of 5 seconds
-            for thread in threads:
-                thread.join()
-                
+                if any(thread.is_alive() for thread in threads):
+                    # There is still processing happening, do nothing
+                    pass
+                else:
+                    # Stop all threads
+                    for thread in threads:
+                        thread.stop()
             
             print("training complete\n", self.kafka_train_data)
             self.consumer.close()  # close the Kafka consumer connection
-
 
         except Exception as e:
             print(f"Error: {e}")
