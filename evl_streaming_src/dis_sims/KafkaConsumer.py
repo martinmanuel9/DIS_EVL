@@ -301,24 +301,19 @@ class KafkaConsumer:
             else:
                 logging.error("Received message is not a byte-like object.")
 
-    def consume_messages(self, timeout = 10):
+    def consume_messages(self, timeout=10):
         last_message_time = time.time()
-        # messages = []
         try:
             while True:
                 msg = self.consumer.poll(1.0)
                 if msg is None:
-                    continue
+                    if time.time() - last_message_time > timeout:
+                        print("Timeout: No messages received in the last {} seconds".format(timeout))
+                        break  # exit the loop after timeout
+                    else:
+                        continue
                 self.on_message(msg)
-                # messages.append(msg)
-                last_message_time = time.time() # update last message time
-                if time.time() - last_message_time > timeout:
-                    table = pa.Table.from_pandas(self.kafka_train_data)
-                    parquet_file_path = "../datasets"
-                    pq.write_table(table, parquet_file_path)
-                    print("Timeout: No messages received in the last {} seconds".format(timeout))
-                    # self.consumer.close()
-                    last_message_time = time.time() # reset last message time
+                last_message_time = time.time()  # update last message time
         except KeyboardInterrupt:
             pass
         except Exception as e:
@@ -397,16 +392,13 @@ class KafkaConsumer:
                     # There is still processing happening, do nothing
                     pass
                 else:
-                    # Stop all threads
-                    for thread in threads:
-                        thread.stop()
+                    thread.stop()
             
-            print("training complete\n", self.kafka_train_data)
+            print("Stopped all threads")
             self.consumer.close()  # close the Kafka consumer connection
 
         except Exception as e:
-            print(f"Error: {e}")
-            print("Error: Could not run kafka during training data.")
+            print(f"Error: {e}: exiting training mode.")
             return False
 
             
