@@ -150,7 +150,6 @@ class GPSSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-
                 print( "Sent {} PDU: {} bytes".format("GPSData", len(xml_data))  
                     + "\n GPS Data Sent:"
                     + "\n  Longitude   : {} degrees".format(self.gpsTrain['Dataframe']['longitude'][i]) 
@@ -218,7 +217,6 @@ class GPSSim:
                 data = memoryStream.getvalue()
 
                 self.producer.produce_message(data)
-
 
                 print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
                     + "\n GPS Data Sent:"

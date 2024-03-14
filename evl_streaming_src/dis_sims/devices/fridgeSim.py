@@ -145,7 +145,6 @@ class FridgeSim:
 
                 self.producer.produce_message(data)
 
-                print("Sending message via Kafka_PDU")
                 print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
                     + "\n Fridge Data Sent:"
                     + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))

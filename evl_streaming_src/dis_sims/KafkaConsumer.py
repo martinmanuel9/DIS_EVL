@@ -301,7 +301,7 @@ class KafkaConsumer:
             else:
                 logging.error("Received message is not a byte-like object.")
 
-    def consume_messages(self, timeout=10):
+    def consume_messages(self, timeout=5):
         last_message_time = time.time()
         try:
             while True:
@@ -392,10 +392,12 @@ class KafkaConsumer:
                     # There is still processing happening, do nothing
                     pass
                 else:
-                    thread.stop()
+                    # Stop all threads
+                    for thread in threads:
+                        thread.stop()
             
             print("Stopped all threads")
-            self.consumer.close()  # close the Kafka consumer connection
+            # self.consumer.close()  # close the Kafka consumer connection
 
         except Exception as e:
             print(f"Error: {e}: exiting training mode.")

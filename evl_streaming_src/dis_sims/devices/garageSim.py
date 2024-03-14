@@ -199,7 +199,7 @@ class GarageSim:
                     + "\n  Door State     : {}".format(self.garageTest['Dataframe']['door_state'][i])
                     + "\n  Sphone         : {}".format(self.garageTest['Dataframe']['sphone_signal'][i])
                     + "\n  Attack         : {}".format(self.garageTest['Dataframe']['type'][i])
-                    + "\n  Label          : {}".format(self.garageTest['Dataframe']['label'][i])
+                    + "\n  Label          : {}\n".format(self.garageTest['Dataframe']['label'][i])
                     )
                 
                 if self.speed == 'slow':

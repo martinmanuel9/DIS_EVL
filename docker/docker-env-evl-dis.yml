@@ -93,7 +93,7 @@ services:
 
   mysql:
     image: mysql:latest
-    container_name: mysql_osaids
+    container_name: mysql_oaiids
     ports:
       - "3306:3306"
     environment:

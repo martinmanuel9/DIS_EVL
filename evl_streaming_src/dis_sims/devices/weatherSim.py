@@ -123,7 +123,7 @@ class WeatherSim:
                     + "\n  Pressure        : {}".format(self.weatherTrain['Dataframe']['pressure'][i])
                     + "\n  Humidity        : {}".format(self.weatherTrain['Dataframe']['humidity'][i])
                     + "\n  Attack          : {}".format(self.weatherTrain['Dataframe']['type'][i])
-                    + "\n  Label           : {}".format(self.weatherTrain['Dataframe']['label'][i])
+                    + "\n  Label           : {}\n".format(self.weatherTrain['Dataframe']['label'][i])
                     )
                 
                 if self.speed == 'slow':
@@ -214,7 +214,7 @@ class WeatherSim:
                     + "\n  Pressure        : {}".format(self.weatherTrain['Dataframe']['pressure'][i])
                     + "\n  Humidity        : {}".format(self.weatherTrain['Dataframe']['humidity'][i])
                     + "\n  Attack          : {}".format(self.weatherTrain['Dataframe']['type'][i])
-                    + "\n  Label           : {}".format(self.weatherTrain['Dataframe']['label'][i])
+                    + "\n  Label           : {}\n".format(self.weatherTrain['Dataframe']['label'][i])
                     )
                 if self.speed == 'slow':
                     time.sleep(7)

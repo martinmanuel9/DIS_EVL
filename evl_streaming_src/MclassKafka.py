@@ -96,7 +96,7 @@ class MClassStreamKafka():
         """
         kafkaConsumer = kc.KafkaConsumer
         kafka_train_data = kafkaConsumer.train(self, verbose="false")
-        print(kafka_train_data)
+        
         # # close the Kafka Consumer
         # kafkaConsumer.close(self)
         

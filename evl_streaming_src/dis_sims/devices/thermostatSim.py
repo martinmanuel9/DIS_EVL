@@ -92,7 +92,7 @@ class ThermostatSim:
                     + "\n  Temperature        : {}".format(thermostatPdu.temperature)
                     + "\n  Temp Status        : {}".format(thermostatPdu.temp_status)
                     + "\n  Attack             : {}".format(thermostatPdu.attack.decode('utf-8'))
-                    + "\n  Label              : {}".format(thermostatPdu.label)
+                    + "\n  Label              : {}\n".format(thermostatPdu.label)
                     )
                 
                 if self.speed == 'slow':
@@ -143,7 +143,7 @@ class ThermostatSim:
                     + "\n  Temperature        : {}".format(thermostatPdu.temperature)
                     + "\n  Temp Status        : {}".format(thermostatPdu.temp_status)
                     + "\n  Attack             : {}".format(thermostatPdu.attack.decode('utf-8'))
-                    + "\n  Label              : {}".format(thermostatPdu.label)
+                    + "\n  Label              : {}\n".format(thermostatPdu.label)
                     )
                 
                 if self.speed == 'slow':
@@ -175,7 +175,7 @@ class ThermostatSim:
                     + "\n  Temperature        : {}".format(thermostatPdu.temperature)
                     + "\n  Temp Status        : {}".format(thermostatPdu.temp_status)
                     + "\n  Attack             : {}".format(thermostatPdu.attack.decode('utf-8'))
-                    + "\n  Label              : {}".format(thermostatPdu.label)
+                    + "\n  Label              : {}\n".format(thermostatPdu.label)
                     )
                 
                 if self.speed == 'slow':
@@ -226,7 +226,7 @@ class ThermostatSim:
                     + "\n  Temperature        : {}".format(thermostatPdu.temperature)
                     + "\n  Temp Status        : {}".format(thermostatPdu.temp_status)
                     + "\n  Attack             : {}".format(thermostatPdu.attack.decode('utf-8'))
-                    + "\n  Label              : {}".format(thermostatPdu.label)
+                    + "\n  Label              : {}\n".format(thermostatPdu.label)
                     )
                 
                 if self.speed == 'slow':
