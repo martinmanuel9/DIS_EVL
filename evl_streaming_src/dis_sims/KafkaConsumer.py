@@ -62,7 +62,16 @@ class KafkaConsumer:
         self.transmission = transmission
         self.mode = mode
         self.verbose = verbose
+        self.lock = threading.Lock() 
         self.kafka_train_data = {topic: pd.DataFrame() for topic in self.topic}
+        
+    def update_data(self, topic, value):
+        with self.lock:
+            if self.kafka_train_data[topic].empty:
+                self.kafka_train_data[topic] = value
+            else:
+                self.kafka_train_data[topic] = pd.concat([self.kafka_train_data[topic], value], ignore_index=True)
+
     
     def on_message(self, msg):
         if msg.error():
@@ -105,10 +114,12 @@ class KafkaConsumer:
                                         + " Label       : {}\n".format(pdu.label)
                                         )
                             
-                            if self.kafka_train_data["gps"].empty:
-                                self.kafka_train_data["gps"] = gps_df
-                            else:
-                                self.kafka_train_data["gps"] = pd.concat([self.kafka_train_data["gps"], gps_df], ignore_index=True)
+                            # if self.kafka_train_data["gps"].empty:
+                            #     self.kafka_train_data["gps"] = gps_df
+                            # else:
+                            #     self.kafka_train_data["gps"] = pd.concat([self.kafka_train_data["gps"], gps_df], ignore_index=True)
+
+                            self.update_data("gps", gps_df)
                             
                             if self.mode == "test":
                                 return gps_df
@@ -132,10 +143,12 @@ class KafkaConsumer:
                                     + " Label         : {}\n".format(pdu.label)
                                     )
                             
-                            if self.kafka_train_data['light'].empty:
-                                self.kafka_train_data["light"] = light_df
-                            else:
-                                self.kafka_train_data["light"] = pd.concat([self.kafka_train_data["light"], light_df], ignore_index=True)
+                            # if self.kafka_train_data['light'].empty:
+                            #     self.kafka_train_data["light"] = light_df
+                            # else:
+                            #     self.kafka_train_data["light"] = pd.concat([self.kafka_train_data["light"], light_df], ignore_index=True)
+                            self.update_data("light", light_df)
+                            
                             if self.mode == "test":
                                 return light_df
                         
@@ -191,33 +204,31 @@ class KafkaConsumer:
                                         + " Attack      : {}\n".format(pdu.attack)
                                         + " Label       : {}\n".format(pdu.label)  
                                         )
-                                
-                            
-                            
                             if pdu.device == "Fridge":
-                                if self.kafka_train_data['fridge'].empty:
-                                    self.kafka_train_data["fridge"] = fridge_df
-                                else:
-                                    self.kafka_train_data["fridge"] = pd.concat([self.kafka_train_data["fridge"], fridge_df], ignore_index=True)
+                                # if self.kafka_train_data['fridge'].empty:
+                                #     self.kafka_train_data["fridge"] = fridge_df
+                                # else:
+                                #     self.kafka_train_data["fridge"] = pd.concat([self.kafka_train_data["fridge"], fridge_df], ignore_index=True)
+                                self.update_data("fridge", fridge_df)
                                 
                                 if self.mode == "test":
                                     return fridge_df
                             
                             if pdu.device == "Thermostat":
-                                if self.kafka_train_data['thermostat'].empty:
-                                    self.kafka_train_data["thermostat"] = thermostat_df
-                                else:
-                                    self.kafka_train_data["thermostat"] = pd.concat([self.kafka_train_data["thermostat"], thermostat_df], ignore_index=True)
-                                
+                                # if self.kafka_train_data['thermostat'].empty:
+                                #     self.kafka_train_data["thermostat"] = thermostat_df
+                                # else:
+                                #     self.kafka_train_data["thermostat"] = pd.concat([self.kafka_train_data["thermostat"], thermostat_df], ignore_index=True)
+                                self.update_data("thermostat", thermostat_df)
                                 if self.mode == "test":
                                     return thermostat_df
                             
                             if pdu.device == "Weather":
-                                if self.kafka_train_data['weather'].empty:
-                                    self.kafka_train_data["weather"] = weather_df
-                                else:
-                                    self.kafka_train_data["weather"] = pd.concat([self.kafka_train_data["weather"], weather_df], ignore_index=True)
-                                
+                                # if self.kafka_train_data['weather'].empty:
+                                #     self.kafka_train_data["weather"] = weather_df
+                                # else:
+                                #     self.kafka_train_data["weather"] = pd.concat([self.kafka_train_data["weather"], weather_df], ignore_index=True)
+                                self.update_data("weather", weather_df)
                                 if self.mode == "test":
                                     return weather_df
                             
@@ -244,10 +255,12 @@ class KafkaConsumer:
                                     + " Label           : {}\n".format(pdu.label)
                                     )
                             
-                            if self.kafka_train_data['modbus'].empty:
-                                self.kafka_train_data["modbus"] = modbus_df
-                            else:
-                                self.kafka_train_data["modbus"] = pd.concat([self.kafka_train_data["modbus"], modbus_df], ignore_index=True)
+                            # if self.kafka_train_data['modbus'].empty:
+                            #     self.kafka_train_data["modbus"] = modbus_df
+                            # else:
+                            #     self.kafka_train_data["modbus"] = pd.concat([self.kafka_train_data["modbus"], modbus_df], ignore_index=True)
+                            self.update_data("modbus", modbus_df)
+                                
                             if self.mode == "test":
                                 return modbus_df
                         
@@ -270,10 +283,12 @@ class KafkaConsumer:
                                     + " Label : {}\n".format(pdu.label)
                                     )
                             
-                            if self.kafka_train_data['garage'].empty:
-                                self.kafka_train_data["garage"] = garage_df
-                            else:
-                                self.kafka_train_data["garage"] = pd.concat([self.kafka_train_data["garage"], garage_df], ignore_index=True)
+                            # if self.kafka_train_data['garage'].empty:
+                            #     self.kafka_train_data["garage"] = garage_df
+                            # else:
+                            #     self.kafka_train_data["garage"] = pd.concat([self.kafka_train_data["garage"], garage_df], ignore_index=True)
+                            self.update_data("garage", garage_df)
+                            
                             if self.mode == "test":
                                 return garage_df
                         
@@ -301,7 +316,7 @@ class KafkaConsumer:
             else:
                 logging.error("Received message is not a byte-like object.")
 
-    def consume_messages(self, timeout=5):
+    def consume_messages(self, timeout=10):
         last_message_time = time.time()
         try:
             while True:
@@ -318,193 +333,94 @@ class KafkaConsumer:
             pass
         except Exception as e:
             logging.error(f"Error consuming message: {e}")
-            
+        finally:
+            self.consumer.close()
+
+    def merge_dicts(dict1, dict2):
+        merged_dict = dict1.copy()
+        for key, value in dict2.items():
+            if key in merged_dict:
+                merged_dict[key] = pd.concat([merged_dict[key], value])
+            else:
+                merged_dict[key] = value
+                
+        return merged_dict
         
     def train(self, verbose):
         try:
             logging.basicConfig(level=logging.INFO)
             
             threads = []
-            
-            fridgeTrainConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["fridge"],
-                                transmission="kafka_pdu",
-                                mode="train",
-                                verbose=verbose
-                                )
-            
-            garageTrainConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["garage"],
-                                transmission="kafka_pdu",
-                                mode="train",
-                                verbose=verbose
-                                )
-            
-            gpsTrainConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["gps"],
-                                transmission="kafka_pdu",
-                                mode="train",
-                                verbose=verbose
-                                )
-            
-            modbusTrainConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["modbus"],
-                                transmission="kafka_pdu",
-                                mode="train",
-                                verbose=verbose
-                                )
-                                
-            thermostatTrainConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["thermostat"],
-                                transmission="kafka_pdu",
-                                mode="train",
-                                verbose=verbose
-                                )
-            
-            weatherTrainConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["weather"],
-                                transmission="kafka_pdu",
-                                mode="train",
-                                verbose=verbose
-                                )
-                                
-            # create thread for each topic
-            threads.append(threading.Thread(target=fridgeTrainConsumer.consume_messages))
-            threads.append(threading.Thread(target=garageTrainConsumer.consume_messages))
-            threads.append(threading.Thread(target=gpsTrainConsumer.consume_messages))  
-            threads.append(threading.Thread(target=modbusTrainConsumer.consume_messages))
-            threads.append(threading.Thread(target=thermostatTrainConsumer.consume_messages))
-            threads.append(threading.Thread(target=weatherTrainConsumer.consume_messages))
-            
+            consumers = []
+
+            # Define Kafka consumer instances
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["fridge"], "kafka_pdu", "train", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["garage"], "kafka_pdu", "train", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["gps"], "kafka_pdu", "train", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["modbus"], "kafka_pdu", "train", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["thermostat"], "kafka_pdu", "train", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["weather"], "kafka_pdu", "train", verbose))
+
+            # Create threads for each consumer
+            for consumer in consumers:
+                threads.append(threading.Thread(target=consumer.consume_messages))
+
             for thread in threads:
                 thread.start()
                 
             # wait for all threads to finish
             for thread in threads:
                 thread.join()
-                if any(thread.is_alive() for thread in threads):
-                    # There is still processing happening, do nothing
-                    pass
-                else:
-                    # Stop all threads
-                    for thread in threads:
-                        thread.stop()
             
-            print("Stopped all threads")
-            # self.consumer.close()  # close the Kafka consumer connection
+            # Merge data from all consumers
+            merged_data = {}
+            for consumer in consumers:
+                merged_data = KafkaConsumer.merge_dicts(merged_data, consumer.kafka_train_data)
+            
+            print("\n\nTraining complete\n")
+
+            return merged_data
 
         except Exception as e:
             print(f"Error: {e}: exiting training mode.")
             return False
 
-            
+    #TODO: Figure out how to do streaming for test data
     def test(self, verbose):
         try:
             logging.basicConfig(level=logging.INFO)
             
             threads = []
-            
-            fridgeTestConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["fridge"],
-                                transmission="kafka_pdu",
-                                mode="test",
-                                verbose=verbose
-                                )
-            
-            garageTestConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["garage"],
-                                transmission="kafka_pdu",
-                                mode="test",
-                                verbose=verbose
-                                )
-            
-            gpsTestConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["gps"],
-                                transmission="kafka_pdu",
-                                mode="test",
-                                verbose=verbose
-                                )
-            
-            modbusTestConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["modbus"],
-                                transmission="kafka_pdu",
-                                mode="test",
-                                verbose=verbose
-                                )
-                                
-            thermostatTestConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["thermostat"],
-                                transmission="kafka_pdu",
-                                mode="test",
-                                verbose=verbose
-                                )
-            
-            weatherTestConsumer = KafkaConsumer(bootstrap_servers="172.18.0.4:9092",
-                                group_id="dis",
-                                topic= ["weather"],
-                                transmission="kafka_pdu",
-                                mode="test",
-                                verbose=verbose
-                                )
-                                
-            # create thread for each topic
-            threads.append(threading.Thread(target=fridgeTestConsumer.consume_messages))
-            threads.append(threading.Thread(target=garageTestConsumer.consume_messages))
-            threads.append(threading.Thread(target=gpsTestConsumer.consume_messages))  
-            threads.append(threading.Thread(target=modbusTestConsumer.consume_messages))
-            threads.append(threading.Thread(target=thermostatTestConsumer.consume_messages))
-            threads.append(threading.Thread(target=weatherTestConsumer.consume_messages))
-            
+            consumers = []
+
+            # Define Kafka consumer instances
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["fridge"], "kafka_pdu", "test", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["garage"], "kafka_pdu", "test", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["gps"], "kafka_pdu", "test", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["modbus"], "kafka_pdu", "test", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["thermostat"], "kafka_pdu", "test", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["weather"], "kafka_pdu", "test", verbose))
+
+            # Create threads for each consumer
+            for consumer in consumers:
+                threads.append(threading.Thread(target=consumer.consume_messages))
+
             for thread in threads:
                 thread.start()
                 
             # wait for all threads to finish
             for thread in threads:
                 thread.join()
-                
             
-            print("testing complete\n")
-            self.consumer.close()  # close the Kafka consumer connection
+            # Merge data from all consumers
+            merged_data = {}
+            for consumer in consumers:
+                merged_data = KafkaConsumer.merge_dicts(merged_data, consumer.kafka_train_data)
+            
+            print("\n\nTesting complete\n")
 
+            return merged_data
 
         except Exception as e:
-            print(f"Error: {e}")
-            print("Error: Could not run kafka during validating data.")
+            print(f"Error: {e}: exiting training mode.")
             return False
-
-
-# def main():
-#     try:
-#         while True:
-#             logging.basicConfig(level=logging.INFO)
-#             parser = argparse.ArgumentParser(description="Kafka Consumer Training")
-#             parser.add_argument("--bootstrap_servers", default="172.18.0.4:9092", help="Bootstrap servers")
-#             parser.add_argument("--group_id", default="dis", help="Group ID")
-#             parser.add_argument("--topic", nargs="+", default=["fridge", "garage", "gps", "light", "modbus", "thermostat", "weather"], help="Topic")
-#             parser.add_argument("--transmission", choices = ["kafka","kafka_pdu"], default="kafka_pdu", help="Transmission option")
-#             parser.add_argument("--mode", choices=["train", "test"], default="train", help="Mode: train or test")
-#             parser.add_argument("--verbose", choices=["false", "true"], default="false", help="Enable verbose mode")
-
-#             args = parser.parse_args() 
-
-#             consumer = KafkaConsumer(args.bootstrap_servers, args.group_id, args.topic, args.transmission, args.mode, args.verbose)
-#             consumer.consume_messages()
-#             time.sleep(1)  # delay of 1 second
-
-#     except KeyboardInterrupt:
-#         consumer.close()
-
-# if __name__ == "__main__":
-#     main()
-    
