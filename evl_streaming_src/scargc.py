@@ -42,7 +42,7 @@ from tqdm import tqdm
 import math
 import benchmark_datagen_old as bdg
 import ton_iot_datagen as ton_iot
-import bot_iot_datagen as bot_iot
+import evl_streaming_src.dataOps.bot_iot_datagen as bot_iot
 import unsw_nb15_datagen as unsw
 import classifier_performance as cp
 from sklearn.cluster import KMeans
@@ -57,7 +57,7 @@ import time
 import pandas as pd
 from sklearn import metrics
 from sklearn import preprocessing
-from knn import knn as Bknn
+from evl_streaming_src.helper.knn import knn as Bknn
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Flatten

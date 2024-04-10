@@ -41,7 +41,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.DataOutputStream import DataOutputStream
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import ton_iot_dis_datagen as ton
+import dataOps.ton_iot_dis_datagen as ton
 import KafkaProducer as kp
 import xml.etree.ElementTree as ET
 
@@ -232,5 +232,5 @@ class GarageSim:
 
 
 # if __name__ == "__main__":
-#     GarageSim = GarageSim(transmission='kafka_pdu')
+#     GarageSim = GarageSim(transmission='kafka_pdu', speed = 'fast')
 #     GarageSim.sendGarageTrain()

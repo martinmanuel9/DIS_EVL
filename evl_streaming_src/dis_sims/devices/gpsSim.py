@@ -42,7 +42,7 @@ from opendismodel.opendis.dis7 import EntityStatePdu
 from opendismodel.opendis.DataOutputStream import DataOutputStream
 from opendismodel.opendis.RangeCoordinates import *
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-import ton_iot_dis_datagen as ton
+import dataOps.ton_iot_dis_datagen as ton
 import KafkaProducer as kp
 import xml.etree.ElementTree as ET
 
@@ -392,5 +392,5 @@ class GPSSim:
                     time.sleep(random.uniform(0, 4))
 
 # if __name__ == '__main__':
-#     gpsSim = GPSSim(transmission= 'kafka_pdu')
+#     gpsSim = GPSSim(transmission= 'kafka_pdu', speed = 'fast')
 #     gpsSim.sendGPSTrain()

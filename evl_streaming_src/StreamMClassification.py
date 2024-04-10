@@ -60,7 +60,7 @@ updatedDirectory = os.getcwd()
 sys.path.append(current_directory)
 from dis_sims import KafkaConsumer as kc
 
-class MClassStreamKafka(): 
+class StreamMClassification(): 
     def __init__(self, 
                 classifier,
                 cluster_method,
@@ -581,7 +581,9 @@ class MClassStreamKafka():
         3. save models under models based on topic
         """
         total_start = time.time()
+        # get initial training data
         self.getTrainData()
+        
         total_end = time.time()
 
     def mclass_stream_run(self):
@@ -689,7 +691,7 @@ class MClassStreamKafka():
 
 
 # test mclass
-train_mclass_stream = MClassStreamKafka(classifier='knn', cluster_method = 'kmeans', graph=False).trainer()
+train_mclass_stream = StreamMClassification(classifier='knn', cluster_method = 'kmeans', graph=False).trainer()
 
 #%%
  
