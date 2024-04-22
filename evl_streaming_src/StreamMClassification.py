@@ -41,7 +41,6 @@ import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
 # from keras.preprocessing.sequence import pad_sequences
-# from keras_preprocessing.sequence import pad_sequences
 from sklearn.svm import SVC, SVR
 import classifier_performance as cp
 from scipy import stats
@@ -56,7 +55,7 @@ import sys
 import os
 current_directory = os.getcwd()
 # os.chdir(current_directory + '/evl_streaming_src')
-updatedDirectory = os.getcwd()
+# updatedDirectory = os.getcwd()
 sys.path.append(current_directory)
 from dis_sims import KafkaConsumer as kc
 
@@ -81,23 +80,19 @@ class StreamMClassification():
         self.microCluster = {}
         self.X = {}
         self.Y = {}
-        self.T = {}
         # for UNSW IoT dataset
         self.data= {}
         self.labeled= {}
-        self.Xinit = {}
-        self.Yinit = {}
         self.all_data = {}
         self.all_data_test = {}
         
     def getTrainData(self):
         """
-        Get the training data from the Kafka topics
+        Get the training data from the Kafka topics as a dictionary with the topics as keys
         """
         kafkaConsumer = kc.KafkaConsumer
         trainedData = kafkaConsumer.train(self, verbose="false")
-        print("trainedData:\n", trainedData.keys())
-        
+        return trainedData
         
 
     def findClosestMC(self, x, MC_Centers):
@@ -137,25 +132,22 @@ class StreamMClassification():
             optimal_cluster = max(sil_score, key=sil_score.get)
             self.NClusters = optimal_cluster
 
-    def cluster(self, inData):
+    def cluster(self, ts, inData, inLabels):
         """
         We cluster the data either through kmeans or gmm 
         """       
         if self.method == 'kmeans':
-            if ts == 0:
-                self.find_silhoette_score(X=self.all_data, y=self.all_data[:,-1], ts=ts)
-                kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X)  
-            else:
-                kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(X) #may not need to do this as we need to create a new cluster for the new data
+            self.find_silhoette_score(X=inData, y=inLabels, ts=ts)
+            kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(inData)  
             # computes cluster centers and radii of cluster for initial ts
-            self.microCluster[ts] = self.create_centroid(inCluster = kmeans_model, fitCluster = kmeans_model.fit_predict(X), x= X , y= y)
-            self.clusters[ts] = kmeans_model.predict(X) # gets the cluster labels for the data
+            self.microCluster[ts] = self.create_centroid(inCluster = kmeans_model, fitCluster = kmeans_model.fit_predict(inData), x= inData , y= inLabels)
+            self.clusters[ts] = kmeans_model.predict(inData) # gets the cluster labels for the data
             self.cluster_centers[ts] = kmeans_model.cluster_centers_
 
         elif self.method == 'gmm':
             gmm_model = GMM(n_components=self.NClusters)
-            gmm_model.fit(y) 
-            self.clusters[ts] = gmm_model.predict(self.Y[ts+1])
+            gmm_model.fit(inData) 
+            self.clusters[ts] = gmm_model.predict(inData)
             self.cluster_centers[ts] = self.clusters[ts] 
             
         # for each of the clusters, find the labels of the data samples in the clusters
@@ -473,7 +465,7 @@ class StreamMClassification():
         return updatedMicroCluster, updatedClusters, updatedClusterCenters
 
     def initLabelData(self, ts, inData, inLabels):
-        self.cluster(X= inData, y= inLabels, ts=ts )
+        self.cluster(inData= inData, inLabels= inLabels, ts=ts )
         t_start = time.time()
         # classify based on the clustered predictions (self.preds) done in the init step
         self.preds[ts] = self.classify(trainData= inData , trainLabel= inLabels, testData= self.all_data_test[:np.shape(inData)[0]])
@@ -582,7 +574,19 @@ class StreamMClassification():
         """
         total_start = time.time()
         # get initial training data
-        self.getTrainData()
+        trained_data = self.getTrainData()
+        # getting all trained data for each kakfa topic
+        for key in trained_data.keys():
+            trained_array = trained_data[key].values
+            print(trained_array)
+            self.X[key] = trained_array[:,:-1]
+            self.Y[key] = trained_array[:,-1]
+            self.all_data[key] = trained_array
+            
+            self.initLabelData(ts= time.time(), inData= self.X[key], inLabels= self.Y[key])
+        
+        
+        
         
         total_end = time.time()
 
