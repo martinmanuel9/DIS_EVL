@@ -575,6 +575,7 @@ class StreamMClassification():
         total_start = time.time()
         # get initial training data
         trained_data = self.getTrainData()
+        print(trained_data)
         # getting all trained data for each kakfa topic
         for key in trained_data.keys():
             trained_array = trained_data[key].values

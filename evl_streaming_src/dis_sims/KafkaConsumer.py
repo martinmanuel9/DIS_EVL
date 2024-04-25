@@ -45,7 +45,9 @@ from opendismodel.opendis.RangeCoordinates import *
 from io import BytesIO
 import pandas as pd
 import pyarrow as pa
+import datetime
 import pyarrow.parquet as pq
+from category_encoders import OrdinalEncoder 
 
 class KafkaConsumer:
     def __init__(self, bootstrap_servers, group_id, topic, transmission, mode, verbose):
@@ -89,7 +91,7 @@ class KafkaConsumer:
                             # Aggregate GPS data
                             gps_data = {
                                 "pdu_id": pdu.pduType,
-                                "pdu_name": pduTypeName,
+                                # "pdu_name": pduTypeName,
                                 "longitude": pdu.entityLocation.x,
                                 "latitude": pdu.entityLocation.y,
                                 "altitude": pdu.entityLocation.z,
@@ -114,11 +116,6 @@ class KafkaConsumer:
                                         + " Label       : {}\n".format(pdu.label)
                                         )
                             
-                            # if self.kafka_train_data["gps"].empty:
-                            #     self.kafka_train_data["gps"] = gps_df
-                            # else:
-                            #     self.kafka_train_data["gps"] = pd.concat([self.kafka_train_data["gps"], gps_df], ignore_index=True)
-
                             self.update_data("gps", gps_df)
                             
                             if self.mode == "test":
@@ -127,7 +124,7 @@ class KafkaConsumer:
                         elif pdu.pduType == 73: # Light
                             light_data = {
                                 "pdu_id": pdu.pduType,
-                                "pdu_name": pduTypeName,
+                                # "pdu_name": pduTypeName,
                                 "light_status": pdu.light_status,
                                 "attack": pdu.attack,
                                 "label": pdu.label
@@ -143,10 +140,6 @@ class KafkaConsumer:
                                     + " Label         : {}\n".format(pdu.label)
                                     )
                             
-                            # if self.kafka_train_data['light'].empty:
-                            #     self.kafka_train_data["light"] = light_df
-                            # else:
-                            #     self.kafka_train_data["light"] = pd.concat([self.kafka_train_data["light"], light_df], ignore_index=True)
                             self.update_data("light", light_df)
                             
                             if self.mode == "test":
@@ -156,7 +149,7 @@ class KafkaConsumer:
                             if pdu.device == "Fridge":
                                 fridge_data = {
                                     "pdu_id": pdu.pduType,
-                                    "pdu_name": pduTypeName,
+                                    # "pdu_name": pduTypeName,
                                     "device": pdu.device,
                                     "temperature": pdu.temperature,
                                     "condition": pdu.condition,
@@ -169,7 +162,7 @@ class KafkaConsumer:
                             if pdu.device == "Thermostat":
                                 thermostat_data = {
                                     "pdu_id": pdu.pduType,
-                                    "pdu_name": pduTypeName,
+                                    # "pdu_name": pduTypeName,
                                     "device": pdu.device,
                                     "temperature": pdu.temperature,
                                     "temp_status": pdu.temp_status,
@@ -182,7 +175,7 @@ class KafkaConsumer:
                             if pdu.device == "Weather":
                                 weather_data = {
                                     "pdu_id": pdu.pduType,
-                                    "pdu_name": pduTypeName,
+                                    # "pdu_name": pduTypeName,
                                     "device": pdu.device,
                                     "temperature": pdu.temperature,
                                     "pressure": pdu.pressure,
@@ -205,29 +198,17 @@ class KafkaConsumer:
                                         + " Label       : {}\n".format(pdu.label)  
                                         )
                             if pdu.device == "Fridge":
-                                # if self.kafka_train_data['fridge'].empty:
-                                #     self.kafka_train_data["fridge"] = fridge_df
-                                # else:
-                                #     self.kafka_train_data["fridge"] = pd.concat([self.kafka_train_data["fridge"], fridge_df], ignore_index=True)
                                 self.update_data("fridge", fridge_df)
                                 
                                 if self.mode == "test":
                                     return fridge_df
                             
                             if pdu.device == "Thermostat":
-                                # if self.kafka_train_data['thermostat'].empty:
-                                #     self.kafka_train_data["thermostat"] = thermostat_df
-                                # else:
-                                #     self.kafka_train_data["thermostat"] = pd.concat([self.kafka_train_data["thermostat"], thermostat_df], ignore_index=True)
                                 self.update_data("thermostat", thermostat_df)
                                 if self.mode == "test":
                                     return thermostat_df
                             
                             if pdu.device == "Weather":
-                                # if self.kafka_train_data['weather'].empty:
-                                #     self.kafka_train_data["weather"] = weather_df
-                                # else:
-                                #     self.kafka_train_data["weather"] = pd.concat([self.kafka_train_data["weather"], weather_df], ignore_index=True)
                                 self.update_data("weather", weather_df)
                                 if self.mode == "test":
                                     return weather_df
@@ -235,7 +216,7 @@ class KafkaConsumer:
                         elif pdu.pduType == 71: # modbus
                             modbus_data = {
                                 "pdu_id": pdu.pduType,
-                                "pdu_name": pduTypeName,
+                                # "pdu_name": pduTypeName,
                                 "fc1": pdu.fc1,
                                 "fc2": pdu.fc2,
                                 "fc3": pdu.fc3,
@@ -255,10 +236,6 @@ class KafkaConsumer:
                                     + " Label           : {}\n".format(pdu.label)
                                     )
                             
-                            # if self.kafka_train_data['modbus'].empty:
-                            #     self.kafka_train_data["modbus"] = modbus_df
-                            # else:
-                            #     self.kafka_train_data["modbus"] = pd.concat([self.kafka_train_data["modbus"], modbus_df], ignore_index=True)
                             self.update_data("modbus", modbus_df)
                                 
                             if self.mode == "test":
@@ -267,7 +244,7 @@ class KafkaConsumer:
                         elif pdu.pduType == 72: # garage
                             garage_data = {
                                 "pdu_id": pdu.pduType,
-                                "pdu_name": pduTypeName,
+                                # "pdu_name": pduTypeName,
                                 "door_state": pdu.door_state,
                                 "sphone": pdu.sphone,
                                 "attack": pdu.attack,
@@ -283,10 +260,6 @@ class KafkaConsumer:
                                     + " Label : {}\n".format(pdu.label)
                                     )
                             
-                            # if self.kafka_train_data['garage'].empty:
-                            #     self.kafka_train_data["garage"] = garage_df
-                            # else:
-                            #     self.kafka_train_data["garage"] = pd.concat([self.kafka_train_data["garage"], garage_df], ignore_index=True)
                             self.update_data("garage", garage_df)
                             
                             if self.mode == "test":
@@ -357,6 +330,7 @@ class KafkaConsumer:
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["fridge"], "kafka_pdu", "train", verbose))
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["garage"], "kafka_pdu", "train", verbose))
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["gps"], "kafka_pdu", "train", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["light"], "kafka_pdu", "train", verbose))
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["modbus"], "kafka_pdu", "train", verbose))
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["thermostat"], "kafka_pdu", "train", verbose))
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["weather"], "kafka_pdu", "train", verbose))
@@ -378,6 +352,60 @@ class KafkaConsumer:
                 merged_data = KafkaConsumer.merge_dicts(merged_data, consumer.kafka_train_data)
             
             print("\n\nTraining complete\n")
+            
+            # Save data to parquet file onto the datasets directory
+            # for key, value in merged_data.items():
+            #     if not value.empty:
+            #         value.to_parquet(f"datasets/{key}_{datetime.datetime.now().strftime('%Y%m%d')}.parquet", index=False)
+            #         print(f"Saved {key} data to datasets/{key}.parquet")
+            #     else:
+            #         print(f"No data received for {key}")
+            
+            
+            # map the environment devices 
+            # Fridge: 0, Thermostat: 1, Weather: 2
+            merged_data["fridge"]["device"] = 0
+            merged_data["thermostat"]["device"] = 1
+            merged_data["weather"]["device"] = 2
+            
+            
+            print(merged_data)
+            
+            ## fridge mapping
+            fridge_mapping = [{'col': 'condition', 'mapping' : {"low": 1, "high": 2}},
+                            {'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomware': 5, 'scanning': 6, 'xss': 7 }}] 
+            merged_data["fridge"] = OrdinalEncoder(cols=['condition', 'attack'], mapping=fridge_mapping).fit(merged_data["fridge"]).transform(merged_data["fridge"])
+            
+            # garage mapping 
+            garage_mapping = [
+                    {'col': 'door_state', 'mapping': {'closed': 0, 'open': 1}},
+                    {'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7}}, 
+                    {'col': 'sphone', 'mapping': {'false  ': 0, 'true  ': 1, '0': 0, '1':1}}]
+            merged_data["garage"] = OrdinalEncoder(cols=['door_state', 'sphone', 'attack'], mapping=garage_mapping).fit(merged_data["garage"]).transform(merged_data["garage"])
+            
+            #gps mapping
+            gps_mapping = [{'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7}}]
+            merged_data["gps"]= OrdinalEncoder(cols=['attack'], mapping=gps_mapping).fit(merged_data["gps"]).transform(merged_data["gps"])
+            
+            # modbus mapping
+            modbus_mapping = [{'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'injection': 3, 'password': 4, 'scanning': 6, 'xss': 7}}]
+            merged_data["modbus"] = OrdinalEncoder(cols=['attack'], mapping=modbus_mapping).fit(merged_data["modbus"]).transform(merged_data["modbus"])
+            
+            # light mapping
+            light_mapping = [{'col':'light_status', 'mapping': {' off': 0, ' on': 1}}, 
+                            {'col': 'attack', 'mapping':{'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
+            merged_data["light"] = OrdinalEncoder(cols=['light_status', 'attack'], mapping = light_mapping).fit(merged_data["light"]).transform(merged_data["light"])
+            
+            # thermostat mapping
+            thermo_mapping = [{'col': 'attack', 'mapping':{'normal': 0, 'backdoor': 1, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
+            merged_data["thermostat"] = OrdinalEncoder(cols=['attack'], mapping=thermo_mapping).fit(merged_data["thermostat"]).transform(merged_data["thermostat"])
+            
+            # weather mapping
+            weather_mapping = [{'col': 'attack', 'mapping':{'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
+            merged_data["weather"] = OrdinalEncoder(cols=['attack'], mapping=weather_mapping).fit(merged_data["weather"]).transform(merged_data["weather"])
+            
+            print(merged_data)
+            
 
             return merged_data
 
@@ -385,7 +413,6 @@ class KafkaConsumer:
             print(f"Error: {e}: exiting training mode.")
             return False
 
-    #TODO: Figure out how to do streaming for test data
     def test(self, verbose):
         try:
             logging.basicConfig(level=logging.INFO)
@@ -397,6 +424,7 @@ class KafkaConsumer:
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["fridge"], "kafka_pdu", "test", verbose))
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["garage"], "kafka_pdu", "test", verbose))
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["gps"], "kafka_pdu", "test", verbose))
+            consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["light"], "kafka_pdu", "test", verbose))
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["modbus"], "kafka_pdu", "test", verbose))
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["thermostat"], "kafka_pdu", "test", verbose))
             consumers.append(KafkaConsumer("172.18.0.4:9092", "dis", ["weather"], "kafka_pdu", "test", verbose))
