@@ -60,6 +60,7 @@ sys.path.append(current_directory)
 from dis_sims import KafkaConsumer as kc
 import joblib
 import pickle as pkl
+import datetime
 
 class StreamMClassification(): 
     def __init__(self, 
@@ -142,25 +143,33 @@ class StreamMClassification():
         current_directory = os.getcwd()
 
         # Specify the directory where you want to save the model
-        model_directory = os.path.join(current_directory, '/models')
-        print(model_directory)
+        model_directory = current_directory + '/evl_streaming_src/models'
 
         # Ensure that the directory exists, if not, create it
         if not os.path.exists(model_directory):
             os.makedirs(model_directory)
+            
+        # Get the current date and time
+        current_time = datetime.datetime.now()
 
-        model_name = 'StreamMClass'+ self.classifier + '_' + self.method + '_' + dataset + '_' + '.h5' 
+        # Format the current date and time as 'yyyymmdd'
+        formatted_time = current_time.strftime('%Y%m%d')
+        model_name = f'StreamMClass{self.classifier}_{self.method}_{dataset}_{formatted_time}'
+
+        model_name_h5 = model_name +'.h5' 
         # Specify the filepath to save the model in the chosen directory
-        model_filepath = os.path.join(model_directory, model_name)
+        model_filepath = os.path.join(model_directory, model_name_h5)
 
-        # Assuming 'model' is your trained KMeans model
+        
         # Call the joblib.dump method to save the model
         joblib.dump(model, model_filepath)
         
-        with open(model_directory + 'StreamMClass'+ self.classifier + '_' + self.method + '_' + dataset + '_' + '.pkl', 'wb') as f:
+        os.chdir(model_directory)
+        with open(model_name + '.pkl', 'wb') as f:
             pkl.dump(model, f)
         
         print("Model saved successfully.")
+        os.chdir('../')
         
         
     def cluster(self, ts, inData, inLabels, dataset):
@@ -606,7 +615,6 @@ class StreamMClassification():
         total_start = time.time()
         # get initial training data
         trained_data = self.getTrainData()
-        print(trained_data)
         # getting all trained data for each kakfa topic
         for key in trained_data.keys():
             trained_array = trained_data[key].values
