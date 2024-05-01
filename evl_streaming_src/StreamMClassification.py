@@ -138,13 +138,31 @@ class StreamMClassification():
         """
         Save the model as a h5 file and pkl file
         """
-        filepath = '/models'
-        joblib.dump(model, filepath)
-        
-        with open('models/'+ self.method + '_' + dataset + self.classifier + '.pkl', 'wb') as f:
-            pkl.dump(model, f)
-            
+        # Get the current working directory
+        current_directory = os.getcwd()
 
+        # Specify the directory where you want to save the model
+        model_directory = os.path.join(current_directory, '/models')
+        print(model_directory)
+
+        # Ensure that the directory exists, if not, create it
+        if not os.path.exists(model_directory):
+            os.makedirs(model_directory)
+
+        model_name = 'StreamMClass'+ self.classifier + '_' + self.method + '_' + dataset + '_' + '.h5' 
+        # Specify the filepath to save the model in the chosen directory
+        model_filepath = os.path.join(model_directory, model_name)
+
+        # Assuming 'model' is your trained KMeans model
+        # Call the joblib.dump method to save the model
+        joblib.dump(model, model_filepath)
+        
+        with open(model_directory + 'StreamMClass'+ self.classifier + '_' + self.method + '_' + dataset + '_' + '.pkl', 'wb') as f:
+            pkl.dump(model, f)
+        
+        print("Model saved successfully.")
+        
+        
     def cluster(self, ts, inData, inLabels, dataset):
         """
         We cluster the data either through kmeans or gmm 
@@ -592,15 +610,11 @@ class StreamMClassification():
         # getting all trained data for each kakfa topic
         for key in trained_data.keys():
             trained_array = trained_data[key].values
-            print(trained_array)
             self.X[key] = trained_array[:,:-1]
             self.Y[key] = trained_array[:,-1]
             self.all_data[key] = trained_array
             
             self.initLabelData(ts= time.time(), inData= self.X[key], inLabels= self.Y[key], dataset=key)
-        
-        
-        
         
         total_end = time.time()
 

@@ -411,10 +411,6 @@ class KafkaConsumer:
             #         print(f"Saved {key} data to datasets/{key}.parquet")
             #     else:
             #         print(f"No data received for {key}")
-            
-            
-            
-            print(merged_data)
 
             return merged_data
 
