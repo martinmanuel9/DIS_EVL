@@ -1,5 +1,6 @@
 # Ignore data 
 data/BoT_IoT_Data/**
+data/JITC_Data/**
 models/spark-streaming/scripts/checkpoint/**
 __pycache__/**
 models/dis/devices/__pycache__/**

@@ -61,8 +61,9 @@ class DeviceTrain():
             threads.append(threading.Thread(target=gpsTrain.sendGPSTrain))
             threads.append(threading.Thread(target=lightTrain.sendLightTrain))
             threads.append(threading.Thread(target=modbusTrain.sendModbusTrain))
-            threads.append(threading.Thread(target=weatherTrain.sendWeatherTrain))
             threads.append(threading.Thread(target=thermnostatTrain.sendThermostatTrain))
+            threads.append(threading.Thread(target=weatherTrain.sendWeatherTrain))
+            
 
             # Start all threads
             for thread in threads:
@@ -94,8 +95,9 @@ class DeviceTrain():
             threads.append(threading.Thread(target=gpsTest.sendGPSTest))
             threads.append(threading.Thread(target=lightTest.sendLightTest))
             threads.append(threading.Thread(target=modbusTest.sendModbusTest))
-            threads.append(threading.Thread(target=weatherTest.sendWeatherTest))
             threads.append(threading.Thread(target=thermostatTest.sendThermostatTest))
+            threads.append(threading.Thread(target=weatherTest.sendWeatherTest))
+            
 
             # Start all threads
             for thread in threads:

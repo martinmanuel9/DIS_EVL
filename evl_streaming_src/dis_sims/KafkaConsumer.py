@@ -91,7 +91,7 @@ class KafkaConsumer:
                             # Aggregate GPS data
                             gps_data = {
                                 "pdu_id": pdu.pduType,
-                                # "pdu_name": pduTypeName,
+                                "pdu_name": pduTypeName,
                                 "longitude": pdu.entityLocation.x,
                                 "latitude": pdu.entityLocation.y,
                                 "altitude": pdu.entityLocation.z,
@@ -102,6 +102,12 @@ class KafkaConsumer:
                                 "label": pdu.label
                             }
                             gps_df = pd.DataFrame([gps_data])
+                            
+                            gps_mapping = [
+                                {'col': 'pdu_name', 'mapping': {'EntityStatePdu': 0}},
+                                {'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7}}]
+                            gps_df= OrdinalEncoder(cols=['pdu_name', 'attack'], mapping=gps_mapping).fit(gps_df).transform(gps_df)
+            
                             
                             if self.verbose == "true":
                                 print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
@@ -121,35 +127,15 @@ class KafkaConsumer:
                             if self.mode == "test":
                                 return gps_df
                         
-                        elif pdu.pduType == 73: # Light
-                            light_data = {
-                                "pdu_id": pdu.pduType,
-                                # "pdu_name": pduTypeName,
-                                "light_status": pdu.light_status,
-                                "attack": pdu.attack,
-                                "label": pdu.label
-                                
-                            }
-                            light_df = pd.DataFrame([light_data])
-                            
-                            if self.verbose == "true":
-                                print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
-                                    + " Motion Status : {}\n".format(pdu.motion_status)
-                                    + " Light Status  : {}\n".format(pdu.light_status)
-                                    + " Attack        : {}\n".format(pdu.attack)
-                                    + " Label         : {}\n".format(pdu.label)
-                                    )
-                            
-                            self.update_data("light", light_df)
-                            
-                            if self.mode == "test":
-                                return light_df
+                        
                         
                         elif pdu.pduType == 70:  # environment
+                            # map the environment devices 
+                            # Fridge: 0, Thermostat: 1, Weather: 2
                             if pdu.device == "Fridge":
                                 fridge_data = {
                                     "pdu_id": pdu.pduType,
-                                    # "pdu_name": pduTypeName,
+                                    "pdu_name": pduTypeName,
                                     "device": pdu.device,
                                     "temperature": pdu.temperature,
                                     "condition": pdu.condition,
@@ -158,11 +144,18 @@ class KafkaConsumer:
                                 }
                                 
                                 fridge_df = pd.DataFrame([fridge_data])
+                                # ## fridge mapping
+                                fridge_mapping = [{'col': 'condition', 'mapping' : {"low": 1, "high": 2}},
+                                                {'col': 'pdu_name', 'mapping': {'Environment': 1}}, 
+                                                {'col': 'device', 'mapping': {'Fridge': 0}},
+                                                {'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomware': 5, 'scanning': 6, 'xss': 7 }}] 
+                                fridge_df = OrdinalEncoder(cols=['condition', 'pdu_name', 'device', 'attack'], mapping=fridge_mapping).fit(fridge_df).transform(fridge_df)
+                                
                             
                             if pdu.device == "Thermostat":
                                 thermostat_data = {
                                     "pdu_id": pdu.pduType,
-                                    # "pdu_name": pduTypeName,
+                                    "pdu_name": pduTypeName,
                                     "device": pdu.device,
                                     "temperature": pdu.temperature,
                                     "temp_status": pdu.temp_status,
@@ -171,11 +164,19 @@ class KafkaConsumer:
                                 }
                                 
                                 thermostat_df = pd.DataFrame([thermostat_data])
+                                
+                                ## thermostat mapping
+                                thermo_mapping = [ 
+                                    {'col': 'pdu_name', 'mapping': {'Environment': 1}},
+                                    {'col': 'device', 'mapping': {'Thermostat': 1}},
+                                    {'col': 'attack', 'mapping':{'normal': 0, 'backdoor': 1, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
+                                thermostat_df = OrdinalEncoder(cols=['pdu_name', 'device', 'attack'], mapping=thermo_mapping).fit(thermostat_df).transform(thermostat_df)
+            
                             
                             if pdu.device == "Weather":
                                 weather_data = {
                                     "pdu_id": pdu.pduType,
-                                    # "pdu_name": pduTypeName,
+                                    "pdu_name": pduTypeName,
                                     "device": pdu.device,
                                     "temperature": pdu.temperature,
                                     "pressure": pdu.pressure,
@@ -185,6 +186,12 @@ class KafkaConsumer:
                                 }
                                 
                                 weather_df = pd.DataFrame([weather_data])
+                                ## weather mapping
+                                weather_mapping = [
+                                    {'col': 'pdu_name', 'mapping': {'Environment': 1}},
+                                    {'col': 'device', 'mapping': {'Weather': 2}},
+                                    {'col': 'attack', 'mapping':{'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
+                                weather_df = OrdinalEncoder(cols=['pdu_name', 'device','attack'], mapping=weather_mapping).fit(weather_df).transform(weather_df) 
                             
                             if self.verbose == "true":
                                 print("Received {}: {} Bytes \n".format(pduTypeName, len(message), flush=True)
@@ -213,10 +220,11 @@ class KafkaConsumer:
                                 if self.mode == "test":
                                     return weather_df
                             
+                            
                         elif pdu.pduType == 71: # modbus
                             modbus_data = {
                                 "pdu_id": pdu.pduType,
-                                # "pdu_name": pduTypeName,
+                                "pdu_name": pduTypeName,
                                 "fc1": pdu.fc1,
                                 "fc2": pdu.fc2,
                                 "fc3": pdu.fc3,
@@ -225,6 +233,12 @@ class KafkaConsumer:
                                 "label": pdu.label
                             }
                             modbus_df = pd.DataFrame([modbus_data])
+                            ## modbus mapping
+                            modbus_mapping = [
+                                {'col': 'pdu_name', 'mapping': {'Modbus': 2}},
+                                {'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'injection': 3, 'password': 4, 'scanning': 6, 'xss': 7}}]
+                            modbus_df = OrdinalEncoder(cols=['pdu_name', 'attack'], mapping=modbus_mapping).fit(modbus_df).transform(modbus_df)
+            
                             
                             if self.verbose == "true":
                                 print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
@@ -244,13 +258,19 @@ class KafkaConsumer:
                         elif pdu.pduType == 72: # garage
                             garage_data = {
                                 "pdu_id": pdu.pduType,
-                                # "pdu_name": pduTypeName,
+                                "pdu_name": pduTypeName,
                                 "door_state": pdu.door_state,
                                 "sphone": pdu.sphone,
                                 "attack": pdu.attack,
                                 "label": pdu.label
                             }
                             garage_df = pd.DataFrame(garage_data)
+                            garage_mapping = [
+                                    {'col': 'pdu_name', 'mapping': {'Garage': 3}},
+                                    {'col': 'door_state', 'mapping': {'closed': 0, 'open': 1}},
+                                    {'col': 'sphone', 'mapping': {'false  ': 0, 'true  ': 1, '0': 0, '1':1}},
+                                    {'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7}}]
+                            garage_df = OrdinalEncoder(cols=['pdu_name', 'door_state', 'sphone', 'attack'], mapping=garage_mapping).fit(garage_df).transform(garage_df)
                             
                             if self.verbose == "true":
                                 print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
@@ -264,6 +284,37 @@ class KafkaConsumer:
                             
                             if self.mode == "test":
                                 return garage_df
+                        
+                        elif pdu.pduType == 73: # Light
+                            light_data = {
+                                "pdu_id": pdu.pduType,
+                                "pdu_name": pduTypeName,
+                                "light_status": pdu.light_status,
+                                "attack": pdu.attack,
+                                "label": pdu.label
+                                
+                            }
+                            light_df = pd.DataFrame([light_data])
+                            ## light mapping
+                            light_mapping = [
+                                            {'col':'pdu_name', 'mapping': {'Light': 4}}, 
+                                            {'col':'light_status', 'mapping': {' off': 0, ' on': 1}}, 
+                                            {'col': 'attack', 'mapping':{'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
+                            light_df = OrdinalEncoder(cols=['pdu_name', 'light_status', 'attack'], mapping = light_mapping).fit(light_df).transform(light_df)
+            
+                            
+                            if self.verbose == "true":
+                                print("Received {}: {} Bytes\n".format(pduTypeName, len(message), flush=True)
+                                    + " Motion Status : {}\n".format(pdu.motion_status)
+                                    + " Light Status  : {}\n".format(pdu.light_status)
+                                    + " Attack        : {}\n".format(pdu.attack)
+                                    + " Label         : {}\n".format(pdu.label)
+                                    )
+                            
+                            self.update_data("light", light_df)
+                            
+                            if self.mode == "test":
+                                return light_df
                         
                         else: 
                             pduData = {
@@ -362,50 +413,8 @@ class KafkaConsumer:
             #         print(f"No data received for {key}")
             
             
-            # map the environment devices 
-            # Fridge: 0, Thermostat: 1, Weather: 2
-            merged_data["fridge"]["device"] = 0
-            merged_data["thermostat"]["device"] = 1
-            merged_data["weather"]["device"] = 2
-            
             
             print(merged_data)
-            
-            ## fridge mapping
-            fridge_mapping = [{'col': 'condition', 'mapping' : {"low": 1, "high": 2}},
-                            {'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomware': 5, 'scanning': 6, 'xss': 7 }}] 
-            merged_data["fridge"] = OrdinalEncoder(cols=['condition', 'attack'], mapping=fridge_mapping).fit(merged_data["fridge"]).transform(merged_data["fridge"])
-            
-            # garage mapping 
-            garage_mapping = [
-                    {'col': 'door_state', 'mapping': {'closed': 0, 'open': 1}},
-                    {'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7}}, 
-                    {'col': 'sphone', 'mapping': {'false  ': 0, 'true  ': 1, '0': 0, '1':1}}]
-            merged_data["garage"] = OrdinalEncoder(cols=['door_state', 'sphone', 'attack'], mapping=garage_mapping).fit(merged_data["garage"]).transform(merged_data["garage"])
-            
-            #gps mapping
-            gps_mapping = [{'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7}}]
-            merged_data["gps"]= OrdinalEncoder(cols=['attack'], mapping=gps_mapping).fit(merged_data["gps"]).transform(merged_data["gps"])
-            
-            # modbus mapping
-            modbus_mapping = [{'col': 'attack', 'mapping': {'normal': 0, 'backdoor': 1, 'injection': 3, 'password': 4, 'scanning': 6, 'xss': 7}}]
-            merged_data["modbus"] = OrdinalEncoder(cols=['attack'], mapping=modbus_mapping).fit(merged_data["modbus"]).transform(merged_data["modbus"])
-            
-            # light mapping
-            light_mapping = [{'col':'light_status', 'mapping': {' off': 0, ' on': 1}}, 
-                            {'col': 'attack', 'mapping':{'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
-            merged_data["light"] = OrdinalEncoder(cols=['light_status', 'attack'], mapping = light_mapping).fit(merged_data["light"]).transform(merged_data["light"])
-            
-            # thermostat mapping
-            thermo_mapping = [{'col': 'attack', 'mapping':{'normal': 0, 'backdoor': 1, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
-            merged_data["thermostat"] = OrdinalEncoder(cols=['attack'], mapping=thermo_mapping).fit(merged_data["thermostat"]).transform(merged_data["thermostat"])
-            
-            # weather mapping
-            weather_mapping = [{'col': 'attack', 'mapping':{'normal': 0, 'backdoor': 1, 'ddos': 2, 'injection': 3, 'password': 4, 'ransomeware': 5, 'scanning': 6, 'xss': 7 }}]
-            merged_data["weather"] = OrdinalEncoder(cols=['attack'], mapping=weather_mapping).fit(merged_data["weather"]).transform(merged_data["weather"])
-            
-            print(merged_data)
-            
 
             return merged_data
 

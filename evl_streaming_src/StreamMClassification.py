@@ -40,7 +40,7 @@ from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense
-# from keras.preprocessing.sequence import pad_sequences
+from keras.preprocessing.sequence import pad_sequences
 from sklearn.svm import SVC, SVR
 import classifier_performance as cp
 from scipy import stats
@@ -58,6 +58,8 @@ current_directory = os.getcwd()
 # updatedDirectory = os.getcwd()
 sys.path.append(current_directory)
 from dis_sims import KafkaConsumer as kc
+import joblib
+import pickle as pkl
 
 class StreamMClassification(): 
     def __init__(self, 
@@ -131,14 +133,27 @@ class StreamMClassification():
                 sil_score[c] = score
             optimal_cluster = max(sil_score, key=sil_score.get)
             self.NClusters = optimal_cluster
+    
+    def save_model(self, model, dataset):
+        """
+        Save the model as a h5 file and pkl file
+        """
+        filepath = '/models'
+        joblib.dump(model, filepath)
+        
+        with open('models/'+ self.method + '_' + dataset + self.classifier + '.pkl', 'wb') as f:
+            pkl.dump(model, f)
+            
 
-    def cluster(self, ts, inData, inLabels):
+    def cluster(self, ts, inData, inLabels, dataset):
         """
         We cluster the data either through kmeans or gmm 
         """       
         if self.method == 'kmeans':
             self.find_silhoette_score(X=inData, y=inLabels, ts=ts)
-            kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(inData)  
+            kmeans_model = KMeans(n_clusters=self.NClusters, n_init='auto').fit(inData) 
+            # save the KMeans model as h5 under models folder
+            self.save_model(model= kmeans_model, dataset = dataset)
             # computes cluster centers and radii of cluster for initial ts
             self.microCluster[ts] = self.create_centroid(inCluster = kmeans_model, fitCluster = kmeans_model.fit_predict(inData), x= inData , y= inLabels)
             self.clusters[ts] = kmeans_model.predict(inData) # gets the cluster labels for the data
@@ -253,7 +268,6 @@ class StreamMClassification():
             trainLabel = tf.keras.utils.to_categorical(trainLabel, num_classes=num_classes)
             input_dim = trainData[:,:-1].shape[1]
             sequence_length = 1000
-         
             # Define the input shape and number of hidden units
             input_shape = (sequence_length, input_dim)  # e.g., (10, 32)
             hidden_units = 64
@@ -464,8 +478,8 @@ class StreamMClassification():
         updatedClusterCenters = updatedModel.cluster_centers_
         return updatedMicroCluster, updatedClusters, updatedClusterCenters
 
-    def initLabelData(self, ts, inData, inLabels):
-        self.cluster(inData= inData, inLabels= inLabels, ts=ts )
+    def initLabelData(self, ts, inData, inLabels, dataset):
+        self.cluster(inData= inData, inLabels= inLabels, ts=ts , dataset= dataset)
         t_start = time.time()
         # classify based on the clustered predictions (self.preds) done in the init step
         self.preds[ts] = self.classify(trainData= inData , trainLabel= inLabels, testData= self.all_data_test[:np.shape(inData)[0]])
@@ -527,7 +541,6 @@ class StreamMClassification():
         # # remove non-unique values from the clusters
         uniqueFilteredXt =  np.unique(filteredXt, axis=0)
         # update based on joined clusters
-       
         self.microCluster[ts], self.clusters[ts], self.cluster_centers[ts] = self.updateModelMC(inData= uniqueFilteredXt, ts= ts)
         
         for mc in self.microCluster[ts]:
@@ -584,7 +597,7 @@ class StreamMClassification():
             self.Y[key] = trained_array[:,-1]
             self.all_data[key] = trained_array
             
-            self.initLabelData(ts= time.time(), inData= self.X[key], inLabels= self.Y[key])
+            self.initLabelData(ts= time.time(), inData= self.X[key], inLabels= self.Y[key], dataset=key)
         
         
         
@@ -623,8 +636,7 @@ class StreamMClassification():
                 closestMC = self.findClosestMC(x= self.X[ts], MC_Centers= self.cluster_centers[ts-1])
                 preGroupedPoints, preGroupedXt = self.preGroupMC(inDict= closestMC, ts= ts)
                 pointsAddToMC, pointsNewMC, xtAddToMC, xtNewMC = self.evaluateXt(inPreGroupedPoints= preGroupedPoints, 
-                                                                                 prevMC= self.microCluster[ts-1], inPreGroupedXt= preGroupedXt)
-                
+                                                                                prevMC= self.microCluster[ts-1], inPreGroupedXt= preGroupedXt)
                 
                 # we first check if we first need to create a new cluster based on streaming data
                 if len(xtNewMC) > 0:
