@@ -61,6 +61,7 @@ from dis_sims import KafkaConsumer as kc
 import joblib
 import pickle as pkl
 import datetime
+from sklearn.model_selection import train_test_split
 
 class StreamMClassification(): 
     def __init__(self, 
@@ -81,13 +82,13 @@ class StreamMClassification():
         self.performance_metric = {}
         self.avg_perf_metric = {}
         self.microCluster = {}
-        self.X = {}
-        self.Y = {}
+        self.X_init = {}
+        self.Y_init = {}
         # for UNSW IoT dataset
         self.data= {}
         self.labeled= {}
-        self.all_data = {}
-        self.all_data_test = {}
+        self.all_data_init = {}  
+        self.all_data_test = {} # delete soon
         
     def getTrainData(self):
         """
@@ -95,6 +96,7 @@ class StreamMClassification():
         """
         kafkaConsumer = kc.KafkaConsumer
         trainedData = kafkaConsumer.train(self, verbose="false")
+        
         return trainedData
         
 
@@ -508,14 +510,16 @@ class StreamMClassification():
     def initLabelData(self, ts, inData, inLabels, dataset):
         self.cluster(inData= inData, inLabels= inLabels, ts=ts , dataset= dataset)
         t_start = time.time()
-        # classify based on the clustered predictions (self.preds) done in the init step
-        self.preds[ts] = self.classify(trainData= inData , trainLabel= inLabels, testData= self.all_data_test[:np.shape(inData)[0]])
+        # get training data and labels performance metrics 
+        X_train, X_test, y_train, y_test = train_test_split(inData, inLabels, test_size=0.2, random_state=42)
+        init_trained_data = 'Trained' + '_' + dataset
+        self.preds[init_trained_data] = self.classify(trainData= X_train , trainLabel= y_train, testData= X_test)
         t_end = time.time()
-        perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[ts], test= self.all_data_test[:np.shape(self.preds[ts])[0]], \
-                                        dataset= self.dataset , method= self.method , \
+        perf_metric = cp.PerformanceMetrics(timestep= ts, preds= self.preds[init_trained_data], test= X_test, \
+                                        dataset= dataset , method= self.method , \
                                         classifier= self.classifier, tstart=t_start, tend=t_end)
-        self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.all_data_test[:np.shape(self.preds[ts])[0]][:,-1])
-
+        self.performance_metric[init_trained_data] = perf_metric.findClassifierMetrics(preds= self.preds[init_trained_data], test= y_test)
+        print(self.performance_metric[init_trained_data])
 
     def findDisjointMCs(self, inMCluster):
         disjoint_sets = []
@@ -616,15 +620,24 @@ class StreamMClassification():
         # get initial training data
         trained_data = self.getTrainData()
         # getting all trained data for each kakfa topic
+
+        # check if any of the dataframe in the keys are empty
+        del_keys = []
+        for key in trained_data.keys():
+            if trained_data[key].empty:
+                del_keys.append(key)
+        
+        for del_key in del_keys:
+            del trained_data[del_key]
+        
         for key in trained_data.keys():
             trained_array = trained_data[key].values
-            self.X[key] = trained_array[:,:-1]
-            self.Y[key] = trained_array[:,-1]
-            self.all_data[key] = trained_array
+            self.X_init[key] = trained_array[:,:-1]
+            self.Y_init[key] = trained_array[:,-1]
+            self.all_data_init[key] = trained_array
             
-            self.initLabelData(ts= time.time(), inData= self.X[key], inLabels= self.Y[key], dataset=key)
-        
-        total_end = time.time()
+            self.initLabelData(ts= time.time(), inData= self.X_init[key], inLabels= self.Y_init[key], dataset=key)
+            
 
     def mclass_stream_run(self):
         """
