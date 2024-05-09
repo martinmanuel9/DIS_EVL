@@ -32,8 +32,13 @@ College of Engineering
 import os
 import json
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split 
 from bitarray import bitarray
+import binascii
+import html
+import base64
+
 
 class JITC_DATAOPS:
     def __init__(self, dataset):
@@ -51,32 +56,36 @@ class JITC_DATAOPS:
     def process_json_file(self, json_file):
         with open(json_file, 'r') as f:
             json_data = json.load(f)  # Load JSON data
+            # remove quotes 
+            json_data = json_data.replace("\"", "")
             self.data.append({'filename': os.path.basename(json_file), 'binary': json_data})
         
     def import_data(self):
         self.process_directory(os.getcwd() + '/data/JITC_Data')
         self.data = pd.DataFrame(self.data)
-
-    def develop_dataset(self):
-        X = self.data['binary']
+        
+    def decode_dataset(self, data):
+        X = data.to_frame()
+        # go through dataframe and decode binary data
         for i in range(len(X)):
-            # break down each entry into 8 character bins to create sentence
-            X[i] = [X[i][j:j+8] for j in range(0, len(X[i]), 8)]
-            print(X[i])
-            # convert each 8 character bin into a bitarray
-            X[i] = [bitarray(bin_str) for bin_str in X[i]]
-            # convert bitarray to decode in ascii
-            X[i] = [bit.tobytes().decode('ascii') for bit in X[i]]
-            # join all 8 character bins to create a sentence
-            X[i] = ''.join(X[i])
-            print(X[i])
+            print('Before:\n',X['binary'].iloc[i][0])
+            X['binary'].iloc[i] = binascii.b2a_base64(bitarray(X['binary'].iloc[i]), newline=True).decode()
+            decodedBytes = base64.b64decode(X['binary'].iloc[i])
+            X['binary'].iloc[i] = decodedBytes.decode('ascii')
+            
+        
+        print('After:\n', X)
+        return X
+    
 
-
-        X_train, X_test = train_test_split(X, test_size=0.8, random_state=42)
+    def develop_dataset(self, ):
+        X_train, X_test = train_test_split(self.data['binary'], test_size=0.8, random_state=42)
+        
+        # X_train_decoded = self.decode_dataset(X_train)
 
         return X_train, X_test
 
-if __name__ == "__main__":
-    dataOps = JITC_DATAOPS(dataset='JITC')
-    X_train, X_test= dataOps.develop_dataset()
-    print(X_train)
+# if __name__ == "__main__":
+#     dataOps = JITC_DATAOPS(dataset='JITC')
+#     X_train, X_test= dataOps.develop_dataset()
+#     print(X_train)
