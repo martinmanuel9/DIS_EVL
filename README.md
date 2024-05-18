@@ -62,7 +62,8 @@ make altinstall
 ```
 
 g. Verify installation and add to path
-probably run pwd to find the path. 
+probably run pwd to find the path.
+
 ```bash
 export PATH="/<<path_to_python3.11>>/python3.11/bin:$PATH"
 python3.11 --version
@@ -97,6 +98,7 @@ python3.11 -m venv pyvenv
 ```
 
 3. Run and check python version:
+
 ```bash
 source pyvenv/bin/activate
 ```
@@ -108,6 +110,10 @@ pip install -r requirements.txt
 ```
 
 # Option 2: Conda Establishing Conda Environment
+
+## recommeded if you already have a conda license. This may incur cost
+
+If you happen to like conda and have an environment set up. The following is conda's set up
 
 1. Get the following anaconda file:
    Anaconda3-2023.07-1-Linux-x86_64.sh
@@ -206,7 +212,7 @@ Now everytime you begin runnig the simulations you can activate the conda enviro
 conda activate pyvenv
 ```
 
-# Establishing Microservices
+# Establishing Docker Images for Environment
 
 Automate services start-up using Docker images for Cassandra, MySQL, Kafka, Zookeeper, and Spark.
 We have enabled automation and wit
