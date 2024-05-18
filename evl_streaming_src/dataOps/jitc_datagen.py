@@ -33,12 +33,9 @@ import os
 import json
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from sklearn.model_selection import train_test_split 
 from bitarray import bitarray
-import binascii
-import html
-import base64
-
 
 class JITC_DATAOPS:
     def __init__(self, dataset):
@@ -59,6 +56,19 @@ class JITC_DATAOPS:
                     data = '{\"binary\":' + data + '}'
                 with open(directory + '/' + filename, 'w') as f:
                     f.write(data)
+                    
+    ## --------------------------------------------------------------
+    
+    def change_directory(self):
+        path = os.getcwd()
+        ###  debug mode
+        # testPath = str(path) + '/data/JITC_Data/'
+        # os.chdir(testPath)
+        ### run mode: change path to data directory
+        path = Path(path)
+        path = path.parents[1]
+        changed_path = str(path) + '/data/JITC_Data/'
+        os.chdir(changed_path)
 
     # add binaries into a list
     def process_directory(self, directory):
@@ -74,44 +84,15 @@ class JITC_DATAOPS:
             json_data = json.load(f)  # Load JSON data
             # print(json_data['binary'])
             self.data[os.path.basename(json_file)] = json_data['binary']
-        
+    
     def import_data(self):
-        self.process_directory(os.getcwd() + '/data/JITC_Data')
+        self.change_directory()
+        self.process_directory(os.getcwd())
         self.dataframe = pd.DataFrame.from_dict(self.data, orient='index', columns=['binary'])
         self.dataframe.index.name = 'filename'
-        
-    def decode_dataset(self, data):
-        X = data
-        # go through dataframe and decode binary data
-        for i in range(len(X)):
-            # print('Before:\n', type(X['binary'].iloc[i]))
-            binary_str = X['binary'].iloc[i]
-            # convert to bytes
-            bytes_list = [binary_str[i:i+8] for i in range(0, len(binary_str), 8)]
-            byte_values = [int(byte, 2) for byte in bytes_list]
-            decoded_values = [bytes([byte]).decode('utf-8') for byte in byte_values]
-            print('Decoded:', decoded_values)
-        return X
-    
 
-    def develop_dataset(self, ):
+    def develop_dataset(self):
         X_train, X_test = train_test_split(self.dataframe, test_size=0.8, random_state=42)
-        
-        X_train_decoded = self.decode_dataset(X_train)
-        
-        
-        # X_train = pd.DataFrame(X_train)
-        # # Find duplicate rows based on the 'binary' column
-        # duplicates = X_train.duplicated(subset=['binary'], keep=False)
-        
-        # X_train['label'] = ~duplicates
-
-        # # Print instances where label is True
-        # print(X_train[X_train['label'] == True])
-        
-        
-
-
         return X_train, X_test
 
 if __name__ == "__main__":
@@ -119,4 +100,5 @@ if __name__ == "__main__":
     # run the following only once to update json files
     # dataOps.update_jsons(os.getcwd() + '/data/JITC_Data')
     X_train, X_test= dataOps.develop_dataset()
+
 

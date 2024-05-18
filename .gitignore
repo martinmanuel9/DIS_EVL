@@ -15,3 +15,8 @@ models/spark-streaming/scripts/__pycache__
 evl_streaming_src/dis/__pycache__/**
 evl_streaming_src/__pycache__/** 
 evl_streaming_src/dis_sims/__pycache__/** 
+pyvenv/**
+pyvenv/bin/** 
+pyvenv/include/**
+pyvenv/lib/**
+pyvenv/lib64/**
