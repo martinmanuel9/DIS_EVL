@@ -23,6 +23,72 @@
 # Option 1: Recommended to create python environment
 
 1. Ensure you have the latest python version -> python 3.11
+   a. You can download python 3.11.9 the following:
+
+```bash
+wget https://www.python.org/ftp/python/3.11.9/Python-3.11.9.tgz
+```
+
+b. Extract the download
+
+```bash
+tar -xf Python-3.11.9.tgz
+```
+
+c. Configure and build navigate to extracted directory
+
+```bash
+cd Python-3.11.9
+```
+
+d. Build configuration optimization flags:
+
+```bash
+./configure --enable-optimizations
+```
+
+e. Build Python using multiple processors
+
+```bash
+make -j$(nproc)
+```
+
+f. Install python3.11 in your system
+
+```bash
+./configure --prefix=$HOME/python3.11
+make
+make altinstall
+```
+
+g. Verify installation and add to path
+
+```bash
+export PATH="/home/martinmlopez/python3.11/bin:$PATH"
+python3.11 --version
+```
+
+h. Set python3.11 as default
+
+```bash
+nano ~/.bashrc
+```
+
+i. Add the following at the end of the file
+
+This may not work and you can skip steps i-k as you can still run python3.11 to establish environment
+
+```bash
+alias python3='/usr/local/bin/python3.11'
+```
+
+j. Update the bash file and apply the changes
+k. Verify python version
+
+```bash
+python3 --version
+```
+
 2. Within the DIS_EVL directory run the following command to create your python environment
 
 ```bash
@@ -30,7 +96,12 @@ python3.11 -m venv pyvenv
 
 ```
 
-3. Run the following command to install all necessary packages
+3. Run and check python version:
+```bash
+source pyvenv/bin/activate
+```
+
+4. Run the following command to install all necessary packages
 
 ```bash
 pip install -r requirements.txt

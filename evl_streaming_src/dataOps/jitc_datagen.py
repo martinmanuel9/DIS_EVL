@@ -61,14 +61,15 @@ class JITC_DATAOPS:
     
     def change_directory(self):
         path = os.getcwd()
-        ###  debug mode
-        # testPath = str(path) + '/data/JITC_Data/'
-        # os.chdir(testPath)
+        ###  debug mode ---------------------------
+        testPath = str(path) + '/data/JITC_Data/'
+        os.chdir(testPath)
+        #------------------------------------------
         ### run mode: change path to data directory
-        path = Path(path)
-        path = path.parents[1]
-        changed_path = str(path) + '/data/JITC_Data/'
-        os.chdir(changed_path)
+        # path = Path(path)
+        # path = path.parents[1]
+        # changed_path = str(path) + '/data/JITC_Data/'
+        # os.chdir(changed_path)
 
     # add binaries into a list
     def process_directory(self, directory):
@@ -100,5 +101,6 @@ if __name__ == "__main__":
     # run the following only once to update json files
     # dataOps.update_jsons(os.getcwd() + '/data/JITC_Data')
     X_train, X_test= dataOps.develop_dataset()
+    print(X_train.head())
 
 
