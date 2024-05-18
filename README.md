@@ -62,9 +62,9 @@ make altinstall
 ```
 
 g. Verify installation and add to path
-
+probably run pwd to find the path. 
 ```bash
-export PATH="/home/martinmlopez/python3.11/bin:$PATH"
+export PATH="/<<path_to_python3.11>>/python3.11/bin:$PATH"
 python3.11 --version
 ```
 
