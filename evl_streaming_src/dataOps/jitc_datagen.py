@@ -67,14 +67,14 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         ###  debug mode ---------------------------
-        # testPath = str(path) + '/data/JITC_Data/'
-        # os.chdir(testPath)
+        testPath = str(path) + '/data/JITC_Data/'
+        os.chdir(testPath)
         #------------------------------------------
         ### run mode: change path to data directory
-        path = Path(path)
-        path = path.parents[1]
-        changed_path = str(path) + '/data/JITC_Data/'
-        os.chdir(changed_path)
+        # path = Path(path)
+        # path = path.parents[1]
+        # changed_path = str(path) + '/data/JITC_Data/'
+        # os.chdir(changed_path)
 
     # add binaries into a list
     def process_directory(self, directory):
@@ -148,6 +148,15 @@ if __name__ == "__main__":
     # Extract features from the LSTM layer
     X_train_features = feature_extractor.predict(X_train)
     X_test_features = feature_extractor.predict(X_test)
+    
+    # save features in pickle and h5 format
+    X_train_features = pd.DataFrame(X_train_features)
+    X_test_features = pd.DataFrame(X_test_features)
+    X_train_features.to_pickle('X_train_features.pkl')
+    X_test_features.to_pickle('X_test_features.pkl')
+    X_train_features.to_hdf('X_train_features.h5', key='X_train_features')
+    X_test_features.to_hdf('X_test_features.h5', key='X_test_features')
+    
 
     # Train a different model (e.g., RandomForest) using the extracted features
     rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
