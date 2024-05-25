@@ -39,11 +39,12 @@ import numpy as np
 from scipy import stats
 from sklearn.svm import SVC, SVR
 from tqdm import tqdm
+import os
 import math
-import benchmark_datagen_old as bdg
-import ton_iot_datagen as ton_iot
-import evl_streaming_src.dataOps.bot_iot_datagen as bot_iot
-import unsw_nb15_datagen as unsw
+# import dataOps.benchmark_datagen_old as bdg
+# import dataOps.ton_iot_datagen as ton_iot
+import dataOps.bot_iot_datagen as bot_iot
+# import unsw_nb15_datagen as unsw
 import classifier_performance as cp
 from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
@@ -57,13 +58,12 @@ import time
 import pandas as pd
 from sklearn import metrics
 from sklearn import preprocessing
-from evl_streaming_src.helper.knn import knn as Bknn
+from helper.knn import knn as Bknn
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, Dense, Flatten
 from tensorflow.keras import optimizers
 from tensorflow.keras import callbacks
-# from keras.preprocessing.sequence import pad_sequences
 from keras_preprocessing.sequence import pad_sequences
 class SCARGC: 
     def __init__(self, 
@@ -287,11 +287,14 @@ class SCARGC:
             for k in range(0, len(labels[0])):
                 self.labeled[ts] = labels[0][k]
                 ts += 1
+                
+            
 
             dict_train = {}
             for i in range(0, len(train['Data'][0])):
                 dict_train[i] = train['Data'][0][i]
-            
+                
+           
             dict_test = {}
             for j in range(0, len(test['Data'][0])):
                 dict_test[j] = test['Data'][0][j]
@@ -493,7 +496,58 @@ class SCARGC:
             self.X = dict_train
             self.Y = dict_test
             self.all_data = train['Dataset']
+            
+        elif self.dataset == 'JITC':
+            X_train = pd.read_pickle('data/JITC_Data/artifacts/X_train.pkl')
+            X_test = pd.read_pickle('data/JITC_Data/artifacts/X_test.pkl')
+            y_train = pd.read_pickle('data/JITC_Data/artifacts/y_train.pkl')
+            y_test = pd.read_pickle('data/JITC_Data/artifacts/y_test.pkl')
+            # x_test_features = pd.read_pickle('data/JITC_Data/artifacts/X_test_features.pkl')
+            # x_train_features = pd.read_pickle('data/JITC_Data/artifacts/X_train_features.pkl')
+            
+            # transformations
+            x_train = X_train.to_numpy()
+            x_test = X_test.to_numpy()
+            y_train = y_train.to_numpy()
+            y_test = y_test.to_numpy()
+            
+            ts = 0
+            # set data (all the features)
+            for i in range(0, len(x_train[0])):
+                self.data[ts] = x_train[0][i]
+                ts += 1
+            # set all the labels 
+            ts = 0
+            for k in range(0, len(y_train)):
+                self.labeled[ts] = y_train[k]
+                ts += 1
+            
+            ## all data 
+            # join x_train and y_train
+            print(x_train.shape, y_train.shape)
+            all_train_data = np.concatenate((x_train, y_train), axis=1)
+            dict_train = {}
+            for i in range(0, len(all_train_data)):
+                dict_train[i] = all_train_data[i]
+                
+            dict_y_train = {}
+            for i in range(0, len(y_train)):
+                dict_y_train[i] = y_train[i]
+            
+            
+            
+            all_test_data = np.concatenate((x_test, y_test), axis=1)
+            dict_test = {}
+            for j in range(0, len(y_test)):
+                dict_test[j] = y_test[j]
 
+            self.Xinit = dict_train
+            self.Yinit = dict_y_train
+
+            self.X = dict_train
+            self.Y = dict_test
+            self.all_data = all_train_data
+            
 
         # get the number of classes in the dataset 
         self.nclasses = len(np.unique(self.Y))
@@ -674,7 +728,7 @@ class SCARGC:
                     trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1) #self.all_data[:,:-1]
                     lstmData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')                     
                     model.fit(lstmData, trainLabel, batch_size=1000, epochs=3, validation_split=0.25, 
-                              callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2) 
+                                callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2) 
                     self.train_model = model
                     testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
                     testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32') 
@@ -1043,5 +1097,5 @@ class SCARGC:
             return self.avg_perf_metric
 
 
-run_scargc_svm = SCARGC(classifier = 'lstm', dataset= 'ton_iot_fridge', datasource='UNSW', resample=False).run()
+run_scargc_svm = SCARGC(classifier = 'mlp', dataset= 'JITC', datasource='UNSW', resample=False).run()
 print(run_scargc_svm)

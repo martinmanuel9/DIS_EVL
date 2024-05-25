@@ -67,13 +67,13 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         ###  debug mode ---------------------------
-        testPath = str(path) + '/data/JITC_Data/'
+        testPath = str(path) + '/data/testJITC/'
         os.chdir(testPath)
         #------------------------------------------
         ### run mode: change path to data directory
         # path = Path(path)
         # path = path.parents[1]
-        # changed_path = str(path) + '/data/JITC_Data/'
+        # changed_path = str(path) + '/data/testJITC/'
         # os.chdir(changed_path)
 
     # add binaries into a list
@@ -140,10 +140,33 @@ if __name__ == "__main__":
     # dataOps.update_jsons(os.getcwd() + '/data/JITC_Data')
     
     X_train, X_test, y_train, y_test = dataOps.develop_dataset()
+    
+    # make new directory called artifacts and change to that directory
+    os.mkdir('artifacts')
+    os.chdir('artifacts')
+    
+    # save X_train, X_test, y_train, y_test in pickle and h5 format
+    X_train = pd.DataFrame(X_train.reshape(X_train.shape[0], -1))
+    X_test = pd.DataFrame(X_test.reshape(X_test.shape[0], -1))
     print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
     
-    lstm_model, feature_extractor = dataOps.build_lstm_model((X_train.shape[1], 1))
-    history = dataOps.train_and_evaluate_model(lstm_model, X_train, X_test, y_train, y_test)
+    
+    X_train = pd.DataFrame(X_train)
+    X_test = pd.DataFrame(X_test)
+    y_train = pd.DataFrame(y_train)
+    y_test = pd.DataFrame(y_test)
+    X_train.to_pickle('X_train.pkl')
+    X_test.to_pickle('X_test.pkl')
+    y_train.to_pickle('y_train.pkl')
+    y_test.to_pickle('y_test.pkl')
+    
+    
+    lstm_model = dataOps.build_lstm_model((X_train.shape[1], 1))
+    feature_extractor = lstm_model[1]
+    # compile model
+    lstm_model[1].compile(optimizer=Adam(), loss='binary_crossentropy', metrics=['accuracy'])
+    # train model
+    history = dataOps.train_and_evaluate_model(lstm_model[1], X_train, X_test, y_train, y_test)
 
     # Extract features from the LSTM layer
     X_train_features = feature_extractor.predict(X_train)
@@ -154,8 +177,9 @@ if __name__ == "__main__":
     X_test_features = pd.DataFrame(X_test_features)
     X_train_features.to_pickle('X_train_features.pkl')
     X_test_features.to_pickle('X_test_features.pkl')
-    X_train_features.to_hdf('X_train_features.h5', key='X_train_features')
-    X_test_features.to_hdf('X_test_features.h5', key='X_test_features')
+    
+    # X_train_features.to_hdf('X_train_features.h5', key='X_train_features')
+    # X_test_features.to_hdf('X_test_features.h5', key='X_test_features')
     
 
     # Train a different model (e.g., RandomForest) using the extracted features

@@ -1,0 +1,45 @@
+[tool.poetry]
+name = "dis-evl"
+version = "0.1.0"
+description = ""
+authors = ["martinmanuel9 <martinmlopez@arizona.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+art = "6.1"
+confluent-kafka = "2.3.0"
+cplex = "22.1.1.2"
+docplex = "2.27.239"
+flatbuffers = "24.3.25"
+h5py = "3.11.0"
+isodate = "0.6.1"
+jax = "0.4.26"
+keras = "3.3.3"
+libclang = "18.1.1"
+markdown-it-py = "3.0.0"
+mdurl = "0.1.2"
+ml-dtypes = "0.3.2"
+namex = "0.0.8"
+noisecut = "0.2.1"
+optree = "0.11.0"
+owlready2 = "0.45"
+pad-sequences = "0.6.1"
+pip = "24.0"
+rdflib = "7.0.0"
+rich = "13.7.0"
+tensorboard = "2.16.2"
+tensorflow = "2.16.1"
+pyyaml = "6.0.1"
+numpy = "^1.26.4"
+pandas = "^2.2.2"
+scikit-learn = "^1.5.0"
+bitarray = "^2.9.2"
+docker = "^7.1.0"
+tqdm = "^4.66.4"
+category-encoders = "^2.6.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

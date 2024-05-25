@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang='en' class='h-100'>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="csrf-param" content="authenticity_token" />
+<meta name="csrf-token" content="ZEehOl5WTIXfVVL8TjeV-lhohriiHrb4gU18eTzTc59yRqcOrN0SLkNPM4z8VmW5cR5hk363NLuGahtcgZzCQA" />
+  <meta name="csp-nonce" />
+  <title>CUDA Toolkit - Free Tools and Training | NVIDIA Developer</title>
+<meta name="description" content="Get exclusive access to hundreds of SDKs, technical trainings, and connect with other developers and researchers.">
+<meta name="keywords" content="cuda toolkit, cuda sdk, cuda trainings, nvidia">
+<link rel="canonical" href="https://developer.nvidia.com/cuda-toolkit">
+<link rel="alternate" href="https://developer.nvidia.com/cuda-toolkit" hreflang="x-default">
+<link rel="alternate" href="https://developer.nvidia.com/cuda-toolkit" hreflang="en-us">
+<link rel="alternate" href="https://developer.nvidia.cn/cuda-toolkit" hreflang="zh-cn">
+<meta property="og:site_name" content="NVIDIA Developer">
+<meta property="og:title" content="CUDA Toolkit - Free Tools and Training">
+<meta property="og:description" content="Get access to SDKs, trainings, and connect with developers.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://developer.download.nvidia.com/images/og-default.jpg">
+<meta property="og:url" content="https://developer.nvidia.com/cuda-toolkit">
+<meta name="twitter:title" content="NVIDIA CUDA Toolkit - Free Tools and Training">
+<meta name="twitter:description" content="Get exclusive access to hundreds of SDKs, technical trainings, and opportunities to connect with millions of like-minded developers, researchers, and students.">
+<meta name="twitter:image" content="https://developer.download.nvidia.com/images/og-default.jpg">
+<meta name="twitter:site" content="@NVIDIA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:creator" content="@NVIDIA">
+<meta property="industry" content="HPC / Scientific Computing">
+
+  <link rel="stylesheet" href="https://dirms4qsy6412.cloudfront.net/assets/application-007e0127c362275e9ec3564ea10ef1f499875aa4b7357161b89c0b1063f71173.css" media="all" />
+  
+<link rel="stylesheet" href="https://dirms4qsy6412.cloudfront.net/assets/one-trust-bea625cf16a072ce5fdb0707a19f2645daf63c05eb1a016db72773eba008fc07.css" />
+<script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js" data-document-language="true" type="text/javascript" charset="UTF-8" data-domain-script="3e2b62ff-7ae7-4ac5-87c8-d5949ecafff5"></script>
+<script type="text/javascript">
+  function OptanonWrapper() { }
+</script>
+<script src="https://dirms4qsy6412.cloudfront.net/assets/onetrust-overrides-386253c7c8f99e1a86c9b6a1fda52d82e2c54f5536415050a594e5c276a39329.js"></script>
+
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" as="style" type="text/css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <link rel="stylesheet" href="https://dirms4qsy6412.cloudfront.net/assets/devzone3/vars-cd3a0769a3c2f2d9ea6b83ac53ce86bceef4c719e4dbd22ed41d48d01f200901.css" media="all" />
+  <link rel="stylesheet" href="https://dirms4qsy6412.cloudfront.net/assets/devzone3/new/application-4d4789b282f9bebdafac63a564f1912c578f242d9fe3ac914de1aa91fe15d7a4.css" media="all" />
+  <link rel="stylesheet" href="https://dirms4qsy6412.cloudfront.net/assets/feed-aggregator/feed-aggregator-9ace7521871242143cb35fa86d5be702c4dacb409600041fa6a5b14fa2a71dde.css" media="all" />
+  <link rel="stylesheet" href="https://dirms4qsy6412.cloudfront.net/assets/twentytwenty/css/twentytwenty-4ef2ccd719d09a97572e93c499c1fb11cc971d2a3519cfe105dcff2be92f65b9.css" media="all" />
+
+  <script src="https://dirms4qsy6412.cloudfront.net/assets/horizontal-chart/d3.v4.min-41cfecdf7c41476e805de7afacf4aacdd1a4be6947fbecf95217e947ebc2faf5.js"></script>
+  <script src="https://dirms4qsy6412.cloudfront.net/assets/horizontal-chart/visualize-d-06443fdef48364af6635f0d1d3535da26910671f6f6a680c531eff0e54ed595f.js"></script>
+  <link rel="stylesheet" href="https://dirms4qsy6412.cloudfront.net/assets/sf-validation/sf-validation-805362e079494cd052f713be5f91a44eb602f545c342f794abbd4a8050c0acb3.css" />
+
+  <script src="https://assets.adobedtm.com/5d4962a43b79/c1061d2c5e7b/launch-191c2462b890.min.js" data-ot-ignore="true"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.min.js" integrity="sha512-STof4xm1wgkfm7heWqFJVn58Hm3EtS31XFaagaa8VMReCXAkQnJZ+jEy8PCC/iT18dFy95WcExNHFTqLyp72eQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+    <script src="https://api-prod.nvidia.com/search/nvidia-gallery-widget.js"></script>
+
+<script src="https://dirms4qsy6412.cloudfront.net/assets/devzone3/modules/nvidia_editor/nod_widgets-8c38a7d04ed3c3acd9117aa126bf76d7902d3c57c72b76dbf3c281c96ed09975.js"></script>
+
+
+  <link rel="icon" type="image/x-icon" href="https://dirms4qsy6412.cloudfront.net/assets/favicon-81bff16cada05fcff11e5711f7e6212bdc2e0a32ee57cd640a8cf66c87a6cbe6.ico" />
+</head>
+
+<body class='d-flex flex-column h-100' data-theme='devzone3_new'>
+<div id='header'></div>
+
+
+
+
+
+
+  
+
+<main class="main-content dz3-main-section dz-new-theme page-cuda-toolkit page-cuda-toolkit" data-id="333">
+  <!--<div style="background-color: #3c404f; background-size: cover; min-height: 370px;" class="sct-bg--s sct-vert-cntr sct-vert-top--m hero-image--1">
+  <div class="cntnr--cw">
+    <div class="row opaque-bg txt-cntr">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <h1 class="h--large">Free Tools and Trainings for Developers</h1>
+        <p class="p--large text-white">Get exclusive access to hundreds of SDKs, technical trainings, and opportunities to connect with millions of like-minded developers, researchers, and students.</p>
+        <br>
+        <a class="cta--prim" href="/developer-program">Learn more</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<style>
+  .hero-image--1 {
+    background-image: url(https://d29g4g2dyqv443.cloudfront.net/sites/default/files/akamai/developer-key-visual-2021-3-copy.jpg);
+  }
+  .opaque-bg {
+    background-color: rgba(0,0,0,.75);
+    color: #fff;
+  }
+
+  /* @media only screen and (max-width: 1023px) {
+    .hero-image--1 {
+      background-image: url(https://via.placeholder.com/1024x300?text=1024x300%20Tablet+image);
+    }
+  }
+
+  @media only screen and (max-width: 659px) {
+    .hero-image--1 {
+      background-image: url(https://via.placeholder.com/660x300?text=660x300%20Phone+image);
+    }
+  }
+
+  @media only screen and (min-width: 1024px) and (max-width: 1366px) {
+    .hero-image--1 {
+      background-image: url(https://via.placeholder.com/1366x300?text=1366x300%20Laptop+image);
+    }
+  } */
+</style>
+-->
+
+<section class="sct--s">
+  <div class="cntnr--narrow txt-cntr">
+    <h1 class="h--large txt-clr--blck">CUDA Toolkit</h1>
+    
+    <p class="p--large">The NVIDIA® CUDA® Toolkit provides a development environment for creating high-performance, GPU-accelerated applications. With it, you can develop, optimize, and deploy your applications on GPU-accelerated embedded systems, desktop workstations, enterprise data centers, cloud-based platforms, and supercomputers. The toolkit includes GPU-accelerated libraries, debugging and optimization tools, a C/C++ compiler, and a runtime library.</p>
+<br>
+	  
+        <center><a href="/cuda-downloads" class="cta--prim cta--l">Download Now</a></center>
+      <br>
+ 
+  </div>
+
+<hr>
+<br>
+  <div class="cntnr--cw ">
+    <h2 class="h--small txt-clr--blck txt-cntr">The Features of CUDA 12 </h2>
+
+   
+      <div class="row">
+		<div class="col-md-4">
+				<div class="card">
+				  <div class="card-cntnt-cntnr">
+					<h3 class="h--smallest txt-clr--blck">Built-In Capabilities for Easy Scaling</h3>
+					<p class="p--medium">Using built-in capabilities for distributing computations across multi-GPU configurations, you can develop applications that scale from single-GPU workstations to cloud installations with thousands of GPUs.</p>
+					<br>
+					<a class="cta--tert mt-auto" href="https://developer.nvidia.com/hpc-sdk">Learn More <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+		
+		<div class="col-md-4">
+				<div class="card">
+				  <div class="card-cntnt-cntnr">
+					<h3 class="h--smallest txt-clr--blck">New Release, New Benefits  </h3>
+					<p class="p--medium">CUDA 12 introduces support for the NVIDIA Hopper™ and Ada Lovelace architectures, Arm® server processors, lazy module and kernel loading, revamped dynamic parallelism APIs, enhancements to the CUDA graphs API, performance-optimized libraries, and new developer tool capabilities.</p>
+					<br>
+					<a class="cta--tert mt-auto" href="https://developer.nvidia.com/blog/cuda-toolkit-12-0-released-for-general-availability/">Learn More <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+		
+		<div class="col-md-4">
+				<div class="card">
+				  <div class="card-cntnt-cntnr">
+					<h3 class="h--smallest txt-clr--blck">Support for Hopper </h3>
+					<p class="p--medium">Support for the Hopper architecture includes next-generation Tensor Cores and Transformer Engine, the high-speed NVIDIA NVLink® Switch, mixed-precision modes, second-generation Multi-Instance GPU (MIG), advanced memory management, and standard C++/Fortran/Python parallel language constructs.</p>
+					<br>
+					<a class="cta--tert mt-auto" href="https://developer.nvidia.com/blog/nvidia-hopper-architecture-in-depth/">Learn More <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+	  </div>
+      
+
+  </div>
+</section>
+
+
+  
+<section class="sct--xs sct--lt-gry1">
+
+  <div class="cntnr--narrow txt-cntr">
+    
+      <h2 class="h--medium txt-clr--blck">Tutorials</h2>
+      <p class="p--large">CUDA Developer Tools is a series of tutorial videos designed to get you started using NVIDIA Nsight™ tools for CUDA development. It explores key features for CUDA profiling, debugging, and optimizing.  </p>
+		<br>
+  </div>
+  
+  <div class="cntnr--cw">
+    
+     <div class="row">
+		
+		<div class="col-md-3">
+				<div class="card">
+					
+					<iframe width="100%" height="240px" src="https://www.youtube.com/embed/H3AQnlpxk0c?si=ZgcmUN9H3zLH2m0e" title="Watch video of CUDA Tutorials  - CUDA Compatibility" alt="Watch video of CUDA Tutorials  - CUDA Compatibility" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+					
+				  <div class="card-cntnt-cntnr" style="height:35%;">
+					<h3 class="h--smallest txt-clr--blck">CUDA Compatibility </h3>
+					<a class="cta--tert" href="https://www.youtube.com/watch?v=H3AQnlpxk0c">Watch Video <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+		
+		<div class="col-md-3">
+			<div class="card">
+					
+					<iframe width="100%" height="240px" src="https://www.youtube.com/embed/_JgNA82325I?si=cFw9qBCbCL0IAKfC" title="Watch video of CUDA Tutorials  - How to simplify CUDA upgrades for Jetson devices" alt="Watch video of CUDA Tutorials  - How to simplify CUDA upgrades for Jetson devices" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+					
+				  <div class="card-cntnt-cntnr" style="height:35%;">
+					<h3 class="h--smallest txt-clr--blck">CUDA Upgrades for Jetson Devices </h3>
+					<a class="cta--tert" href="https://www.youtube.com/watch?v=_JgNA82325I">Watch Video <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+		
+		<div class="col-md-3">
+			<div class="card">
+					
+					<iframe width="100%" height="240px" src="https://www.youtube.com/embed/dB5Jxwj0PDw?si=c943joVYqhsnFWme" title="Watch video of CUDA Tutorials  - Profile and Debug applications" alt="Watch video of CUDA Tutorials  - Profile and Debug applications" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+					
+				  <div class="card-cntnt-cntnr" style="height:35%;">
+					<h3 class="h--smallest txt-clr--blck">Profiling and Debugging Applications </h3>
+					<a class="cta--tert" href="https://www.youtube.com/watch?v=dB5Jxwj0PDw">Watch Video <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+		
+		
+		<div class="col-md-3">
+			<div class="card">
+					
+					<iframe width="100%" height="240px" src="https://www.youtube.com/embed/JaHVsZa2jTc?si=YCVA4S358I_2lW_e" title="Watch video of CUDA Tutorials  - Installing CUDA Toolkit on Windows and WSL" alt="Watch video of CUDA Tutorials  - Installing CUDA Toolkit on Windows and WSL" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+					
+				  <div class="card-cntnt-cntnr" style="height:35%;">
+					<h3 class="h--smallest txt-clr--blck">Installing CUDA Toolkit on Windows and WSL </h3>
+					<a class="cta--tert" href="https://www.youtube.com/watch?v=JaHVsZa2jTc">Watch Video <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+	 
+	 </div>
+
+  </div>
+  
+  <br>
+</section>  
+
+  
+  
+<section class="sct--s">
+  <div class="cntnr--cw txt-cntr">
+    
+      <h2 class="h--medium txt-clr--blck">GTC Digital Webinars</h2>
+      <p class="p--large">Dive deeper into the latest CUDA features.</p>
+	
+
+  </div>
+  
+  <div class="cntnr--cw ">
+    
+      <div class="row">
+		
+		<div class="col-md-4">
+				<div class="card">
+				  <div class="card-cntnt-cntnr">
+					<h3 class="h--smallest txt-clr--blck">Inside the NVIDIA Hopper Architecture</h3>
+					<p class="p--medium">Explore what's new with the NVIDIA Hopper architecture and its implementation in the NVIDIA H100 Tensor Core GPU.</p>
+					<a class="cta--tert mt-auto" href="https://www.nvidia.com/en-us/on-demand/session/gtcspring22-s42663/">Watch Now <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+		
+		<div class="col-md-4">
+				<div class="card">
+				  <div class="card-cntnt-cntnr">
+					<h3 class="h--smallest txt-clr--blck">CUDA—New Features and Beyond</h3>
+					<p class="p--medium">Learn what's new in the CUDA Toolkit, including the latest and greatest features in the CUDA language, compiler, libraries, and tools—and get a sneak peek at what's coming up over the next year.</p>
+					<br>
+					<a class="cta--tert mt-auto" href="placeholder">Watch Now <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+		
+		<div class="col-md-4">
+				<div class="card">
+				  <div class="card-cntnt-cntnr">
+					<h3 class="h--smallest txt-clr--blck">CUDA on NVIDIA Hopper GPU Architecture</h3>
+					<p class="p--medium">Learn how to leverage the NVIDIA Hopper architecture’s capabilities to take your algorithms to the next level of performance.</p>
+					<a class="cta--tert mt-auto" href="https://www.nvidia.com/en-us/on-demand/session/gtcspring23-s51119/">Watch Now <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+		
+	 
+	 </div>
+	 
+		<br>
+		<!--<center><a href="https://www.nvidia.com/en-us/on-demand/search/?facet.mimetype[]=event%20session&layout=list&page=1&q=CUDA&sort=relevance&sortDir=desc" class="cta--scnd cta--l">See All</a></center>-->
+
+		<center><p class="nvidia-lg-absolute-bottom cta--tert cta--cntr justify-content-center"><b><a href="https://www.nvidia.com/en-us/on-demand/search/?facet.mimetype[]=event%20session&layout=list&page=1&q=CUDA&sort=relevance&sortDir=desc">See All<span class="fas fa-angle-right fa-fw"></span></a></b></p></center>
+  </div>
+</section>
+
+
+  <style>
+    
+	.mobile-padding-cta{
+          margin-top:2px;
+          
+      }
+	  
+	
+    @media only screen and (max-width: 1023px) {
+      
+      .mobile-padding-cta{
+          margin-top:-20px;
+          
+      }
+	  
+
+	  
+    }
+  
+   
+  </style>
+
+<section class="sct--m sct--lt-gry1">
+  <div class="cntnr--cozy txt-cntr">
+    <h2 class="h--medium txt-clr--blck">Customer Stories</h2>
+    <p class="p--large">See how developers, scientists, and researchers are using CUDA today.</p>
+	<br>
+  </div>
+  <div class="cntnr--cw">
+    <div class="row">
+
+      <div class="col-md-4">
+				<div class="card">
+					
+					<iframe width="100%" height="220px" src="https://www.youtube.com/embed/Oz0aeL6dQGs?si=9F-ClGnr4E3Lv32u" title="Watch video of Developer Spotlight - Using HPC to explore the universe" alt="Watch video of Developer Spotlight - Using HPC to explore the universe" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+					
+				  <div class="card-cntnt-cntnr" style="height:10%;">
+					<h3 class="h--smallest txt-clr--blck">Using HPC to Explore the Universe </h3>
+					<p>Wes Armour, director at the Oxford e-Research Centre, discusses the role of GPUs in processing large amounts of astronomical data collected by the Square Kilometre Array and how CUDA is the best-suited option for their signal processing software. </p>
+					<br>
+					<a class="cta--tert mt-auto" href="https://www.youtube.com/watch?v=Oz0aeL6dQGs&t=107s">Watch Video <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+		
+		<div class="col-md-4">
+			<div class="card">
+					
+					<iframe width="100%" height="220px" src="https://www.youtube.com/embed/FqnPGHdh7iM?si=aCR3-boBViISDZF_" title="Watch video of Developer Spotlight - Opening a new era of drug discovery with Amber" alt="Watch video of Developer Spotlight - Opening a new era of drug discovery with Amber" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+					
+				  <div class="card-cntnt-cntnr" style="height:10%;">
+					<h3 class="h--smallest txt-clr--blck">Opening a New Era of Drug Discovery With Amber</h3>
+					<p>David Cerutti and Taisung Lee from Rutgers University share how Amber, harnessing CUDA, is advancing multiple scientific domains and opening a new era of drug discovery and design. </p>
+					<br><br>
+					<a class="cta--tert mt-auto" href="https://www.youtube.com/watch?v=FqnPGHdh7iM">Watch Video <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+		
+		<div class="col-md-4">
+			<div class="card">
+					
+					<iframe width="100%" height="220px" src="https://www.youtube.com/embed/DWWXaUNVZM4?si=mEAi89FGBmx9XVnK" title="Watch video of Developer Spotlight - Visualizing and simulating atomic structures" alt="Watch video of Developer Spotlight - Visualizing and simulating atomic structures" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+					
+				  <div class="card-cntnt-cntnr" style="height:10%;">
+					<h3 class="h--smallest txt-clr--blck">Visualizing and Simulating Atomic Structures</h3>
+					<p>John Stone, senior research programmer at the Beckman Institute at the University of Illinois, Urbana-Champaign, discusses how CUDA and GPUs are used to process large datasets to visualize and simulate high-resolution atomic structures.</p>
+					<br>
+					<a class="cta--tert mt-auto" href="https://www.youtube.com/watch?v=DWWXaUNVZM4">Watch Video <span class="fas fa-angle-right fa-fw"></span></a>
+				  </div>
+				  
+				</div>
+		</div>
+
+    </div>
+
+
+  </div>
+  
+  <br>
+</section>
+
+
+  
+
+
+<section class="sct--m">
+  <div class="cntnr--narrow txt-cntr">
+    <h2 class="h--medium txt-clr--blck">CUDA Ecosystem</h2>
+    <p class="p--large">Explore the top compute and graphics packages with built-in CUDA integration.</p>
+	<br>
+  </div>
+
+  <div class="cntnr--narrow">
+    <div class="row">
+
+      <div class="col-md-3 col-xs-6">
+        
+          <div class="card">
+			  <div class="card-cntnt-cntnr">
+				<a target="_blank" href="https://business.adobe.com/#"><center><img alt="Adobe, CUDA Ecosystem Partner" class="img-responsive" src="https://developer.download.nvidia.com/images/adobe-logo.svg"></center></a>
+			  </div>
+		  </div>
+     
+      </div>
+
+      <div class="col-md-3 col-xs-6">
+	  
+        <div class="card">
+			<div class="card-cntnt-cntnr">
+				<a target="_blank" href="https://www.ansys.com/campaigns/nvidia"><img alt="Ansys, CUDA Ecosystem Partner" class="img-responsive" src="https://developer.download.nvidia.com/images/ansys-logo.svg"></a>
+			</div>
+		</div>
+		 
+      </div>
+
+      <div class="col-md-3 col-xs-6">
+        <div class="card">
+			<div class="card-cntnt-cntnr">
+				<a target="_blank" href="https://www.autodesk.com/"><img alt="Autodesk, CUDA Ecosystem Partner" class="img-responsive" src="https://developer.download.nvidia.com/images/autodesk-logo.svg"></a>
+			</div>
+		</div>
+          
+        
+      </div>
+
+      <div class="col-md-3 col-xs-6">
+        <div class="card">
+			<div class="card-cntnt-cntnr">
+				<a target="_blank" href="https://www.3ds.com/"><img alt="Dassault Systemes, CUDA Ecosystem Partner" class="img-responsive" src="https://developer.download.nvidia.com/images/dassault-systemes-logo.svg"></a>
+			</div>
+		</div>
+          
+        
+      </div>
+
+      
+
+    </div>
+
+    <div class="row">
+      <div class="col-md-3  col-xs-6">
+        <div class="card">
+			<div class="card-cntnt-cntnr">
+				<a target="_blank" href="https://www.mathworks.com/solutions/gpu-computing.html?s_tid=srchtitle_site_search_1_CUDA"><img alt="MathWorks, CUDA Ecosystem Partner" class="img-responsive" src="https://developer.download.nvidia.com/images/mathworks-logo.svg"></a>
+			</div>
+		</div>
+          
+        
+      </div>
+
+      <div class="col-md-3  col-xs-6">
+        <div class="card">
+			<div class="card-cntnt-cntnr">
+				<a target="_blank" href="https://www.microsoft.com/en-sg/search/explore?q=NVIDIA+CUDA"><img alt="Microsoft, CUDA Ecosystem Partner" class="img-responsive" src="https://developer.download.nvidia.com/images/microsoft-logo.svg"></a>
+			</div>
+		</div>
+          
+        
+      </div>
+
+      <div class="col-md-3  col-xs-6">
+	  
+        <div class="card">
+			<div class="card-cntnt-cntnr">
+				<a target="_blank" href="https://www.ni.com/en/shop/labview.html"><img alt="National Instruments, CUDA Ecosystem Partner" class="img-responsive" src="https://developer.download.nvidia.com/images/national-instruments-logo.svg"></a>
+			</div>
+		</div>
+          
+        
+      </div>
+
+      <div class="col-md-3  col-xs-6">
+		<div class="card">
+			<div class="card-cntnt-cntnr">
+				<a target="_blank" href="https://www.wolfram.com/mathematica/"><img alt="Wolfram Mathematica, CUDA Ecosystem Partner" class="img-responsive" src="https://developer.download.nvidia.com/images/wolfram-logo.svg"></a>
+			</div>
+		</div>
+          
+        
+      </div>
+
+
+    </div>
+  </div>
+
+
+
+</section>
+
+
+
+
+
+<div class="sct--xs sct--lt-gry1">
+  <div class="cntnr--narrow ">
+    <h2 class="h--medium txt-cntr txt-clr--blck">Featured Blogs</h2>
+	<br>
+    <div class="row">
+      <feed-aggregator categories='all' tags='all' per-page='4' excluded-tags='1958' locale='en'></feed-aggregator>
+    <br>
+    
+    </div>
+<br><br>
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+        <p><b><a class="cta--tert cta--cntr justify-content-center" href="https://devblogs.nvidia.com/">See more<span class="fas fa-angle-right fa-fw"></span></a></b></p>
+      </div>
+      <div class="col-md-2"></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="sct--xs">
+  <div class="cntnr--narrow">
+    <h2 class="h--medium  txt-cntr txt-clr--blck">Latest News</h2>
+    <br>
+	<div class="row">
+      
+      <feed-aggregator categories='all' tags='1958' per-page='4' excluded-tags='null' locale='en'></feed-aggregator>
+      
+      
+    </div>
+<br><br>
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-8">
+      
+      <center><p class="nvidia-lg-absolute-bottom cta--tert cta--cntr justify-content-center"><b><a href="https://news.developer.nvidia.com/">See more<span class="fas fa-angle-right fa-fw"></span></a></b></p></center>
+</div>
+    </div>
+    <div class="col-md-2"></div>
+
+  </div>
+</div>
+
+
+<style>
+  .hero-image--2 {
+    background-image: url(https://developer.download.nvidia.com/images/ai-inference-hero-2560x300.jpg);
+  }
+
+  /* @media only screen and (max-width: 1023px) {
+    .hero-image--2 {
+      background-image: url(https://developer.download.nvidia.com/images/ai-inference-hero-2560x300.jpg);
+    }
+  }
+
+  @media only screen and (max-width: 659px) {
+    .hero-image--2 {
+      background-image: url(https://developer.download.nvidia.com/images/ai-inference-hero-2560x300.jpg);
+    }
+  }
+
+  @media only screen and (min-width: 1024px) and (max-width: 1366px) {
+    .hero-image--2 {
+      background-image: url(https://developer.download.nvidia.com/images/ai-inference-hero-2560x300.jpg);
+    }
+  } */
+</style>
+
+<div style="" class="sct-bg--s sct-vert-cntr sct-vert-top--m hero-image--2">
+  <div class="cntnr--narrow">
+    <div class="row txt-cntr">
+      <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+        <h2 class="h--medium text-white">Free Tools and Trainings for Developers</h2>
+        <p class="p--large text-white">Get exclusive access to hundreds of SDKs, technical trainings, and opportunities to connect with millions of like-minded developers, researchers, and students.</p>
+        <br>
+        <a class="cta--prim" href="/developer-program">Learn more</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+ 
+
+<section class="sct--m sct--lt-gry1">
+  <div class="cntnr--narrow">
+    <h2 class="h--medium txt-clr--blck txt-cntr">Resources</h2>
+    <div class="row">
+      <div class="col-md-4">
+		<h3 class="h--smallest">CUDA Documentation and Release Notes</h3>
+		<p>Documentation library containing in-depth technical information on the CUDA Toolkit.</p>
+		<br>
+		<br>
+		<div class="mobile-padding-cta"><a class="cta--tert" style="padding-top:3px;" href="https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html">Learn more <span class="fas fa-angle-right fa-fw"></span></a></div>
+	  </div>
+      <div class="col-md-4">
+		<h3 class="h--smallest">CUDA 12 Features Revealed</h3>
+		<p>A technical blog on the CUDA Toolkit 12.0’s features and capabilities.</p>
+		<br><br><br>
+		<div class="mobile-padding-cta"><a class="cta--tert"  href="https://developer.nvidia.com/blog/cuda-toolkit-12-0-released-for-general-availability/">Learn more <span class="fas fa-angle-right fa-fw"></span></a></div>
+	  </div>
+	  <div class="col-md-4">
+		<h3 class="h--smallest">CUDA Toolkit in the NGC Catalog</h3>
+		<p>CUDA containers are available to download from NGC™—along with other NVIDIA GPU-accelerated SDKs and AI models—to help accelerate your applications.</p>
+		<br>
+		<a class="cta--tert" href="https://catalog.ngc.nvidia.com/containers?filters=&orderBy=scoreDESC&query=cuda">Learn more <span class="fas fa-angle-right fa-fw"></span></a>
+	  </div>
+    </div>
+	
+	<div class="row">
+      <div class="col-md-4">
+		<h3 class="h--smallest">All CUDA Technical Blogs</h3>
+		<p>An archive of CUDA technical blogs covering key features and capabilities, written by engineers for engineers.</p>
+		<br>
+		<a class="cta--tert" href="https://devblogs.nvidia.com/tag/cuda/">Learn more <span class="fas fa-angle-right fa-fw"></span></a>
+	  </div>
+      <div class="col-md-4">
+		<h3 class="h--smallest">CUDA-X™ Libraries</h3>
+		<p>A suite of AI, data science, and math libraries developed to help developers accelerate their applications.</p>
+		<br>
+		<a class="cta--tert" href="https://developer.nvidia.com/gpu-accelerated-libraries">Learn more <span class="fas fa-angle-right fa-fw"></span></a>
+	  </div>
+	  <div class="col-md-4">
+		<h3 class="h--smallest">Training</h3>
+		<p>Self-paced or instructor-led CUDA training courses for developers through the NVIDIA Deep Learning Institute (DLI).</p>
+		<br>
+		<a class="cta--tert" href="https://developer.nvidia.com/accelerated-computing-training">Learn more <span class="fas fa-angle-right fa-fw"></span></a>
+	  </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-md-4">
+		<h3 class="h--smallest">Nsight Developer Tools</h3>
+		<p>NVIDIA Nsight Compute and Nsight System suite of tools designed to help developers optimize and increase performance of their applications.</p>
+		<br>
+		<a class="cta--tert" href="https://developer.nvidia.com/tools-overview">Learn more <span class="fas fa-angle-right fa-fw"></span></a>
+	  </div>
+      <div class="col-md-4">
+		<h3 class="h--smallest">Sample CUDA Code</h3>
+		<p>GitHub repository of sample CUDA code to help developers learn and ramp up development of their GPU-accelerated applications. </p>
+		<br><br>
+		<div class="mobile-padding-cta"><a class="cta--tert" href="https://developer.nvidia.com/cuda-code-samples">Learn more <span class="fas fa-angle-right fa-fw"></span></a></div>
+	  </div>
+	  <div class="col-md-4">
+		<h3 class="h--smallest">NVIDIA Developer Forums</h3>
+		<p>An information exchange to help developers get answers to their technical questions directly from NVIDIA engineers.</p>
+		<br><br>
+		<div class="mobile-padding-cta"><a class="cta--tert " href="https://forums.developer.nvidia.com/c/accelerated-computing/cuda/206">Learn more <span class="fas fa-angle-right fa-fw"></span></a></div>
+	  </div>
+    </div>
+     
+	<div class="row">
+      <div class="col-md-4">
+		<h3 class="h--smallest">Bug Submission</h3>
+		<p>NVIDIA Engineering’s own bug tracking tool and database where developers can submit technical bugs.</p>
+		<br>
+		<a class="cta--tert" href="https://developer.nvidia.com/nvidia_bug/add">Learn more <span class="fas fa-angle-right fa-fw"></span></a>
+	  </div>
+      
+    </div>
+
+    
+  </div>
+</section>
+
+
+
+
+
+
+
+<!-- <style>
+  .view-tagged-news .view-content .views-row .views-field-nothing .title {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .view-tagged-news .view-content .views-row .views-field-nothing .created {
+    display: none;
+  }
+</style> -->
+<!-- gtc retargetting code -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-974166441"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-974166441');
+</script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const allLinks = document.querySelectorAll('.dz3-main-section.dz-new-theme a');
+      allLinks.forEach((link) => {
+        let hasIcon = link.querySelector('span.fas');
+        if(hasIcon) {
+          link.classList.add('has-cta-icon');
+        }
+      });
+    });
+  </script>
+</main>
+
+
+
+
+<div id='footer' class='mt-auto'></div>
+
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+
+  <script src="https://dirms4qsy6412.cloudfront.net/assets/feed-aggregator/feed-aggregator-7f147443abc2d1300a239c29e4ba3ca0d0d2eb0dc66b608765e2b3be50e18e10.js"></script>
+
+    <script src="https://dirms4qsy6412.cloudfront.net/assets/devzone3/new/dist/dz3-new-bundle-11f473650a558402a2733b7bb4d6133e28814892ec0527381c9144f3499b8d60.js"></script>
+
+  <script src="https://dirms4qsy6412.cloudfront.net/assets/twentytwenty/js/jquery.event.move-16041d2e384b513c1b202af51fc404a0643b8c38ff823bb4326520ad5a82b761.js"></script>
+  <script src="https://dirms4qsy6412.cloudfront.net/assets/twentytwenty/js/jquery.twentytwenty-835622257095d5bd0719a5484d68213ccc8708a321dd3deded777d1e6623b499.js"></script>
+
+  <script>
+  const template = document.createElement('template');
+  template.innerHTML = `
+<style>
+@import "https://dirms4qsy6412.cloudfront.net/assets/feed-aggregator/feed-aggregator-9ace7521871242143cb35fa86d5be702c4dacb409600041fa6a5b14fa2a71dde.css";
+.feed-aggregator-component .card {
+  box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14), 0 1px 10px 0 rgba(0,0,0,0.12), 0 2px 4px -1px rgba(0,0,0,0.3) !important;
+}
+.feed-aggregator-component .card:hover {
+  box-shadow: 0 0 8px 0 rgba(0,0,0,0.13), 0 14px 32px 5px rgba(0,0,0,0.13) !important;
+}
+</style>
+<div class="feed-aggregator-component"></div>
+`;
+  const hosts = {
+    'en': 'https://developer.nvidia.com/blog',
+    'cn': 'https://developer.nvidia.com/zh-cn/blog',
+  }
+
+  class FeedAggregatorElement extends HTMLElement {
+    constructor() {
+      super();
+      this._shadowRoot = this.attachShadow({ 'mode': 'open' });
+      this._shadowRoot.appendChild(template.content.cloneNode(true));
+    }
+
+    connectedCallback() {
+      const categories = this.getAttribute('categories');
+      const tags = this.getAttribute('tags');
+      const perPage = this.getAttribute('per-page');
+      const excludedTags = this.getAttribute('excluded-tags');
+
+      let locale = this.getAttribute('locale');
+      if (!locale) {
+        locale = 'en';
+      }
+      let targetElement = this._shadowRoot.querySelector(".feed-aggregator-component");
+      let feed = {
+        id: 'blog',
+        host: hosts[locale],
+        type: 'json',
+        minCount: 2,
+      };
+      if (categories && categories !== 'all') {
+        feed['category_ids'] = categories.split(',');
+      }
+      if (tags && tags !== 'all') {
+        feed['tag_ids'] = tags.split(',');
+      }
+      if(excludedTags && excludedTags !== 'null'){
+        feed['excluded_tag_ids'] = excludedTags.split(',');
+      }
+      document.addEventListener("DOMContentLoaded", function () {
+        new FeedAggregator({
+          target: targetElement,
+          props: {
+            count: perPage,
+            openInNewTab: true,
+            showExcerpts: true,
+            feeds: [feed]
+          }
+        });
+      })
+    }
+  }
+
+  window.customElements.define('feed-aggregator', FeedAggregatorElement);
+</script>
+
+
+<template id='application-button-template'>
+  <style>
+      @import "https://dirms4qsy6412.cloudfront.net/assets/application-button/application-button-68ca7e1e3aa49ec79169d49226e34ee0c341d27a15a38b28ce975cb2467e123e.css";
+  </style>
+  <a href='' class='nvidia-application-button'>Join now</a>
+</template>
+
+<script>
+  async function fetchMembershipState () {
+    const userInfo = await fetch('/api/user');
+    const {status} = userInfo;
+    if (status === 401) {
+      let error = new Error('Unauthorized');
+      error.statusCode = status;
+      throw error;
+    }
+
+    // TODO: Figure out how to get DZ4 program
+
+    // Fetch page info.
+    const {pathname} = location;
+    const pageInfo = await fetch(`${pathname}.json`);
+    const pageData = await pageInfo.json();
+
+    // Fetch membership info
+    return pageData;
+  }
+
+  const initApplicationButton = (element) => {
+    const linkElement = element.querySelector('a');
+    fetchMembershipState()
+      .then(data => {
+        console.log(data);
+      })
+      .catch(error => {
+        switch (error.statusCode) {
+          default:
+            linkElement.innerHTML = 'Login';
+            linkElement.href = '/login';
+        }
+      });
+  };
+
+  class NvidiaApplicationButton extends HTMLElement {
+    constructor() {
+      const template = document.getElementById('application-button-template');
+      super();
+      this._shadowRoot = this.attachShadow({ 'mode': 'open' });
+      this._shadowRoot.appendChild(template.content.cloneNode(true));
+    }
+    connectedCallback() {
+      const element = this._shadowRoot;
+      document.addEventListener('DOMContentLoaded', () => {
+        initApplicationButton(element);
+      });
+    }
+  }
+  window.customElements.define('nv-application-button', NvidiaApplicationButton);
+</script>
+
+<template id='application-text-template'>
+  <p></p>
+</template>
+
+<script>
+  class NvidiaApplicationText extends HTMLElement {
+    constructor() {
+      const template = document.getElementById('application-text-template');
+      super();
+      this._shadowRoot = this.attachShadow({ 'mode': 'open' });
+      this._shadowRoot.appendChild(template.content.cloneNode(true));
+    }
+    connectedCallback() {
+
+    }
+  }
+  window.customElements.define('nv-application-text', NvidiaApplicationText);
+</script>
+
+
+
+
+<template id='nv-sf-form-validator-template'>
+  <script src="https://dirms4qsy6412.cloudfront.net/assets/sf-validation/moment-620a5949fff0ad37198f07464b91d7b7c110ecdb6f94ca90ca7d2e1b471f1da8.js"></script>
+  <script src="https://dirms4qsy6412.cloudfront.net/assets/sf-validation/validate.min-2160a65c1b5d4a5966544ad25af8fe99f11c636a99c516fee6c7afd3b1f21409.js"></script>
+  <p></p>
+</template>
+
+<script>
+  class NvidiaSalesforceValidator extends HTMLElement {
+    constructor() {
+      const template = document.getElementById('nv-sf-form-validator-template');
+      super();
+      this._shadowRoot = this.attachShadow({'mode': 'open'});
+      this._shadowRoot.appendChild(template.content.cloneNode(true));
+    }
+
+    initComponent() {
+      if (!window.sfv) {
+        return;
+      }
+      validate.extend(validate.validators.datetime, {
+        parse: function (value, options) {
+          if (moment(value, options.format, true).isValid()) {
+            return +moment.utc(value);
+          }
+        },
+        format: function (value, options) {
+          var format = options.dateOnly ? "MM/DD/YYYY" : "MM/DD/YYYY hh:mm";
+          return moment.utc(value).format(format);
+        }
+      });
+
+      function showErrors(errors) {
+        $.each(errors, function (index, element) {
+          $('input[name="' + errors[index]['attribute'] + '"]').each(function (i, e) {
+            var errorMessage = errors[index]['options']['message'];
+            $('<div class="js-validation-errors">' + errorMessage + '</div>').insertAfter(e);
+          }).focus();
+        });
+      }
+
+      function isValidForm(form, constraints) {
+        var errors = validate(form, constraints, {format: "detailed"});
+        if (errors) {
+          showErrors(errors);
+          return false;
+        }
+        return true;
+      }
+
+      $.each(window.sfv, function (index, element) {
+        $(element.target).on('click', function (event) {
+          $('.js-validation-errors').remove();
+          if (!isValidForm(element.form, element.constraints)) {
+            event.preventDefault();
+          }
+        });
+      });
+    }
+
+    connectedCallback() {
+      document.addEventListener('DOMContentLoaded', () => {
+        this.initComponent();
+      });
+    }
+  }
+
+  window.customElements.define('nv-sf-form-validator', NvidiaSalesforceValidator);
+</script>
+
+
+<script src="https://dirms4qsy6412.cloudfront.net/assets/horizontal-chart/d3.v4.min-41cfecdf7c41476e805de7afacf4aacdd1a4be6947fbecf95217e947ebc2faf5.js"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/assets/horizontal-chart/visualize-d-06443fdef48364af6635f0d1d3535da26910671f6f6a680c531eff0e54ed595f.js"></script>
+
+<template id="chart-template">
+  <style>
+      @import "https://dirms4qsy6412.cloudfront.net/assets/devzone3/modules/nvidia_tokens/nvidia-charts-a459e90d273ab4f8b282e0f5fef607074b5fc7cbb5f8d0f0e378281320e6b9c8.css";
+  </style>
+  <div class="horizontal-chart-component">
+    <div class="chart-container">
+      <h4 class="chart-title"></h4>
+      <p class="chart-subtitle"></p>
+      <div class="legend"></div>
+      <svg data-nvidia-chart="true" data-chart-legend=""></svg>
+      <p class="chart-footnote"></p>
+    </div>
+  </div>
+</template>
+
+<script>
+  function chartInit(element) {
+    const chart = element.querySelector('svg[data-nvidia-chart]');
+    const isRendered = chart.getAttribute("data-rendered");
+    if (isRendered) {
+      return;
+    }
+
+    const svgChart = d3.select(chart);
+    const bars = JSON.parse(chart.dataset['chartBars']);
+    const ticks = JSON.parse(chart.dataset['chartTicks']);
+    const xAxisLabel = chart.dataset['xAxisLabel'];
+    const barPadding = chart.dataset['barPadding'];
+    const milestone = null;
+
+    const isGrouped = chart.dataset['isGrouped'] === 'true';
+    if (isGrouped) {
+      const legend = JSON.parse(chart.dataset['chartLegend']);
+      createGroupedHorizontalBarChart(svgChart, bars, barPadding, legend, ticks, milestone, xAxisLabel, false);
+    } else {
+      createHorizontalBarChart(svgChart, bars, barPadding, ticks, xAxisLabel, "", false);
+    }
+
+    chart.dataset['rendered'] = 'true';
+  }
+
+  $('a[data-toggle="tab"]').on("click", function (event) {
+    setTimeout(() => {
+      // Triggering 'resize' event to redraw charts.
+      window.dispatchEvent(new Event('resize'));
+
+      const target = jQuery(event.target).parents('.nav.nav-tabs').siblings('.tab-content').find('.tab-pane.active');
+      if (target.length > 0) {
+        const svg = jQuery(target).find('horizontal-chart');
+        if (svg.length) {
+          svg.each((idx, el) => {
+            if (jQuery(el).is(':visible')) {
+              const chartContainer = el._shadowRoot.querySelector('.chart-container');
+              chartInit(chartContainer);
+            }
+          });
+        }
+      }
+    }, 50);
+  });
+
+  async function loadFileSource(url) {
+    try{
+      const response = await fetch(url);
+      return response.json();
+    }catch (e) {
+      console.warn(`Failed to load chart data. URL: ${url}`);
+    }
+    return {};
+  }
+
+  class HorizontalChartElement extends HTMLElement {
+    constructor() {
+      const horizontalCharTemplate = document.getElementById('chart-template');
+      super();
+      this._shadowRoot = this.attachShadow({ 'mode': 'open' });
+      this._shadowRoot.appendChild(horizontalCharTemplate.content.cloneNode(true));
+    }
+    connectedCallback() {
+      const url = this.getAttribute('source');
+      const element = this._shadowRoot;
+      document.addEventListener("DOMContentLoaded", function () {
+        loadFileSource(url).then(data => {
+          const {
+            chartTitle: title,
+            chartSubtitle: subTitle,
+            chartFootnote: footNote,
+            chartId: id,
+            isGrouped: isGrouped,
+            legendData,
+            barPadding,
+            xAxisLabel,
+            bars,
+            ticks
+          } = data;
+          element.querySelector('.chart-title').innerHTML = title;
+
+          // Subtitle
+          if (subTitle) {
+            element.querySelector('.chart-subtitle').innerHTML = subTitle;
+          } else {
+            element.querySelector('.chart-subtitle').remove();
+          }
+
+          // Chart
+          const svgElement = element.querySelector('.chart-container svg');
+          svgElement.id = id;
+
+          const dataAttributes = [
+            ['isGrouped', isGrouped ? 'true' : 'false', ''],
+            ['chartLegend', JSON.stringify(legendData), ''],
+            ['xAxisLabel', xAxisLabel, ''],
+            ['barPadding', barPadding, 5],
+            ['chartBars', bars, ''],
+            ['chartTicks', ticks, ''],
+          ];
+          dataAttributes.forEach(dataAttribute => {
+            if (dataAttribute[0] === 'chartBars' && dataAttribute[1]) {
+              dataAttribute[1] = JSON.stringify(dataAttribute[1]);
+            }
+            if (dataAttribute[0] === 'chartTicks' && dataAttribute[1]) {
+              dataAttribute[1] = JSON.stringify(dataAttribute[1]);
+            }
+
+            svgElement.dataset[dataAttribute[0]] = dataAttribute[1] ? dataAttribute[1] : dataAttribute[2];
+          });
+
+          // Caption
+          if (footNote) {
+            element.querySelector('.chart-footnote').innerHTML = footNote;
+          } else {
+            element.querySelector('.chart-footnote').remove();
+          }
+
+          // Init chart
+          const chartContainer = element.querySelector('.chart-container');
+          if (jQuery(chartContainer).is(':visible')) {
+            chartInit(chartContainer);
+          }
+        });
+      })
+    }
+  }
+
+  window.customElements.define('horizontal-chart', HorizontalChartElement);
+</script>
+
+
+
+<script src="https://dirms4qsy6412.cloudfront.net/assets/nv-developer-menu-656530ba11430fdf00dd22f6fb0bd0258b97bdde1cbd01b873f157568bb4662d.js"></script>
+<script>
+  let menuLocale = 'en';
+
+  if (menuLocale == 'en') {
+    menuLocale = 'en-US';
+  }
+
+  function mountHeader(data = false) {
+    let options = {
+      baseURL: window.location.origin,
+      signedIn: false,
+      locale: menuLocale
+    };
+
+    if (data) {
+      options.secondaryMenu = data;
+    }
+
+
+    new NVDeveloperHeader({
+      target: document.getElementById('header'),
+      props: options
+    });
+  }
+
+  function mountFooter(data = false) {
+    let options = {
+      menu: data,
+      locale: menuLocale
+    };
+
+    new NVDeveloperFooter({
+      target: document.getElementById('footer'),
+      props: options
+    });
+  }
+
+  let url = 'd29g4g2dyqv443.cloudfront.net';
+  let headerMenuURL = "https://d29g4g2dyqv443.cloudfront.net/menu/en-US/accelerated-computing.json";
+
+  fetch(headerMenuURL)
+    .then(response => response.json())
+    .then(data => {
+      mountHeader(data);
+    })
+    .catch((error) => {
+      mountHeader();
+      window.nv.tracing.addError('menu', error);
+    });
+
+  fetch(`https://${url}/menu/${menuLocale}/footer.json`)
+    .then(response => response.json())
+    .then(data => {
+      mountFooter(data);
+    })
+    .catch((error) => {
+      mountFooter();
+      window.nv.tracing.addError('menu', error);
+    });
+</script>
+
+  <script src="https://www.datadoghq-browser-agent.com/us1/v5/datadog-rum.js"></script>
+  <script>
+    function OptanonWrapper() {
+      if (window.OnetrustActiveGroups && window.OnetrustActiveGroups.includes("C0002")) {
+        window.DD_RUM && window.DD_RUM.init({
+          clientToken: 'pub0430c74fae5d2b467bcb8d48b13e5b32',
+          applicationId: '9fc963c7-14e6-403d-bdec-ee671550bb7f',
+          site: 'datadoghq.com',
+          service: 'devzone',
+          env: 'production',
+          version: '',
+          sessionSampleRate: 10,
+          sessionReplaySampleRate: 5,
+          trackUserInteractions: true,
+          trackResources: true,
+          trackLongTasks: true,
+          defaultPrivacyLevel: 'mask-user-input',
+        });
+      }
+    }
+  </script>
+
+<script>
+  let silentAuthHost = 'www.nvidia.com';
+  let crossOriginPageUrl = `https://${silentAuthHost}/auth/hints/`;
+
+  function readHint() {
+    return new Promise((resolve) => {
+      const { origin: targetOrigin } = new URL(crossOriginPageUrl);
+
+      const iframe = document.createElement('iframe');
+      iframe.hidden = true;
+      iframe.src = crossOriginPageUrl;
+
+      function responseHandler(event) {
+        if (event.origin === targetOrigin) {
+          iframe.parentNode.removeChild(iframe);
+          return resolve(event.data);
+        }
+      }
+
+      window.addEventListener('message', responseHandler, { once: true });
+
+      iframe.onload = () => {
+        iframe.contentWindow.postMessage({ type: 'read' }, targetOrigin);
+      }
+
+      document.body.appendChild(iframe);
+    });
+  }
+
+  function writeHint(login_hint, idp_id, timestamp, sub) {
+    const { origin: targetOrigin } = new URL(crossOriginPageUrl);
+
+    const iframe = document.createElement('iframe');
+    iframe.hidden = true;
+    iframe.src = crossOriginPageUrl;
+
+    iframe.onload = () => {
+      const message = { type: 'write', login_hint, idp_id, timestamp, sub };
+      iframe.contentWindow.postMessage(message, targetOrigin);
+    }
+
+    document.body.appendChild(iframe);
+  }
+
+  function deleteHint() {
+    const { origin: targetOrigin } = new URL(crossOriginPageUrl);
+
+    const iframe = document.createElement('iframe');
+    iframe.hidden = true;
+    iframe.src = crossOriginPageUrl;
+
+    iframe.onload = () => {
+      iframe.contentWindow.postMessage({ type: 'delete' }, targetOrigin);
+    }
+
+    document.body.appendChild(iframe);
+  }
+
+
+</script>
+
+<script>_satellite.pageBottom();</script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/runtime-066b2e46597408b2b8b7.js" defer="defer"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/588-d5ad843707ddb32fb067.js" defer="defer"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/168-e420bb5dbde4e65352dd.js" defer="defer"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/928-0844b6f66e9cb9b935ef.js" defer="defer"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/180-e5cb0e0c8ae3abb6b18b.js" defer="defer"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/684-b7d9b00151b0d8b50cbc.js" defer="defer"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/691-a3972efa06c37dd22b92.js" defer="defer"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/708-902aa655a9be6cea1c29.js" defer="defer"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/164-4b14603414af1ba887c7.js" defer="defer"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/application-ddeef5334b5f07fcb0de.js" defer="defer"></script>
+<script src="https://dirms4qsy6412.cloudfront.net/packs/js/ls_track-ff94f9472eb0921d625e.js" defer="defer"></script>
+</body>
+</html>

@@ -21,10 +21,11 @@ rdflib==7.0.0
 rich==13.7.0
 tensorboard==2.16.2
 tensorflow==2.16.1
-tensorflow-io-gcs-filesystem==0.36.0
 PyYAML==6.0.1
 numpy
 pandas
 scikit-learn
 bitarray
 docker
+tqdm
+category_encoders
