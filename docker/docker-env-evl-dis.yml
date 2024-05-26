@@ -113,13 +113,23 @@ services:
       datapipeline:
         ipv4_address: 172.18.0.10
 
-  apache-jena:
-    image: stain/jena-fuseki
-    container_name: jena
-    ports:
-      - "3030:3030"
-    environment:
-      - ADMIN_PASSWORD=secret
+  pytorch:
+    image: pytorch/pytorch:latest
+    container_name: pytorch
+    volumes:
+      - .:/project:rw
+    tty: true
     networks:
       datapipeline:
         ipv4_address: 172.18.0.20
+
+  # apache-jena:
+  #   image: stain/jena-fuseki
+  #   container_name: jena
+  #   ports:
+  #     - "3030:3030"
+  #   environment:
+  #     - ADMIN_PASSWORD=secret
+  #   networks:
+  #     datapipeline:
+  #       ipv4_address: 172.18.0.30

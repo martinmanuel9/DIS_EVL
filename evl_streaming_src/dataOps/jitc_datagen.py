@@ -67,14 +67,14 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         ###  debug mode ---------------------------
-        testPath = str(path) + '/data/testJITC/'
-        os.chdir(testPath)
+        # testPath = str(path) + '/data/testJITC/'
+        # os.chdir(testPath)
         #------------------------------------------
         ### run mode: change path to data directory
-        # path = Path(path)
+        path = Path(path)
         # path = path.parents[1]
-        # changed_path = str(path) + '/data/testJITC/'
-        # os.chdir(changed_path)
+        changed_path = str(path) + '/JITC_Data/'
+        os.chdir(changed_path)
 
     # add binaries into a list
     def process_directory(self, directory):
@@ -160,8 +160,10 @@ if __name__ == "__main__":
     y_train.to_pickle('y_train.pkl')
     y_test.to_pickle('y_test.pkl')
     
-    
-    lstm_model = dataOps.build_lstm_model((X_train.shape[1], 1))
+    # get only 10 percent of the data
+    lstm_train = X_train[:int(len(X_train)*0.1)] 
+    print(lstm_train.shape)
+    lstm_model = dataOps.build_lstm_model((lstm_train.shape[1], 1))
     feature_extractor = lstm_model[1]
     # compile model
     lstm_model[1].compile(optimizer=Adam(), loss='binary_crossentropy', metrics=['accuracy'])

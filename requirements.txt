@@ -29,3 +29,4 @@ bitarray
 docker
 tqdm
 category_encoders
+ipykernel

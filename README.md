@@ -173,7 +173,7 @@ conda update --all
 7. Create a conda environment to make sure that your enviornment is ran correctly:
 
 ```bash
-conda create -n pyvenv python=3.11.4 anaconda
+conda create -n pyvenv python=3.11.9 anaconda
 ```
 
 8. Run the following command to activate the conda environment
