@@ -38,6 +38,7 @@ bitarray = "^2.9.2"
 docker = "^7.1.0"
 tqdm = "^4.66.4"
 category-encoders = "^2.6.3"
+docker-compose = "^2.27.1" 
 
 
 [build-system]
