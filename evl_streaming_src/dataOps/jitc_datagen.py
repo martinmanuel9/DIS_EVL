@@ -67,13 +67,13 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         ###  debug mode ---------------------------
-        # testPath = str(path) + '/data/testJITC/'
+        # testPath = str(path) + '/data/JITC_Data/'
         # os.chdir(testPath)
         #------------------------------------------
         ### run mode: change path to data directory
         path = Path(path)
-        # path = path.parents[1]
-        changed_path = str(path) + '/JITC_Data/'
+        path = path.parents[1]
+        changed_path = str(path) + '/data/JITC_Data/'
         os.chdir(changed_path)
 
     # add binaries into a list
@@ -128,7 +128,7 @@ class JITC_DATAOPS:
         return model, feature_extractor
 
     def train_and_evaluate_model(self, model, X_train, X_test, y_train, y_test):
-        history = model.fit(X_train, y_train, epochs=3, batch_size=32, validation_split=0.2) # used to be 20 epochs
+        history = model.fit(X_train, y_train, epochs=20, batch_size=32, validation_split=0.2) # used to be 20 epochs
         
         loss, accuracy = model.evaluate(X_test, y_test)
         print(f'Test Accuracy: {accuracy:.2f}')
@@ -161,14 +161,19 @@ if __name__ == "__main__":
     y_test.to_pickle('y_test.pkl')
     
     # get only 10 percent of the data
-    lstm_train = X_train[:int(len(X_train)*0.1)] 
-    print(lstm_train.shape)
-    lstm_model = dataOps.build_lstm_model((lstm_train.shape[1], 1))
-    feature_extractor = lstm_model[1]
+    lstm_X_train = X_train[:int(len(X_train)*0.125)] 
+    lstm_X_test = X_test[:int(len(X_test)*0.125)]
+    lstm_y_train = y_train[:int(len(y_train)*0.125)]
+    lstm_y_test = y_test[:int(len(y_test)*0.125)]
+
+    print(lstm_X_train.shape, lstm_X_test.shape, lstm_y_train.shape, lstm_y_test.shape)
+    lstm_model, feature_extractor = dataOps.build_lstm_model((lstm_X_train.shape[1], 1))
+    # feature_extractor = lstm_model[1]
     # compile model
-    lstm_model[1].compile(optimizer=Adam(), loss='binary_crossentropy', metrics=['accuracy'])
+    lstm_model.compile(optimizer=Adam(), loss='binary_crossentropy', metrics=['accuracy'])
+    print(lstm_model)
     # train model
-    history = dataOps.train_and_evaluate_model(lstm_model[1], X_train, X_test, y_train, y_test)
+    history = dataOps.train_and_evaluate_model(lstm_model, lstm_X_train, lstm_X_test, lstm_y_train, lstm_y_test)
 
     # Extract features from the LSTM layer
     X_train_features = feature_extractor.predict(X_train)

@@ -41,8 +41,8 @@ from sklearn.svm import SVC, SVR
 from tqdm import tqdm
 import os
 import math
-# import dataOps.benchmark_datagen_old as bdg
-# import dataOps.ton_iot_datagen as ton_iot
+import dataOps.benchmark_datagen_old as bdg
+import dataOps.ton_iot_datagen as ton_iot
 import dataOps.bot_iot_datagen as bot_iot
 # import unsw_nb15_datagen as unsw
 import classifier_performance as cp
@@ -498,12 +498,14 @@ class SCARGC:
             self.all_data = train['Dataset']
             
         elif self.dataset == 'JITC':
+            print(os.getcwd())
+            # os.chdir('../')
             X_train = pd.read_pickle('data/JITC_Data/artifacts/X_train.pkl')
             X_test = pd.read_pickle('data/JITC_Data/artifacts/X_test.pkl')
             y_train = pd.read_pickle('data/JITC_Data/artifacts/y_train.pkl')
             y_test = pd.read_pickle('data/JITC_Data/artifacts/y_test.pkl')
-            # x_test_features = pd.read_pickle('data/JITC_Data/artifacts/X_test_features.pkl')
-            # x_train_features = pd.read_pickle('data/JITC_Data/artifacts/X_train_features.pkl')
+            x_test_features = pd.read_pickle('data/JITC_Data/artifacts/X_test_features.pkl')
+            x_train_features = pd.read_pickle('data/JITC_Data/artifacts/X_train_features.pkl')
             
             # transformations
             x_train = X_train.to_numpy()
@@ -524,7 +526,7 @@ class SCARGC:
             
             ## all data 
             # join x_train and y_train
-            print(x_train.shape, y_train.shape)
+            # print(x_train.shape, y_train.shape)
             all_train_data = np.concatenate((x_train, y_train), axis=1)
             dict_train = {}
             for i in range(0, len(all_train_data)):
@@ -533,7 +535,6 @@ class SCARGC:
             dict_y_train = {}
             for i in range(0, len(y_train)):
                 dict_y_train[i] = y_train[i]
-            
             
             
             all_test_data = np.concatenate((x_test, y_test), axis=1)
@@ -547,6 +548,8 @@ class SCARGC:
             self.X = dict_train
             self.Y = dict_test
             self.all_data = all_train_data
+            self.X_train_features = x_train_features 
+            self.X_test_features = x_test_features
             
 
         # get the number of classes in the dataset 
@@ -571,17 +574,29 @@ class SCARGC:
                     mode_val,_ = stats.mode(yhat)
                     self.class_cluster[i] = mode_val
             elif self.datasource == 'UNSW':
-                
-                self.cluster = KMeans(n_clusters=self.Kclusters).fit(Xinit[0])    
-                labels = self.cluster.predict(Yinit[0])
-                
-                # for each of the clusters, find the labels of the data samples in the clusters
-                # then look at the labels from the initially labeled data that are in the same
-                # cluster. assign the cluster the label of the most frequent class. 
-                for i in range(self.Kclusters):
-                    yhat = Yinit[i][labels]
-                    mode_val,_ = stats.mode(yhat)
-                    self.class_cluster[i] = mode_val
+                if self.dataset == 'JITC':
+                    self.cluster = KMeans(n_clusters=self.Kclusters).fit(self.X_train_features)    
+                    labels = self.cluster.predict(self.X_test_features)
+                    
+                    # for each of the clusters, find the labels of the data samples in the clusters
+                    # then look at the labels from the initially labeled data that are in the same
+                    # cluster. assign the cluster the label of the most frequent class. 
+                    for i in range(self.Kclusters):
+                        yhat = self.X_test_features[i][labels]
+                        mode_val,_ = stats.mode(yhat)
+                        self.class_cluster[i] = mode_val
+                else: 
+                    self.cluster = KMeans(n_clusters=self.Kclusters).fit(Xinit[0])    
+                    labels = self.cluster.predict(Yinit[0])
+                    print(labels)
+                    
+                    # for each of the clusters, find the labels of the data samples in the clusters
+                    # then look at the labels from the initially labeled data that are in the same
+                    # cluster. assign the cluster the label of the most frequent class. 
+                    for i in range(self.Kclusters):
+                        yhat = Yinit[i][labels]
+                        mode_val,_ = stats.mode(yhat)
+                        self.class_cluster[i] = mode_val
 
     def set_cores(self):
         """
@@ -589,7 +604,7 @@ class SCARGC:
         """
         num_cores = multiprocessing.cpu_count()         # determines number of cores
         percent_cores = math.ceil( num_cores)
-        self.n_cores = int(percent_cores)                   # original number of cores to 1
+        self.n_cores = int(percent_cores)               # original number of cores to 1
         
     def run(self): 
         '''
@@ -678,11 +693,19 @@ class SCARGC:
             
             elif self.classifier == 'mlp':
                 if self.datasource == 'UNSW':
-                    mlp = MLPClassifier(random_state=1, max_iter=300)
-                    mlp.fit(self.all_data[:,:-1], self.all_data[:,-1])
-                    self.train_model = mlp
-                    predicted_label = mlp.predict(Yts[0][:,:-1])
-                    self.preds[0] = predicted_label
+                    if self.dataset == 'JITC':
+                        mlp = MLPClassifier(random_state=1, max_iter=300)
+                        mlp.fit(self.X_train_features, self.all_data)
+                        self.train_model = mlp
+                        print(Yts[0].shape) 
+                        predicted_label = mlp.predict(Yts[0].reshape(-1,1))
+                        self.preds[0] = predicted_label
+                    else:
+                        mlp = MLPClassifier(random_state=1, max_iter=300)
+                        mlp.fit(self.all_data[:,:-1], self.all_data[:,-1])
+                        self.train_model = mlp
+                        predicted_label = mlp.predict(Yts[0][:,:-1])
+                        self.preds[0] = predicted_label
                 elif self.datasource == 'synthetic':
                     exit()
             
@@ -1000,7 +1023,7 @@ class SCARGC:
                             # Train the model
                             trainDataReshaped = np.expand_dims(past_centroid, axis=1) #past_centroid[:,:-1] 
                             nearestData.fit(trainDataReshaped, temp_current_centroids, batch_size= 1000, epochs=3, validation_split=0.25, 
-                                         callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2)
+                                            callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2)
                             testDataReshaped = np.expand_dims(temp_current_centroids, axis=1)
                             testDataReshaped = pad_sequences(testDataReshaped, maxlen=1000, padding='post', dtype='float32')
                             centroid_label = nearestData.predict(testDataReshaped)
