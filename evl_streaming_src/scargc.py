@@ -69,7 +69,7 @@ class SCARGC:
     def __init__(self, 
                 datasource,
                 dataset,  
-                Kclusters:int=10,
+                Kclusters:int=1,
                 maxpool:int=25, 
                 resample:bool=True, 
                 T:int=100,
@@ -498,7 +498,6 @@ class SCARGC:
             self.all_data = train['Dataset']
             
         elif self.dataset == 'JITC':
-            print(os.getcwd())
             # os.chdir('../')
             X_train = pd.read_pickle('data/JITC_Data/artifacts/X_train.pkl')
             X_test = pd.read_pickle('data/JITC_Data/artifacts/X_test.pkl')
@@ -635,10 +634,16 @@ class SCARGC:
                     predicted_label = svn_clf.predict(Yts[1][:,:-1])
                     self.preds[0] = predicted_label
                 elif self.datasource == 'UNSW':
-                    svn_clf = SVC(kernel='rbf').fit(self.all_data[:,:-1], self.all_data[:,-1]) # use the entire training data
-                    self.train_model = svn_clf
-                    predicted_label = svn_clf.predict(Yts[0][:,:-1])
-                    self.preds[0] = predicted_label
+                    if self.dataset == 'JITC':
+                        svn_clf = SVR(kernel='rbf').fit(self.X_train_features, self.all_data[:,-1] ) # use the entire training data
+                        self.train_model = svn_clf
+                        predicted_label = svn_clf.predict(self.X_test_features)
+                        self.preds[0] = predicted_label
+                    else: 
+                        svn_clf = SVC(kernel='rbf').fit(self.all_data[:,:-1], self.all_data[:,-1]) # use the entire training data
+                        self.train_model = svn_clf
+                        predicted_label = svn_clf.predict(Yts[0][:,:-1])
+                        self.preds[0] = predicted_label
 
             elif self.classifier == 'logistic_regression':
                 if self.datasource == 'UNSW':
@@ -697,8 +702,7 @@ class SCARGC:
                         mlp = MLPClassifier(random_state=1, max_iter=300)
                         mlp.fit(self.X_train_features, self.all_data)
                         self.train_model = mlp
-                        print(Yts[0].shape) 
-                        predicted_label = mlp.predict(Yts[0].reshape(-1,1))
+                        predicted_label = mlp.predict(self.X_test_features)
                         self.preds[0] = predicted_label
                     else:
                         mlp = MLPClassifier(random_state=1, max_iter=300)
@@ -852,11 +856,15 @@ class SCARGC:
                             Xe, Ye = np.array(labeled_data_labels), np.array(Yts[t+1])                 # Xe = test labels ; Ye = test data
                 elif self.datasource == 'UNSW':
                     if t == 0: 
-                        Xt, Yt = np.array(labeled_data_labels[t]), np.array(Yts[t])       # Xt = train labels ; Yt = train data
-                        Xe, Ye = np.array(Xts), np.array(Yts[t])            # Xe = test labels ; Ye = test data
+                        if self.dataset == 'JITC':
+                            Xt, Yt = np.array(labeled_data_labels[t]), np.array(Yts[t])                    # Xt = train labels ; Yt = train data
+                            Xe, Ye = np.array(Xts), np.array(Yts[t])     
+                        else:
+                            Xt, Yt = np.array(labeled_data_labels[t]), np.array(Yts[t])                    # Xt = train labels ; Yt = train data
+                            Xe, Ye = np.array(Xts), np.array(Yts)     
                     else: 
-                        Xt, Yt = np.array(labeled_data_labels), np.array(labeled_data)             # Xt = train labels ; Yt = train data
-                        Xe, Ye = np.array(labeled_data_labels), np.array(Yts[t])                 # Xe = test labels ; Ye = test data
+                        Xt, Yt = np.array(labeled_data_labels), np.array(labeled_data)                 # Xt = train labels ; Yt = train data
+                        Xe, Ye = np.array(labeled_data_labels), np.array(Yts[t])                       # Xe = test labels ; Ye = test data
 
                 t_start = time.time()            
 
@@ -891,13 +899,11 @@ class SCARGC:
                             testDataReshaped = pad_sequences(YeReshaped, maxlen=1000, padding='post', dtype='float32')
                             preds = self.train_model.predict(testDataReshaped)
                             predicted_label = tf.argmax(preds, axis=1).numpy()
-
                         elif self.classifier == '1dcnn':
                             YeReshaped = np.expand_dims(Ye[:,:-1], axis=1)
                             testDataReshaped = pad_sequences(YeReshaped, maxlen=1000, padding='post', dtype='float32')
                             preds = self.train_model.predict(testDataReshaped)
                             predicted_label = tf.argmax(preds, axis=1).numpy()
-
                         else:
                             predicted_label = self.train_model.predict(Ye[:,:-1])
                     
@@ -921,6 +927,10 @@ class SCARGC:
                 # if |pool| == maxpoolsize
                 if len(pool_label) > self.maxpool:
                     # C <- Clustering(pool, k)
+                    if self.dataset == 'JITC':
+                        pool_data = pool_data.reshape(1, -1)
+                    else:
+                        continue
                     temp_current_centroids = KMeans(n_clusters=self.Kclusters, init=past_centroid, n_init='auto').fit(pool_data).cluster_centers_
                     # find the label for the current centroids               
                     # new labeled data
@@ -1120,5 +1130,5 @@ class SCARGC:
             return self.avg_perf_metric
 
 
-run_scargc_svm = SCARGC(classifier = 'mlp', dataset= 'JITC', datasource='UNSW', resample=False).run()
+run_scargc_svm = SCARGC(classifier = 'svm', dataset= 'JITC', datasource='UNSW', resample=False).run()
 print(run_scargc_svm)
