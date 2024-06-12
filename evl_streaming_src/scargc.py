@@ -306,7 +306,6 @@ class SCARGC:
             self.Y = dict_test
             self.all_data = train['Dataset']
 
-
         elif self.dataset == 'ton_iot_modbus':
             datagen = ton_iot.TON_IoT_Datagen()
             # need to select what IoT data you want fridge, garage, GPS, modbus, light, thermostat, weather 
@@ -541,8 +540,9 @@ class SCARGC:
             for j in range(0, len(y_test)):
                 dict_test[j] = y_test[j]
 
-            self.Xinit = dict_train
-            self.Yinit = dict_y_train
+            self.Xinit = x_train.flatten()
+            self.Yinit = y_train.flatten()
+            
 
             self.X = dict_train
             self.Y = dict_test
@@ -574,20 +574,21 @@ class SCARGC:
                     self.class_cluster[i] = mode_val
             elif self.datasource == 'UNSW':
                 if self.dataset == 'JITC':
-                    self.cluster = KMeans(n_clusters=self.Kclusters).fit(self.X_train_features)    
-                    labels = self.cluster.predict(self.X_test_features)
+                    self.cluster = KMeans(n_clusters=self.Kclusters).fit(Xinit.reshape(-1,1))    
+                    labels = self.cluster.predict(Yinit.reshape(-1,1))
                     
                     # for each of the clusters, find the labels of the data samples in the clusters
                     # then look at the labels from the initially labeled data that are in the same
                     # cluster. assign the cluster the label of the most frequent class. 
                     for i in range(self.Kclusters):
+
                         yhat = self.X_test_features[i][labels]
                         mode_val,_ = stats.mode(yhat)
                         self.class_cluster[i] = mode_val
                 else: 
                     self.cluster = KMeans(n_clusters=self.Kclusters).fit(Xinit[0])    
                     labels = self.cluster.predict(Yinit[0])
-                    print(labels)
+                    
                     
                     # for each of the clusters, find the labels of the data samples in the clusters
                     # then look at the labels from the initially labeled data that are in the same
@@ -635,9 +636,9 @@ class SCARGC:
                     self.preds[0] = predicted_label
                 elif self.datasource == 'UNSW':
                     if self.dataset == 'JITC':
-                        svn_clf = SVR(kernel='rbf').fit(self.X_train_features, self.all_data[:,-1] ) # use the entire training data
+                        svn_clf = SVC(kernel='linear').fit(self.all_data[:,:-1], self.all_data[:,-1] ) # use the entire training data
                         self.train_model = svn_clf
-                        predicted_label = svn_clf.predict(self.X_test_features)
+                        predicted_label = svn_clf.predict(Yts[0].reshape(1, -1))
                         self.preds[0] = predicted_label
                     else: 
                         svn_clf = SVC(kernel='rbf').fit(self.all_data[:,:-1], self.all_data[:,-1]) # use the entire training data
@@ -858,7 +859,9 @@ class SCARGC:
                     if t == 0: 
                         if self.dataset == 'JITC':
                             Xt, Yt = np.array(labeled_data_labels[t]), np.array(Yts[t])                    # Xt = train labels ; Yt = train data
-                            Xe, Ye = np.array(Xts), np.array(Yts[t])     
+                            #convert Yts dictionary to np array
+                            Yts = np.array(list(Yts.values()))
+                            Xe, Ye = np.array(Xts), Yts     
                         else:
                             Xt, Yt = np.array(labeled_data_labels[t]), np.array(Yts[t])                    # Xt = train labels ; Yt = train data
                             Xe, Ye = np.array(Xts), np.array(Yts)     
@@ -905,7 +908,10 @@ class SCARGC:
                             preds = self.train_model.predict(testDataReshaped)
                             predicted_label = tf.argmax(preds, axis=1).numpy()
                         else:
-                            predicted_label = self.train_model.predict(Ye[:,:-1])
+                            if self.dataset == "JITC":
+                                predicted_label = self.train_model.predict(Ye)
+                            else:
+                                predicted_label = self.train_model.predict(Ye[:,:-1]) 
                     
                     pool_data = np.vstack((pool_data, Ye))
 
@@ -928,10 +934,18 @@ class SCARGC:
                 if len(pool_label) > self.maxpool:
                     # C <- Clustering(pool, k)
                     if self.dataset == 'JITC':
+                        pool_data = pool_data.flatten()
+                        # past_centroid = np.squeeze(past_centroid)
+                        # past_centroid = past_centroid.reshape(1, -1)
                         pool_data = pool_data.reshape(1, -1)
+                        # reduce pool data if shape doesn't match past_centroid shape
+                        if np.shape(pool_data)[1] != np.shape(past_centroid)[1]:
+                            pool_data = pool_data[:,:np.shape(past_centroid)[1]]
+                            
+                        temp_current_centroids = KMeans(n_clusters=self.Kclusters, init=past_centroid, n_init='auto').fit(pool_data).cluster_centers_
                     else:
-                        continue
-                    temp_current_centroids = KMeans(n_clusters=self.Kclusters, init=past_centroid, n_init='auto').fit(pool_data).cluster_centers_
+                        temp_current_centroids = KMeans(n_clusters=self.Kclusters, init=past_centroid, n_init='auto').fit(pool_data).cluster_centers_
+                        
                     # find the label for the current centroids               
                     # new labeled data
                     new_label_data = np.zeros(np.shape(temp_current_centroids)[1])
@@ -953,7 +967,10 @@ class SCARGC:
                         elif self.classifier == 'svm':
                             label_encoder = preprocessing.LabelEncoder()
                             t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
-                            nearestData = SVC(kernel='rbf').fit(past_centroid[:,:-1], t_cur_centroid)
+                            if self.dataset == 'JITC':
+                                nearestData = SVC(kernel='linear', random_state=42).fit(past_centroid, t_cur_centroid)
+                            else: 
+                                nearestData = SVC(kernel='rbf').fit(past_centroid[:,:-1], t_cur_centroid) 
                             centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
                             new_label_data = np.vstack(centroid_label)
                         
@@ -1106,7 +1123,10 @@ class SCARGC:
                         past_centroid = temp_current_centroids
                     
                     Ye = np.squeeze(Ye)
-                    Ye = np.array(Ye[:,-1])
+                    if self.dataset == "JITC":
+                        continue
+                    else:
+                        Ye = np.array(Ye[:,-1])
 
                     # reset 
                     pool_data = np.zeros(np.shape(pool_data)[1])
