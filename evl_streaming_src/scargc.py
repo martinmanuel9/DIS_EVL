@@ -37,7 +37,7 @@ import multiprocessing
 import statistics
 import numpy as np 
 from scipy import stats
-from sklearn.svm import SVC, SVR
+from sklearn.svm import SVC, SVR, OneClassSVM
 from tqdm import tqdm
 import os
 import math
@@ -87,6 +87,8 @@ class SCARGC:
         # set the data 
         self.X = {} # Xinit
         self.Y = {} # Yinit
+        self.Xtest = {}
+        self.Ytest = {}
         self.Xinit = {}
         self.Yinit = {}
         self.data = {}
@@ -108,7 +110,7 @@ class SCARGC:
         self.avg_perf_metric = {}
         self.preds = {}
         self.n_cores = []
- 
+
     def set_data(self):
         if self.datasource == 'synthetic':
             set_data = bdg.Datagen()
@@ -497,6 +499,7 @@ class SCARGC:
             self.all_data = train['Dataset']
             
         elif self.dataset == 'JITC':
+            ## comment out if running in debug vs code
             # os.chdir('../')
             X_train = pd.read_pickle('data/JITC_Data/artifacts/X_train.pkl')
             X_test = pd.read_pickle('data/JITC_Data/artifacts/X_test.pkl')
@@ -525,6 +528,8 @@ class SCARGC:
             ## all data 
             # join x_train and y_train
             # print(x_train.shape, y_train.shape)
+            x_train = np.array(list(x_train))
+            y_train = np.array(list(y_train))
             all_train_data = np.concatenate((x_train, y_train), axis=1)
             dict_train = {}
             for i in range(0, len(all_train_data)):
@@ -534,18 +539,24 @@ class SCARGC:
             for i in range(0, len(y_train)):
                 dict_y_train[i] = y_train[i]
             
-            
+            y_test = np.array(list(y_test))
             all_test_data = np.concatenate((x_test, y_test), axis=1)
             dict_test = {}
-            for j in range(0, len(y_test)):
-                dict_test[j] = y_test[j]
+            for j in range(0, len(x_test)):
+                dict_test[j] = x_test[j]
+            
+            dict_y_test = {}
+            for i in range (0, len(y_test)):
+                dict_y_test[i] = y_test[i]
 
-            self.Xinit = x_train.flatten()
-            self.Yinit = y_train.flatten()
+            self.Xinit = x_train
+            self.Yinit = y_train
             
 
             self.X = dict_train
-            self.Y = dict_test
+            self.Y = dict_y_train
+            self.Xtest = dict_test
+            self.Ytest = dict_y_test
             self.all_data = all_train_data
             self.X_train_features = x_train_features 
             self.X_test_features = x_test_features
@@ -636,9 +647,11 @@ class SCARGC:
                     self.preds[0] = predicted_label
                 elif self.datasource == 'UNSW':
                     if self.dataset == 'JITC':
-                        svn_clf = SVC(kernel='linear').fit(self.all_data[:,:-1], self.all_data[:,-1] ) # use the entire training data
+                        svn_clf = SVC(kernel='linear').fit(self.Xinit, self.Yinit.ravel())       #  use the entire training data
                         self.train_model = svn_clf
-                        predicted_label = svn_clf.predict(Yts[0].reshape(1, -1))
+                        Xts[0] = Xts[0].reshape(1,-1)
+                        predicted_label = svn_clf.predict(Xts[0][:,:-1])
+                        predicted_label = predicted_label
                         self.preds[0] = predicted_label
                     else: 
                         svn_clf = SVC(kernel='rbf').fit(self.all_data[:,:-1], self.all_data[:,-1]) # use the entire training data
@@ -832,9 +845,13 @@ class SCARGC:
             pool_index = 0
             past_centroid = self.cluster.cluster_centers_
 
-
-            labeled_data_labels = Xts
-            labeled_data = Yts
+            if self.dataset == "JITC":
+                labeled_data_labels = self.Ytest
+                labeled_data = self.Xtest
+            else:
+                labeled_data_labels = Xts
+                labeled_data = Yts
+            
             
             # run the experiment 
             for t in tqdm(range(self.T-1), position=0, leave=True): 
@@ -857,17 +874,16 @@ class SCARGC:
                             Xe, Ye = np.array(labeled_data_labels), np.array(Yts[t+1])                 # Xe = test labels ; Ye = test data
                 elif self.datasource == 'UNSW':
                     if t == 0: 
-                        if self.dataset == 'JITC':
-                            Xt, Yt = np.array(labeled_data_labels[t]), np.array(Yts[t])                    # Xt = train labels ; Yt = train data
-                            #convert Yts dictionary to np array
-                            Yts = np.array(list(Yts.values()))
-                            Xe, Ye = np.array(Xts), Yts     
-                        else:
-                            Xt, Yt = np.array(labeled_data_labels[t]), np.array(Yts[t])                    # Xt = train labels ; Yt = train data
-                            Xe, Ye = np.array(Xts), np.array(Yts)     
+                        # if self.dataset == 'JITC':
+                        #     Xt, Yt = np.array(labeled_data_labels[t]), np.array(Yts[t])                # Xt = train labels ; Yt = train data
+                        #     Xe, Ye = np.array(Xts), np.array(Yts[t])     
+                        # else:
+                        Xt, Yt = np.array(labeled_data_labels[t]), np.array(labeled_data)                # Xt = train labels ; Yt = train data
+                        Xe, Ye = np.array(labeled_data_labels), np.array(Yts[t+1])     
                     else: 
-                        Xt, Yt = np.array(labeled_data_labels), np.array(labeled_data)                 # Xt = train labels ; Yt = train data
-                        Xe, Ye = np.array(labeled_data_labels), np.array(Yts[t])                       # Xe = test labels ; Ye = test data
+                        print(labeled_data_labels[t])
+                        Xt, Yt = np.array(labeled_data_labels[t]), np.array(labeled_data[t])            # Xt = train labels ; Yt = train data
+                        Xe, Ye = np.array(self.Xtest[t]), np.array(self.Ytest[t])                       # Xe = test labels ; Ye = test data
 
                 t_start = time.time()            
 
@@ -909,7 +925,7 @@ class SCARGC:
                             predicted_label = tf.argmax(preds, axis=1).numpy()
                         else:
                             if self.dataset == "JITC":
-                                predicted_label = self.train_model.predict(Ye)
+                                predicted_label = self.train_model.predict(Xe.reshape(1,-1))
                             else:
                                 predicted_label = self.train_model.predict(Ye[:,:-1]) 
                     
@@ -920,7 +936,7 @@ class SCARGC:
                     predicted_label = np.squeeze(predicted_label)
                     self.preds[t] = predicted_label
                     
-                    pool_label = np.concatenate((pool_label, predicted_label))
+                    pool_label = np.concatenate((np.atleast_1d(pool_label), np.atleast_1d(predicted_label)))
                     
                     if t > 0:
                         sbrt_pool_lbl = list(pool_label)
@@ -968,11 +984,13 @@ class SCARGC:
                             label_encoder = preprocessing.LabelEncoder()
                             t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
                             if self.dataset == 'JITC':
-                                nearestData = SVC(kernel='linear', random_state=42).fit(past_centroid, t_cur_centroid)
+                                nearestData = OneClassSVM(kernel='linear').fit(past_centroid, t_cur_centroid)
+                                centroid_label = nearestData.predict(temp_current_centroids)
+                                new_label_data = np.vstack(centroid_label)
                             else: 
                                 nearestData = SVC(kernel='rbf').fit(past_centroid[:,:-1], t_cur_centroid) 
-                            centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
-                            new_label_data = np.vstack(centroid_label)
+                                centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
+                                new_label_data = np.vstack(centroid_label)
                         
                         elif self.classifier == 'logistic_regression':
                             label_encoder = preprocessing.LabelEncoder()
@@ -1135,12 +1153,37 @@ class SCARGC:
                 
                 t_end = time.time() 
                 # needed to have same shape as preds and test
-                indx = np.arange(np.shape(self.preds[t])[0])
-                indx = np.squeeze(indx) 
-                perf_metric = cp.PerformanceMetrics(timestep= t, preds= self.preds[t], test= Ye[indx], \
-                                                    dataset= self.dataset , method= '' , \
-                                                    classifier= self.classifier, tstart=t_start, tend=t_end)
-                self.performance_metric[t] = perf_metric.findClassifierMetrics(preds= self.preds[t], test= Ye[indx])
+                if self.dataset == 'JITC':
+                    # indx = np.arange(np.shape(self.preds[t])) 
+                    first_dim_size = np.shape([self.preds[t]])
+                    if first_dim_size[0] > 1:
+                        indx = np.arange(first_dim_size)
+                    else:
+                        indx = first_dim_size
+
+                    perf_metric = cp.PerformanceMetrics(timestep=t, preds=self.preds[t], test=Ye,
+                                                        dataset=self.dataset, method='',
+                                                        classifier=self.classifier, tstart=t_start, tend=t_end)
+                    self.performance_metric[t] = perf_metric.findClassifierMetrics(preds=np.squeeze(self.preds[t]), test=Ye)
+                else:
+                    try:
+                        shape = np.shape(self.preds[t])
+                        if len(shape) == 0:
+                            raise ValueError(f"The shape of self.preds[{t}] is {shape}, which is not valid")
+                        first_dim_size = shape[0]
+                    except IndexError as e:
+                        print(f"IndexError: {e}")
+                        print(f"self.preds[{t}] = {self.preds[t]}")
+                        print(f"Shape of self.preds[{t}] = {np.shape(self.preds[t])}")
+                        raise
+
+                    indx = np.arange(first_dim_size)
+                    indx = np.squeeze(indx)
+
+                    perf_metric = cp.PerformanceMetrics(timestep=t, preds=self.preds[t], test=Ye[indx],
+                                                        dataset=self.dataset, method='',
+                                                        classifier=self.classifier, tstart=t_start, tend=t_end)
+                    self.performance_metric[t] = perf_metric.findClassifierMetrics(preds=np.squeeze(self.preds[t]), test=Ye[indx])
 
             total_time_end = time.time()
 
