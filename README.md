@@ -325,7 +325,7 @@ DESCRIBE TABLES;
 If you have not been able to create tables for mysql you may need to login into the container:
 
 ```bash
-docker exec -it mysql mysql -u root -p"secret"
+docker exec -it mysql_oaiids mysql -u root -p"secret"
 ```
 
 From there you will need to create a database:
@@ -345,7 +345,7 @@ Run the env bash file:
 Re-enter the mysql container:
 
 ```bash
-docker exec -it mysql mysql -u root -p"secret"
+docker exec -it mysql_oaiids mysql -u root -p"secret"
 ```
 
 Ensure you are using the `dis` database:

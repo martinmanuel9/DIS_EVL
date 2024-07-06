@@ -40,8 +40,14 @@ from sklearn.metrics import accuracy_score
 from tensorflow.keras.preprocessing.sequence import pad_sequences
 import tensorflow as tf
 from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import LSTM, Dense, Input
 from tensorflow.keras.optimizers import Adam
+from sklearn.mixture import GaussianMixture
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+from concurrent.futures import ThreadPoolExecutor
+from sklearn.decomposition import PCA
 
 class JITC_DATAOPS:
     def __init__(self, dataset):
@@ -67,28 +73,23 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         ###  debug mode ---------------------------
-        # testPath = str(path) + '/data/JITC_Data/'
-        # os.chdir(testPath)
+        testPath = str(path) + '/data/JITC_Data/'
+        os.chdir(testPath)
         #------------------------------------------
         ### run mode: change path to data directory
-        path = Path(path)
-        path = path.parents[1]
-        changed_path = str(path) + '/data/JITC_Data/'
-        os.chdir(changed_path)
+        # print(path)
+        # changed_path = '../../data/JITC_Data/'
+        # os.chdir(changed_path)
+        # print(os.getcwd())
 
-    # add binaries into a list
     def process_directory(self, directory):
-        # print("Processing directory:", directory)
-        # need to prepend each file with {} to make json file correct
-        for filename in os.listdir(directory):
-            if filename.endswith('.json'):
-                filepath = os.path.join(directory, filename)
-                self.process_json_file(filepath)
+        with ThreadPoolExecutor() as executor:
+            json_files = [os.path.join(directory, filename) for filename in os.listdir(directory) if filename.endswith('.json')]
+            executor.map(self.process_json_file, json_files)
 
     def process_json_file(self, json_file):
         with open(json_file, 'r') as f:
             json_data = json.load(f)  # Load JSON data
-            # print(json_data['binary'])
             self.data[os.path.basename(json_file)] = json_data['binary']
     
     def import_data(self):
@@ -96,43 +97,91 @@ class JITC_DATAOPS:
         self.process_directory(os.getcwd())
         self.dataframe = pd.DataFrame.from_dict(self.data, orient='index', columns=['binary'])
         self.dataframe.index.name = 'filename'
+        
+    def find_silhoette_score(self, X):
+        """
+        Find Silhoette Scores allows us to get the optimal number of clusters for the data
+        """
+        X = np.array(X)
+        X = X.astype(int)
+        X = X.reshape(-1, 1) 
+        
+        sil_score = {}
+        for c in range(2, 30):
+            
+            kmeans_model = KMeans(n_clusters=c, n_init='auto').fit(X)
+            score = silhouette_score(X, kmeans_model.labels_, metric='euclidean')
+            sil_score[c] = score
+        optimal_cluster = max(sil_score, key=sil_score.get)
+        return optimal_cluster
+
+    # def convert_binary_string(self, binary_string):
+    #     return [int(b) for b in binary_string]
 
     def develop_dataset(self):
-        # Convert binary strings to lists of integers
-        self.dataframe['binary'] = self.dataframe['binary'].apply(lambda x: [int(b) for b in x])
+        # # Convert binary strings to lists of integers using parallel processing
+        # with ThreadPoolExecutor() as executor:
+        #     self.dataframe['binary'] = list(executor.map(self.convert_binary_string, self.dataframe['binary']))
 
-        # Pad sequences to the same length
-        sequences = pad_sequences(self.dataframe['binary'].tolist(), padding='post')
+        # Flatten the array of arrays into a single list of bits
+        flat_data = [bit for array in self.dataframe['binary'] for bit in array]
+
+        # Group the bits into chunks of 8
+        bytes_list = [flat_data[i:i + 8] for i in range(0, len(flat_data), 8)] 
+        bytes_list = np.array(bytes_list)
+        bytes_list = bytes_list.astype(int) 
         
-        # Assuming binary labels for the LSTM model (sum of sequence mod 2 as an example)
-        labels = np.array([sum(seq) % 2 for seq in sequences])
+        # nClusters = self.find_silhoette_score(bytes_list)
+        nClusters = 30
         
-        # Split the data into training and testing sets
-        X_train, X_test, y_train, y_test = train_test_split(sequences, labels, test_size=0.2, random_state=42)
+        # cluster byte list using GMM cluster
+        # GMM clustering
+        GMMCluster = GaussianMixture(n_components=nClusters, random_state=42).fit(bytes_list)
+        gmm_labels = GMMCluster.predict(bytes_list)
         
-        # Reshape for LSTM [samples, time steps, features]
-        X_train = X_train.reshape((X_train.shape[0], X_train.shape[1], 1))
-        X_test = X_test.reshape((X_test.shape[0], X_test.shape[1], 1))
+        # KMeans clustering
+        KMeanCluster = KMeans(n_clusters=nClusters, random_state=42).fit(bytes_list)
+        kmeans_labels = KMeanCluster.labels_
+        
+        # Dimensionality reduction for visualization
+        pca = PCA(n_components=2)
+        bytes_list_2D = pca.fit_transform(bytes_list)
+
+        # Graph GMM Cluster
+        plt.scatter(bytes_list_2D[:, 0], bytes_list_2D[:, 1], c=gmm_labels, s=40, cmap='viridis')
+        plt.title('GMM Clustering')
+        plt.show()
+        plt.savefig('GMMCluster.png')
+
+        # Graph KMeans Cluster
+        plt.scatter(bytes_list_2D[:, 0], bytes_list_2D[:, 1], c=kmeans_labels, s=40, cmap='viridis')
+        plt.title('KMeans Clustering')
+        plt.show()
+        plt.savefig('KmeansCluster.png')
+        
+        # # graph GMM Cluster
+        # plt.scatter(bytes_list[:, 0], bytes_list[:, 1], c=GMMCluster.predict(bytes_list), s=40, cmap='viridis')
+        # plt.savefig('GMMCluster.png')
+        
+        # # # graph Kmeans cluster based on the labels
+        # plt.scatter(bytes_list[:, 0], bytes_list[:, 1], c=labels, s=40, cmap='viridis')
+        
+        # # save figure
+        # plt.savefig('KmeansCluster.png')
+        
+        # # show figure using plotly graph objects based on on the plt 
+        # fig = go.Figure(data=[go.Scatter(x=bytes_list[:, 0], y=bytes_list[:, 1], mode='markers', marker=dict(color=labels))])
+        # fig.show()
+        
+        # split data into train and test
+        X_train, X_test = train_test_split(bytes_list, test_size=0.4, random_state=42)
+        
+        # create classes & labels based on the clusters identified 
+        y_train = KMeanCluster.predict(X_train)
+        y_test = KMeanCluster.predict(X_test)
         
         return X_train, X_test, y_train, y_test
 
-    def build_lstm_model(self, input_shape):
-        inputs = Input(shape=input_shape)
-        x = LSTM(50, activation='relu', return_sequences=False)(inputs)
-        outputs = Dense(1, activation='sigmoid')(x)
-
-        model = Model(inputs, outputs)
-        model.compile(optimizer=Adam(), loss='binary_crossentropy', metrics=['accuracy'])
-        model.summary()
-        feature_extractor = Model(inputs, x)  # Model to extract features from the LSTM layer
-        return model, feature_extractor
-
-    def train_and_evaluate_model(self, model, X_train, X_test, y_train, y_test):
-        history = model.fit(X_train, y_train, epochs=20, batch_size=32, validation_split=0.2) # used to be 20 epochs
-        
-        loss, accuracy = model.evaluate(X_test, y_test)
-        print(f'Test Accuracy: {accuracy:.2f}')
-        return history
 
 if __name__ == "__main__":
     dataOps = JITC_DATAOPS(dataset='JITC')
@@ -142,58 +191,19 @@ if __name__ == "__main__":
     X_train, X_test, y_train, y_test = dataOps.develop_dataset()
     
     # make new directory called artifacts and change to that directory
-    os.mkdir('artifacts')
-    os.chdir('artifacts')
-    
+    # check if there is a directory called artifacts 
+    if not os.path.exists('artifacts'):
+        os.mkdir('artifacts')
+        os.chdir('artifacts')
+    else:
+        os.chdir('artifacts')
+        
     # save X_train, X_test, y_train, y_test in pickle and h5 format
-    X_train = pd.DataFrame(X_train.reshape(X_train.shape[0], -1))
-    X_test = pd.DataFrame(X_test.reshape(X_test.shape[0], -1))
-    print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
-    
-    
     X_train = pd.DataFrame(X_train)
     X_test = pd.DataFrame(X_test)
     y_train = pd.DataFrame(y_train)
     y_test = pd.DataFrame(y_test)
-    X_train.to_pickle('X_train.pkl')
-    X_test.to_pickle('X_test.pkl')
-    y_train.to_pickle('y_train.pkl')
-    y_test.to_pickle('y_test.pkl')
-    
-    # get only 10 percent of the data
-    lstm_X_train = X_train[:int(len(X_train)*0.125)] 
-    lstm_X_test = X_test[:int(len(X_test)*0.125)]
-    lstm_y_train = y_train[:int(len(y_train)*0.125)]
-    lstm_y_test = y_test[:int(len(y_test)*0.125)]
-
-    print(lstm_X_train.shape, lstm_X_test.shape, lstm_y_train.shape, lstm_y_test.shape)
-    lstm_model, feature_extractor = dataOps.build_lstm_model((lstm_X_train.shape[1], 1))
-    # feature_extractor = lstm_model[1]
-    # compile model
-    lstm_model.compile(optimizer=Adam(), loss='binary_crossentropy', metrics=['accuracy'])
-    print(lstm_model)
-    # train model
-    history = dataOps.train_and_evaluate_model(lstm_model, lstm_X_train, lstm_X_test, lstm_y_train, lstm_y_test)
-
-    # Extract features from the LSTM layer
-    X_train_features = feature_extractor.predict(X_train)
-    X_test_features = feature_extractor.predict(X_test)
-    
-    # save features in pickle and h5 format
-    X_train_features = pd.DataFrame(X_train_features)
-    X_test_features = pd.DataFrame(X_test_features)
-    X_train_features.to_pickle('X_train_features.pkl')
-    X_test_features.to_pickle('X_test_features.pkl')
-    
-    # X_train_features.to_hdf('X_train_features.h5', key='X_train_features')
-    # X_test_features.to_hdf('X_test_features.h5', key='X_test_features')
-    
-
-    # Train a different model (e.g., RandomForest) using the extracted features
-    rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
-    rf_model.fit(X_train_features, y_train)
-    y_pred = rf_model.predict(X_test_features)
-    rf_accuracy = accuracy_score(y_test, y_pred)
-    print(f'Random Forest Test Accuracy: {rf_accuracy:.2f}')
-
-
+    # X_train.to_pickle('X_train.pkl')
+    # X_test.to_pickle('X_test.pkl')
+    # y_train.to_pickle('y_train.pkl')
+    # y_test.to_pickle('y_test.pkl')

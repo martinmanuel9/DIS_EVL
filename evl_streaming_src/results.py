@@ -28,6 +28,7 @@ College of Engineering
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 import pickle as pickle 
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -39,8 +40,7 @@ import os
 
 class Results:
     def provide_results(self):
-        path = str(Path.home())
-        path = path + "/extreme_verification_latency/results"
+        path = os.getcwd() + "/evl_streaming_src/results"
         os.chdir(path)
         list_dir = os.listdir(path)
         result = {}

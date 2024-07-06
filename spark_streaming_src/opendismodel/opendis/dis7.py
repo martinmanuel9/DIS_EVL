@@ -7744,3 +7744,25 @@ class Light( Pdu ):
         self.light_status = inputStream.read_utf();
         self.attack = inputStream.read_utf();
         self.label = inputStream.read_int();
+        
+class BytePdu( Pdu ):
+    """PDU prototye for garage"""
+    def __init__(self):
+        """ Initializer for Environment"""
+        super(BytePdu, self).__init__()
+        self.byte = []
+        self.label = []
+        self.pduType = 74
+
+    
+    def serialize(self, outputStream):
+        """"Parse a message. This may recursively call embedded objects.""" 
+        super( Light, self).serialize(outputStream); 
+        outputStream.write_byte(self.byte);
+        outputStream.write_byte(self.label);
+
+    def parse(self, inputStream):
+        """"Parse a message. This may recursively call embedded objects.""" 
+        super( Light, self).parse(inputStream);
+        self.byte = inputStream.read_byte();
+        self.label = inputStream.read_byte();

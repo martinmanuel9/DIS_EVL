@@ -33,10 +33,10 @@ College of Engineering
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
-import evl_streaming_src.dataOps.datagen_synthetic as cbdg
-import ton_iot_datagen as ton_iot
-import evl_streaming_src.dataOps.bot_iot_datagen as bot_iot
-import unsw_nb15_datagen as unsw
+import dataOps.datagen_synthetic as cbdg
+import dataOps.ton_iot_datagen as ton_iot
+import dataOps.bot_iot_datagen as bot_iot
+import dataOps.unsw_nb15_datagen as unsw
 from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture as GMM
 from sklearn.neural_network import MLPClassifier
