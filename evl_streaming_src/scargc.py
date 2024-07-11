@@ -69,7 +69,7 @@ class SCARGC:
     def __init__(self, 
                 datasource,
                 dataset,  
-                Kclusters:int=1,
+                Kclusters:int=5,
                 maxpool:int=25, 
                 resample:bool=True, 
                 T:int=100,
@@ -87,8 +87,6 @@ class SCARGC:
         # set the data 
         self.X = {} # Xinit
         self.Y = {} # Yinit
-        self.Xtest = {}
-        self.Ytest = {}
         self.Xinit = {}
         self.Yinit = {}
         self.data = {}
@@ -499,7 +497,7 @@ class SCARGC:
             
         elif self.dataset == 'JITC':
             ## comment out if running in debug vs code
-            os.chdir('../')
+            # os.chdir('../')
             # print(os.getcwd())
             X_train = pd.read_pickle('data/JITC_Data/artifacts/X_train.pkl')
             X_test = pd.read_pickle('data/JITC_Data/artifacts/X_test.pkl')
@@ -514,11 +512,20 @@ class SCARGC:
             y_train = y_train.to_numpy()
             y_test = y_test.to_numpy()
             
+            x_train = x_train.astype(int)
+            x_test = x_test.astype(int)
+            y_train = y_train.astype(int)
+            y_test = y_test.astype(int)
+            
+            # TODO: up it to 100 and remove the limit constraint
+            
+            chunk_size = 100
+            
             # for testing
-            x_train = x_train
-            y_train = y_train
-            x_test = x_test
-            y_test = y_test
+            x_train = x_train[:1000]
+            y_train = y_train[:1000]
+            x_test = x_test[:1000]
+            y_test = y_test[:1000]
             
             ts = 0
             # set data (all the features)
@@ -538,31 +545,36 @@ class SCARGC:
             y_train = np.array(list(y_train))
             all_train_data = np.concatenate((x_train, y_train), axis=1)
             dict_train = {}
-            for i in range(0, len(x_train)):
-                dict_train[i] = all_train_data[i]
+            
+            for i in range(0, len(x_train), chunk_size):
+                chunk = all_train_data[i:i + chunk_size]
+                key = i // chunk_size
+                dict_train[key] = chunk
                 
-            dict_y_train = {}
-            for i in range(0, len(y_train)):
-                dict_y_train[i] = y_train[i]
+            # dict_y_train = {}
+            # for i in range(0, len(y_train)):
+            #     dict_y_train[i] = y_train[i]
             
             y_test = np.array(list(y_test))
             all_test_data = np.concatenate((x_test, y_test), axis=1)
             dict_test = {}
-            for j in range(0, len(x_test)):
-                dict_test[j] = x_test[j]
+            for j in range(0, len(x_test), chunk_size):
+                chunk = all_test_data[j:j + chunk_size]
+                key = j // chunk_size
+                dict_test[key] = chunk
             
-            dict_y_test = {}
-            for i in range (0, len(y_test)):
-                dict_y_test[i] = y_test[i]
+            # dict_y_test = {}
+            # for i in range (0, len(y_test)):
+            #     dict_y_test[i] = y_test[i]
 
-            self.Xinit = x_train
-            self.Yinit = y_train
+            self.Xinit = dict_train
+            self.Yinit = dict_test
             
 
             self.X = dict_train
-            self.Y = dict_y_train
-            self.Xtest = dict_test
-            self.Ytest = dict_y_test
+            self.Y = dict_test
+            # self.Xtest = dict_test
+            # self.Ytest = dict_y_test
             self.all_data = all_train_data
             # self.X_train_features = x_train_features 
             # self.X_test_features = x_test_features
@@ -590,30 +602,16 @@ class SCARGC:
                     mode_val,_ = stats.mode(yhat)
                     self.class_cluster[i] = mode_val
             elif self.datasource == 'UNSW':
-                if self.dataset == 'JITC':
-                    self.cluster = KMeans(n_clusters=self.Kclusters).fit(Xinit.reshape(-1,1), Yinit)    
-                    labels = self.cluster.predict(Xinit.reshape(-1,1))
-                    
-                    # for each of the clusters, find the labels of the data samples in the clusters
-                    # then look at the labels from the initially labeled data that are in the same
-                    # cluster. assign the cluster the label of the most frequent class. 
-                    for i in range(self.Kclusters):
-
-                        yhat = Yinit[i][labels]
-                        mode_val,_ = stats.mode(yhat)
-                        self.class_cluster[i] = mode_val
-                else: 
-                    self.cluster = KMeans(n_clusters=self.Kclusters).fit(Xinit[0])    
-                    labels = self.cluster.predict(Yinit[0])
-                    
-                    
-                    # for each of the clusters, find the labels of the data samples in the clusters
-                    # then look at the labels from the initially labeled data that are in the same
-                    # cluster. assign the cluster the label of the most frequent class. 
-                    for i in range(self.Kclusters):
-                        yhat = Yinit[i][labels]
-                        mode_val,_ = stats.mode(yhat)
-                        self.class_cluster[i] = mode_val
+                self.cluster = KMeans(n_clusters=self.Kclusters).fit(Xinit[0])    
+                labels = self.cluster.predict(Yinit[0])
+                
+                # for each of the clusters, find the labels of the data samples in the clusters
+                # then look at the labels from the initially labeled data that are in the same
+                # cluster. assign the cluster the label of the most frequent class. 
+                for i in range(self.Kclusters):
+                    yhat = Yinit[i][labels]
+                    mode_val,_ = stats.mode(yhat)
+                    self.class_cluster[i] = mode_val
 
     def set_cores(self):
         """
@@ -639,16 +637,10 @@ class SCARGC:
                     knn = KNeighborsRegressor(n_neighbors=1).fit(Yts[0], Xts[0])           # KNN.fit(train_data, train label)
                     predicted_label = knn.predict(Yts[1])
                 elif self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        knn = KNeighborsClassifier(n_neighbors=1).fit(self.Xinit, self.Yinit.ravel())           # KNN.fit(train_data, train label)
-                        self.train_model = knn
-                        predicted_label = knn.predict(Xts[0][:,:-1]) 
-                        self.preds[0] = predicted_label 
-                    else:
-                        knn = KNeighborsClassifier(n_neighbors=1).fit(self.all_data[:,:-1], self.all_data[:,-1])           # KNN.fit(train_data, train label)
-                        self.train_model = knn
-                        predicted_label = knn.predict(Yts[0][:,:-1]) 
-                        self.preds[0] = predicted_label
+                    knn = KNeighborsClassifier(n_neighbors=1).fit(self.all_data[:,:-1], self.all_data[:,-1])           # KNN.fit(train_data, train label)
+                    self.train_model = knn
+                    predicted_label = knn.predict(Yts[0][:,:-1]) 
+                    self.preds[0] = predicted_label
 
             elif self.classifier == 'svm':
                 if self.datasource == 'synthetic':
@@ -656,225 +648,188 @@ class SCARGC:
                     predicted_label = svn_clf.predict(Yts[1][:,:-1])
                     self.preds[0] = predicted_label
                 elif self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        svn_clf = SVC(kernel='linear').fit(self.Xinit, self.Yinit.ravel())       #  use the entire training data
-                        self.train_model = svn_clf
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        predicted_label = svn_clf.predict(Xts[0][:,:-1])
-                        predicted_label = predicted_label
-                        self.preds[0] = predicted_label
-                    else: 
-                        svn_clf = SVC(kernel='rbf').fit(self.all_data[:,:-1], self.all_data[:,-1]) # use the entire training data
-                        self.train_model = svn_clf
-                        predicted_label = svn_clf.predict(Yts[0][:,:-1])
-                        self.preds[0] = predicted_label
+                    svn_clf = SVC(kernel='rbf').fit(self.all_data[:,:-1], self.all_data[:,-1]) # use the entire training data
+                    self.train_model = svn_clf
+                    predicted_label = svn_clf.predict(Yts[0][:,:-1])
+                    self.preds[0] = predicted_label
 
             elif self.classifier == 'logistic_regression':
                 if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        lg_rg = LogisticRegression()
-                        lg_rg.fit(self.Xinit, self.Yinit.ravel())
-                        self.train_model = lg_rg
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        predicted_label = lg_rg.predict(Xts[0][:,:-1])
-                        self.preds[0] = predicted_label
-                    else:
-                        lg_rg = LogisticRegression()
-                        lg_rg.fit(self.all_data[:,:-1], self.all_data[:,-1])
-                        self.train_model = lg_rg
-                        predicted_label = lg_rg.predict(Yts[0][:,:-1])
-                        self.preds[0] = predicted_label
+                    lg_rg = LogisticRegression()
+                    lg_rg.fit(self.all_data[:,:-1], self.all_data[:,-1])
+                    self.train_model = lg_rg
+                    predicted_label = lg_rg.predict(Yts[0][:,:-1])
+                    self.preds[0] = predicted_label
                 elif self.datasource == 'synthetic':
                     # TODO: Need to develop synthetic 
                     exit()
             
             elif self.classifier == 'random_forest':
                 if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        rf = RandomForestClassifier()
-                        rf.fit(self.Xinit, self.Yinit.ravel())
-                        self.train_model = rf
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        predicted_label = rf.predict(Xts[0][:,:-1])
-                        self.preds[0] = predicted_label
-                    else:
-                        rf = RandomForestClassifier()
-                        rf.fit(self.all_data[:,:-1], self.all_data[:,-1])
-                        self.train_model = rf
-                        predicted_label = rf.predict(Yts[0][:,:-1])
-                        self.preds[0] = predicted_label
+                    rf = RandomForestClassifier()
+                    rf.fit(self.all_data[:,:-1], self.all_data[:,-1])
+                    self.train_model = rf
+                    predicted_label = rf.predict(Yts[0][:,:-1])
+                    self.preds[0] = predicted_label
                 elif self.datasource == 'synthetic':
                     exit()
             
             elif self.classifier == 'adaboost':
                 if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        ada = AdaBoostClassifier()
-                        ada.fit(self.Xinit, self.Ynit.ravel())
-                        self.train_model = ada
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        predicted_label = ada.predict(Xts[0][:,:-1])
-                        self.preds[0] = predicted_label
-                    else:
-                        ada = AdaBoostClassifier()
-                        ada.fit(self.all_data[:,:-1], self.all_data[:,-1])
-                        self.train_model = ada
-                        predicted_label = ada.predict(Yts[0][:,:-1])
-                        self.preds[0] = predicted_label
+                    ada = AdaBoostClassifier()
+                    ada.fit(self.all_data[:,:-1], self.all_data[:,-1])
+                    self.train_model = ada
+                    predicted_label = ada.predict(Yts[0][:,:-1])
+                    self.preds[0] = predicted_label
                 elif self.datasource == 'synthetic':
                     exit()
             
             elif self.classifier == 'decision_tree':
                 if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        dt = tree.DecisionTreeClassifier()
-                        dt.fit(self.Xinit, self.Yinit.ravel())
-                        self.train_model = dt
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        predicted_label = dt.predict(Xts[0][:,:-1])
-                        self.preds[0] = predicted_label
-                    else:
-                        dt = tree.DecisionTreeClassifier()
-                        dt.fit(self.all_data[:,:-1], self.all_data[:,-1])
-                        self.train_model = dt
-                        predicted_label = dt.predict(Yts[0][:,:-1])
-                        self.preds[0] = predicted_label
+                    dt = tree.DecisionTreeClassifier()
+                    dt.fit(self.all_data[:,:-1], self.all_data[:,-1])
+                    self.train_model = dt
+                    predicted_label = dt.predict(Yts[0][:,:-1])
+                    self.preds[0] = predicted_label
                 elif self.datasource == 'synthetic':
                     exit()
 
             elif self.classifier == 'knn':
                 if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        knn = KNeighborsClassifier(n_neighbors=50)
-                        knn.fit(self.Xinit, self.Yinit.ravel())
-                        self.train_model = knn
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        predicted_label = knn.predict(Xts[0][:,:-1])
-                        self.preds[0] = predicted_label
-                        
-                    else: 
-                        knn = KNeighborsClassifier(n_neighbors=50)
-                        knn.fit(self.all_data[:,:-1], self.all_data[:,-1])
-                        self.train_model = knn
-                        predicted_label = knn.predict(Yts[0][:,:-1])
-                        self.preds[0] = predicted_label
+                    knn = KNeighborsClassifier(n_neighbors=50)
+                    knn.fit(self.all_data[:,:-1], self.all_data[:,-1])
+                    self.train_model = knn
+                    predicted_label = knn.predict(Yts[0][:,:-1])
+                    self.preds[0] = predicted_label
                 elif self.datasource == 'synthetic':
                     exit()
             
             elif self.classifier == 'mlp':
                 if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        mlp = MLPClassifier(random_state=1, max_iter=300)
-                        mlp.fit(self.Xinit, self.Yinit.ravel())
-                        self.train_model = mlp
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        predicted_label = mlp.predict(Xts[0][:,:-1])
-                        self.preds[0] = predicted_label
-                    else:
-                        mlp = MLPClassifier(random_state=1, max_iter=300)
-                        mlp.fit(self.all_data[:,:-1], self.all_data[:,-1])
-                        self.train_model = mlp
-                        predicted_label = mlp.predict(Yts[0][:,:-1])
-                        self.preds[0] = predicted_label
+                    mlp = MLPClassifier(random_state=1, max_iter=300)
+                    mlp.fit(self.all_data[:,:-1], self.all_data[:,-1])
+                    self.train_model = mlp
+                    predicted_label = mlp.predict(Yts[0][:,:-1])
+                    self.preds[0] = predicted_label
                 elif self.datasource == 'synthetic':
                     exit()
             
             elif self.classifier == 'naive_bayes':
                 if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        nb = BernoulliNB()
-                        nb.fit(self.Xinit, self.Yinit.ravel())
-                        self.train_model = nb
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        predicted_label = nb.predict(Xts[0][:,:-1])
-                        self.preds[0] = predicted_label
-                    else:
-                        nb = BernoulliNB()
-                        nb.fit(self.all_data[:,:-1], self.all_data[:,-1])
-                        self.train_model = nb
-                        predicted_label = nb.predict(Yts[0][:,:-1])
-                        self.preds[0] = predicted_label
+                    nb = BernoulliNB()
+                    nb.fit(self.all_data[:,:-1], self.all_data[:,-1])
+                    self.train_model = nb
+                    predicted_label = nb.predict(Yts[0][:,:-1])
+                    self.preds[0] = predicted_label
                 elif self.datasource == 'synthetic':
                     exit()
 
             elif self.classifier == 'lstm':
                 if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        num_classes = len(self.Xinit)
-                        # trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
-                        trainLabel = self.Yinit
-                        
-                        # Define the input shapeinput_shape = (timesteps, input_dim)  
-                        # adjust the values according to your data
-                        tsteps = 1000 
-                        input_dim = np.shape(self.Xinit)[1]
-                        
-                        # Define the LSTM model
-                        model = Sequential()
-                        model.add(LSTM(32, input_shape= (tsteps, input_dim), activation='relu', return_sequences=True )) #, activation='relu', return_sequences=True 
-                        model.add(LSTM(16, activation='relu', return_sequences=True))
-                        model.add(LSTM(16, activation='relu', return_sequences=True))
-                        model.add(Dense(1, activation='sigmoid'))  # binary 
-                        # model.add(Dense(num_classes, activation='softmax'))
-                        
-                        model.add(Flatten())
+                    num_classes = len(set(self.all_data[:,-1]))
+                    # trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
+                    trainLabel = self.all_data[:,-1]
+                    
+                    # Define the input shapeinput_shape = (timesteps, input_dim)  
+                    # adjust the values according to your data
+                    tsteps = 1000 
+                    input_dim = np.shape(self.all_data[:,:-1])[1]
+                    
+                    # Define the LSTM model
+                    model = Sequential()
+                    model.add(LSTM(32, input_shape= (tsteps, input_dim), activation='relu', return_sequences=True )) #, activation='relu', return_sequences=True 
+                    model.add(LSTM(16, activation='relu', return_sequences=True))
+                    model.add(LSTM(16, activation='relu', return_sequences=True))
+                    model.add(Dense(1, activation='sigmoid'))  # binary 
+                    # model.add(Dense(num_classes, activation='softmax'))
+                    
+                    model.add(Flatten())
 
-                        # Compile the model
-                        model.compile(loss='binary_crossentropy',
-                                    optimizer='adam',
-                                    metrics=['accuracy'])
-                        
-                        # Print the model summary
-                        model.summary()
-                        # Train the modet
-                        trainDataReshaped = np.expand_dims(self.Xinit, axis=1) #self.all_data[:,:-1]
-                        lstmData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')                     
-                        model.fit(lstmData, trainLabel, batch_size=1000, epochs=3, validation_split=0.25, 
-                                    callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2) 
-                        self.train_model = model
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        testDataReshaped = np.expand_dims(Xts[0][:,:-1], axis=1)
-                        testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32') 
-                        predicted_label = model.predict(testDataReshaped)
-                        self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
-                    else:
-                        num_classes = len(set(self.all_data[:,-1]))
-                        # trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
-                        trainLabel = self.all_data[:,-1]
-                        
-                        # Define the input shapeinput_shape = (timesteps, input_dim)  
-                        # adjust the values according to your data
-                        tsteps = 1000 
-                        input_dim = np.shape(self.all_data[:,:-1])[1]
-                        
-                        # Define the LSTM model
-                        model = Sequential()
-                        model.add(LSTM(32, input_shape= (tsteps, input_dim), activation='relu', return_sequences=True )) #, activation='relu', return_sequences=True 
-                        model.add(LSTM(16, activation='relu', return_sequences=True))
-                        model.add(LSTM(16, activation='relu', return_sequences=True))
-                        model.add(Dense(1, activation='sigmoid'))  # binary 
-                        # model.add(Dense(num_classes, activation='softmax'))
-                        
-                        model.add(Flatten())
+                    # Compile the model
+                    model.compile(loss='binary_crossentropy',
+                                optimizer='adam',
+                                metrics=['accuracy'])
+                    
+                    # Print the model summary
+                    model.summary()
+                    # Train the modet
+                    trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1) #self.all_data[:,:-1]
+                    lstmData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')                     
+                    model.fit(lstmData, trainLabel, batch_size=1000, epochs=3, validation_split=0.25, 
+                                callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2) 
+                    self.train_model = model
+                    testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
+                    testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32') 
+                    predicted_label = model.predict(testDataReshaped)
+                    self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
 
-                        # Compile the model
-                        model.compile(loss='binary_crossentropy',
-                                    optimizer='adam',
-                                    metrics=['accuracy'])
-                        
-                        # Print the model summary
-                        model.summary()
-                        # Train the modet
-                        trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1) #self.all_data[:,:-1]
-                        lstmData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')                     
-                        model.fit(lstmData, trainLabel, batch_size=1000, epochs=3, validation_split=0.25, 
-                                    callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2) 
-                        self.train_model = model
-                        testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
-                        testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32') 
-                        predicted_label = model.predict(testDataReshaped)
-                        self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
-                        
+                elif self.datasource == 'synthetic':
+                    exit()
+
+            elif self.classifier == 'gru':
+                if self.datasource == 'UNSW':
+                    num_classes = len(set(self.all_data[:,-1]))
+                    trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
+                    sequence_length = 1000
+                    input_dim = np.shape(self.all_data[:,:-1])[1] 
+                    # Define the input shape and number of hidden units
+                    input_shape = (sequence_length, input_dim)  # e.g., (10, 32)
+                    hidden_units = 32
+                    model = tf.keras.Sequential()
+                    model.add(tf.keras.layers.GRU(hidden_units, input_shape=input_shape))
+                    model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
+
+                    # Compile the model
+                    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+                    # Train the model
+                    trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1)
+                    gruData = pad_sequences(trainDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
+                    model.fit(gruData, trainLabel, batch_size=32, epochs=10, validation_split=0.2)
+                    self.train_model = model
+                    testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
+                    testDataReshaped = pad_sequences(testDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
+                    predicted_label = model.predict(testDataReshaped)
+                    self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
+
+            elif self.classifier == '1dcnn':
+                if self.datasource == 'UNSW':
+                    num_classes = len(set(self.all_data[:,-1]))
+                    # trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
+                    trainLabel = self.all_data[:,-1]
+                    
+                    # Define the input shapeinput_shape = (timesteps, input_dim)  
+                    # adjust the values according to your data
+                    tsteps = 1000 
+                    input_dim = np.shape(self.all_data[:,:-1])[1]
+                    
+                    # Define the LSTM model
+                    model = Sequential()
+                    model.add(LSTM(32, input_shape= (tsteps, input_dim), activation='relu', return_sequences=True )) #, activation='relu', return_sequences=True 
+                    model.add(LSTM(16, activation='relu', return_sequences=True))
+                    model.add(LSTM(16, activation='relu', return_sequences=True))
+                    model.add(Dense(1, activation='sigmoid'))  # binary 
+                    # model.add(Dense(num_classes, activation='softmax'))
+                    
+                    model.add(Flatten())
+
+                    # Compile the model
+                    model.compile(loss='binary_crossentropy',
+                                optimizer='adam',
+                                metrics=['accuracy'])
+                    
+                    # Print the model summary
+                    model.summary()
+                    # Train the modet
+                    trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1) #self.all_data[:,:-1]
+                    lstmData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')                     
+                    model.fit(lstmData, trainLabel, batch_size=1000, epochs=3, validation_split=0.25, 
+                                callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2) 
+                    self.train_model = model
+                    testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
+                    testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32') 
+                    predicted_label = model.predict(testDataReshaped)
+                    self.preds[0] = tf.argmax(predicted_label, axis=1).numpy() 
                     
 
                 elif self.datasource == 'synthetic':
@@ -882,238 +837,62 @@ class SCARGC:
 
             elif self.classifier == 'gru':
                 if self.datasource == 'UNSW':
-                    
-                    if self.dataset == 'JITC':
-                        num_classes = len(set(self.Xinit))
-                        trainLabel = tf.keras.utils.to_categorical(self.Xinit, num_classes=num_classes)
-                        sequence_length = 1000
-                        input_dim = np.shape(self.Xinit)[1] 
-                        # Define the input shape and number of hidden units
-                        input_shape = (sequence_length, input_dim)  # e.g., (10, 32)
-                        hidden_units = 32
-                        model = tf.keras.Sequential()
-                        model.add(tf.keras.layers.GRU(hidden_units, input_shape=input_shape))
-                        model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
+                    num_classes = len(set(self.all_data[:,-1]))
+                    trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
+                    sequence_length = 1000
+                    input_dim = np.shape(self.all_data[:,:-1])[1] 
+                    # Define the input shape and number of hidden units
+                    input_shape = (sequence_length, input_dim)  # e.g., (10, 32)
+                    hidden_units = 32
+                    model = tf.keras.Sequential()
+                    model.add(tf.keras.layers.GRU(hidden_units, input_shape=input_shape))
+                    model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
 
-                        # Compile the model
-                        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+                    # Compile the model
+                    model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-                        # Train the model
-                        trainDataReshaped = np.expand_dims(self.Xinit, axis=1)
-                        gruData = pad_sequences(trainDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
-                        model.fit(gruData, trainLabel, batch_size=32, epochs=10, validation_split=0.2)
-                        self.train_model = model
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        testDataReshaped = np.expand_dims(Xts[0][:,:-1], axis=1)
-                        testDataReshaped = pad_sequences(testDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
-                        predicted_label = model.predict(testDataReshaped)
-                        self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
-                    else:
-                        num_classes = len(set(self.all_data[:,-1]))
-                        trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
-                        sequence_length = 1000
-                        input_dim = np.shape(self.all_data[:,:-1])[1] 
-                        # Define the input shape and number of hidden units
-                        input_shape = (sequence_length, input_dim)  # e.g., (10, 32)
-                        hidden_units = 32
-                        model = tf.keras.Sequential()
-                        model.add(tf.keras.layers.GRU(hidden_units, input_shape=input_shape))
-                        model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
-
-                        # Compile the model
-                        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-
-                        # Train the model
-                        trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1)
-                        gruData = pad_sequences(trainDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
-                        model.fit(gruData, trainLabel, batch_size=32, epochs=10, validation_split=0.2)
-                        self.train_model = model
-                        testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
-                        testDataReshaped = pad_sequences(testDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
-                        predicted_label = model.predict(testDataReshaped)
-                        self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
+                    # Train the model
+                    trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1)
+                    gruData = pad_sequences(trainDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
+                    model.fit(gruData, trainLabel, batch_size=32, epochs=10, validation_split=0.2)
+                    self.train_model = model
+                    testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
+                    testDataReshaped = pad_sequences(testDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
+                    predicted_label = model.predict(testDataReshaped)
+                    self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
 
             elif self.classifier == '1dcnn':
                 if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC': 
-                        num_classes = len(set(self.Xinit))
-                        trainLabel = tf.keras.utils.to_categorical(self.Xinit, num_classes=num_classes)
-                        tsteps = 1000 
-                        input_dim = np.shape(self.Xinit)[1]
-                        input_shape = (tsteps, input_dim) 
-                        model = tf.keras.Sequential([
-                            tf.keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu', input_shape=input_shape),
-                            tf.keras.layers.MaxPooling1D(pool_size=2),
-                            # Add more Conv1D and MaxPooling1D layers as needed
-                            tf.keras.layers.Flatten(),
-                            tf.keras.layers.Dense(64, activation='relu'),
-                            tf.keras.layers.Dense(num_classes, activation='softmax')  # Assuming you have multiple classes to predict
-                        ])
+                    num_classes = len(set(self.all_data[:,-1]))
+                    trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
+                    tsteps = 1000 
+                    input_dim = np.shape(self.all_data[:,:-1])[1]
+                    input_shape = (tsteps, input_dim) 
+                    model = tf.keras.Sequential([
+                        tf.keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu', input_shape=input_shape),
+                        tf.keras.layers.MaxPooling1D(pool_size=2),
+                        # Add more Conv1D and MaxPooling1D layers as needed
+                        tf.keras.layers.Flatten(),
+                        tf.keras.layers.Dense(64, activation='relu'),
+                        tf.keras.layers.Dense(num_classes, activation='softmax')  # Assuming you have multiple classes to predict
+                    ])
 
-                        # Step 3: Training
-                        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-                        trainDataReshaped = np.expand_dims(self.Xinit, axis=1)
-                        cnnData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
-                        model.fit(cnnData, trainLabel, batch_size=32, epochs=10) # validation_data=(Yts[0][:,:-1], Yts[0][:,-1])
-                        self.train_model = model
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        testDataReshaped = np.expand_dims(Xts[0][:,:-1], axis=1)
-                        testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
-                        predicted_label = model.predict(testDataReshaped)
-                        self.preds[0] = tf.argmax(predicted_label, axis=1).numpy() 
-                    else: 
-                        num_classes = len(set(self.all_data[:,-1]))
-                        # trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
-                        trainLabel = self.all_data[:,-1]
-                        
-                        # Define the input shapeinput_shape = (timesteps, input_dim)  
-                        # adjust the values according to your data
-                        tsteps = 1000 
-                        input_dim = np.shape(self.all_data[:,:-1])[1]
-                        
-                        # Define the LSTM model
-                        model = Sequential()
-                        model.add(LSTM(32, input_shape= (tsteps, input_dim), activation='relu', return_sequences=True )) #, activation='relu', return_sequences=True 
-                        model.add(LSTM(16, activation='relu', return_sequences=True))
-                        model.add(LSTM(16, activation='relu', return_sequences=True))
-                        model.add(Dense(1, activation='sigmoid'))  # binary 
-                        # model.add(Dense(num_classes, activation='softmax'))
-                        
-                        model.add(Flatten())
-
-                        # Compile the model
-                        model.compile(loss='binary_crossentropy',
-                                    optimizer='adam',
-                                    metrics=['accuracy'])
-                        
-                        # Print the model summary
-                        model.summary()
-                        # Train the modet
-                        trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1) #self.all_data[:,:-1]
-                        lstmData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')                     
-                        model.fit(lstmData, trainLabel, batch_size=1000, epochs=3, validation_split=0.25, 
-                                    callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2) 
-                        self.train_model = model
-                        testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
-                        testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32') 
-                        predicted_label = model.predict(testDataReshaped)
-                        self.preds[0] = tf.argmax(predicted_label, axis=1).numpy() 
-                    
-
-                elif self.datasource == 'synthetic':
-                    exit()
-
-            elif self.classifier == 'gru':
-                if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        num_classes = len(set(self.Xinit))
-                        trainLabel = tf.keras.utils.to_categorical(self.Xinit, num_classes=num_classes)
-                        sequence_length = 1000
-                        input_dim = np.shape(self.Xinit)[1] 
-                        # Define the input shape and number of hidden units
-                        input_shape = (sequence_length, input_dim)  # e.g., (10, 32)
-                        hidden_units = 32
-                        model = tf.keras.Sequential()
-                        model.add(tf.keras.layers.GRU(hidden_units, input_shape=input_shape))
-                        model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
-
-                        # Compile the model
-                        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-
-                        # Train the model
-                        trainDataReshaped = np.expand_dims(self.Xinit, axis=1)
-                        gruData = pad_sequences(trainDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
-                        model.fit(gruData, trainLabel, batch_size=32, epochs=10, validation_split=0.2)
-                        self.train_model = model
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        testDataReshaped = np.expand_dims(Xts[0][:,:-1], axis=1)
-                        testDataReshaped = pad_sequences(testDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
-                        predicted_label = model.predict(testDataReshaped)
-                        self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
-                    else: 
-                        num_classes = len(set(self.all_data[:,-1]))
-                        trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
-                        sequence_length = 1000
-                        input_dim = np.shape(self.all_data[:,:-1])[1] 
-                        # Define the input shape and number of hidden units
-                        input_shape = (sequence_length, input_dim)  # e.g., (10, 32)
-                        hidden_units = 32
-                        model = tf.keras.Sequential()
-                        model.add(tf.keras.layers.GRU(hidden_units, input_shape=input_shape))
-                        model.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
-
-                        # Compile the model
-                        model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-
-                        # Train the model
-                        trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1)
-                        gruData = pad_sequences(trainDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
-                        model.fit(gruData, trainLabel, batch_size=32, epochs=10, validation_split=0.2)
-                        self.train_model = model
-                        testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
-                        testDataReshaped = pad_sequences(testDataReshaped, maxlen=sequence_length, padding='post', dtype='float32') 
-                        predicted_label = model.predict(testDataReshaped)
-                        self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
-
-            elif self.classifier == '1dcnn':
-                if self.datasource == 'UNSW':
-                    if self.dataset == 'JITC':
-                        num_classes = len(set(self.Xinit))
-                        trainLabel = tf.keras.utils.to_categorical(self.Xinit, num_classes=num_classes)
-                        tsteps = 1000 
-                        input_dim = np.shape(self.Xinit)[1]
-                        input_shape = (tsteps, input_dim) 
-                        model = tf.keras.Sequential([
-                            tf.keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu', input_shape=input_shape),
-                            tf.keras.layers.MaxPooling1D(pool_size=2),
-                            # Add more Conv1D and MaxPooling1D layers as needed
-                            tf.keras.layers.Flatten(),
-                            tf.keras.layers.Dense(64, activation='relu'),
-                            tf.keras.layers.Dense(num_classes, activation='softmax')  # Assuming you have multiple classes to predict
-                        ])
-
-                        # Step 3: Training
-                        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-                        trainDataReshaped = np.expand_dims(self.Xinit, axis=1)
-                        cnnData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
-                        model.fit(cnnData, trainLabel, batch_size=32, epochs=10) # validation_data=(Yts[0][:,:-1], Yts[0][:,-1])
-                        self.train_model = model
-                        Xts[0] = Xts[0].reshape(1,-1)
-                        testDataReshaped = np.expand_dims(Xts[0][:,:-1], axis=1)
-                        testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
-                        predicted_label = model.predict(testDataReshaped)
-                        self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
-                    else:
-                        num_classes = len(set(self.all_data[:,-1]))
-                        trainLabel = tf.keras.utils.to_categorical(self.all_data[:,-1], num_classes=num_classes)
-                        tsteps = 1000 
-                        input_dim = np.shape(self.all_data[:,:-1])[1]
-                        input_shape = (tsteps, input_dim) 
-                        model = tf.keras.Sequential([
-                            tf.keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu', input_shape=input_shape),
-                            tf.keras.layers.MaxPooling1D(pool_size=2),
-                            # Add more Conv1D and MaxPooling1D layers as needed
-                            tf.keras.layers.Flatten(),
-                            tf.keras.layers.Dense(64, activation='relu'),
-                            tf.keras.layers.Dense(num_classes, activation='softmax')  # Assuming you have multiple classes to predict
-                        ])
-
-                        # Step 3: Training
-                        model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-                        trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1)
-                        cnnData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
-                        model.fit(cnnData, trainLabel, batch_size=32, epochs=10) # validation_data=(Yts[0][:,:-1], Yts[0][:,-1])
-                        self.train_model = model
-                        testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
-                        testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
-                        predicted_label = model.predict(testDataReshaped)
-                        self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
+                    # Step 3: Training
+                    model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+                    trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1)
+                    cnnData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
+                    model.fit(cnnData, trainLabel, batch_size=32, epochs=10) # validation_data=(Yts[0][:,:-1], Yts[0][:,-1])
+                    self.train_model = model
+                    testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
+                    testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
+                    predicted_label = model.predict(testDataReshaped)
+                    self.preds[0] = tf.argmax(predicted_label, axis=1).numpy()
 
                 elif self.datasource == 'synthetic':
                     exit()
 
                 
-            self.T = len(self.Xtest)      
+            self.T = len(Yts)    # Yts is Xtest
 
             # empty sets for pool and labels
             pool_data = []
@@ -1127,7 +906,6 @@ class SCARGC:
             # else:
             labeled_data_labels = Yts
             labeled_data = Xts
-            
             
             # run the experiment 
             for t in tqdm(range(self.T-1), position=0, leave=True): 
@@ -1154,11 +932,14 @@ class SCARGC:
                         #     Xt, Yt = np.array(labeled_data_labels[t]), np.array(Yts[t])                # Xt = train labels ; Yt = train data
                         #     Xe, Ye = np.array(Xts), np.array(Yts[t])     
                         # else:
-                        Xt, Yt = np.array(Xts[t]), np.array(Yts[t])               # Xt = train labels ; Yt = train data
-                        Xe, Ye =  np.array(Xts[t+1]), np.array(Yts[t+1])                                # Xe = test labels ; Ye = test data
+                        # Xt, Yt = np.array(Xts[t]), np.array(Yts[t])                                     # Xt = train labels ; Yt = train data
+                        # Xe, Ye =  np.array(Xts[t+1]), np.array(Yts[t+1])                                # Xe = test labels ; Ye = test data
+                        
+                        Xt, Yt = np.array(labeled_data_labels[t]), np.array(Yts[t])       # Xt = train labels ; Yt = train data
+                        Xe, Ye = np.array(Xts), np.array(Yts[t])                          # Xe = test labels ; Ye = test data
                     else: 
-                        Xt, Yt = np.array(Xts[t]), np.array(Yts[t])                                     # Xt = train labels ; Yt = train data
-                        Xe, Ye = np.array(self.Xtest[t]), np.array(self.Ytest[t+1])                       # Xe = test labels ; Ye = test data
+                        Xt, Yt = np.array(labeled_data_labels), np.array(labeled_data)             # Xt = train labels ; Yt = train data
+                        Xe, Ye = np.array(labeled_data_labels), np.array(Yts[t])                 # Xe = test labels ; Ye = test data
 
                 t_start = time.time()            
 
@@ -1184,43 +965,22 @@ class SCARGC:
                             predicted_label = svm_mdl.predict(Ye[:,:-1])
                     elif self.datasource == 'UNSW':
                         if self.classifier == 'lstm':
-                            if self.dataset == 'JITC':
-                                XeReshaped = np.expand_dims(Xe[:,:-1], axis=1)
-                                testDataReshaped = pad_sequences(XeReshaped, maxlen=1000, padding='post', dtype='float32') 
-                                preds = self.train_model.predict(testDataReshaped)
-                                predicted_label = tf.argmax(preds, axis=1).numpy() 
-                            else:   
-                                YeReshaped = np.expand_dims(Ye[:,:-1], axis=1)
-                                testDataReshaped = pad_sequences(YeReshaped, maxlen=1000, padding='post', dtype='float32') 
-                                preds = self.train_model.predict(testDataReshaped)
-                                predicted_label = tf.argmax(preds, axis=1).numpy() 
+                            YeReshaped = np.expand_dims(Ye[:,:-1], axis=1)
+                            testDataReshaped = pad_sequences(YeReshaped, maxlen=1000, padding='post', dtype='float32') 
+                            preds = self.train_model.predict(testDataReshaped)
+                            predicted_label = tf.argmax(preds, axis=1).numpy() 
                         elif self.classifier == 'gru':
-                            if self.dataset == 'JITC':
-                                XeReshaped = np.expand_dims(Xe[:,:-1], axis=1)
-                                testDataReshaped = pad_sequences(XeReshaped, maxlen=1000, padding='post', dtype='float32') 
-                                preds = self.train_model.predict(testDataReshaped)
-                                predicted_label = tf.argmax(preds, axis=1).numpy() 
-                            else: 
-                                YeReshaped = np.expand_dims(Ye[:,:-1], axis=1)
-                                testDataReshaped = pad_sequences(YeReshaped, maxlen=1000, padding='post', dtype='float32')
-                                preds = self.train_model.predict(testDataReshaped)
-                                predicted_label = tf.argmax(preds, axis=1).numpy()
+                            YeReshaped = np.expand_dims(Ye[:,:-1], axis=1)
+                            testDataReshaped = pad_sequences(YeReshaped, maxlen=1000, padding='post', dtype='float32')
+                            preds = self.train_model.predict(testDataReshaped)
+                            predicted_label = tf.argmax(preds, axis=1).numpy()
                         elif self.classifier == '1dcnn':
-                            if self.dataset == 'JITC':
-                                XeReshaped = np.expand_dims(Xe[:,:-1], axis=1)
-                                testDataReshaped = pad_sequences(XeReshaped, maxlen=1000, padding='post', dtype='float32') 
-                                preds = self.train_model.predict(testDataReshaped)
-                                predicted_label = tf.argmax(preds, axis=1).numpy() 
-                            else: 
-                                YeReshaped = np.expand_dims(Ye[:,:-1], axis=1)
-                                testDataReshaped = pad_sequences(YeReshaped, maxlen=1000, padding='post', dtype='float32')
-                                preds = self.train_model.predict(testDataReshaped)
-                                predicted_label = tf.argmax(preds, axis=1).numpy()
+                            YeReshaped = np.expand_dims(Ye[:,:-1], axis=1)
+                            testDataReshaped = pad_sequences(YeReshaped, maxlen=1000, padding='post', dtype='float32')
+                            preds = self.train_model.predict(testDataReshaped)
+                            predicted_label = tf.argmax(preds, axis=1).numpy()
                         else:
-                            if self.dataset == "JITC":
-                                predicted_label = self.train_model.predict(Xe.reshape(1,-1))
-                            else:
-                                predicted_label = self.train_model.predict(Ye[:,:-1]) 
+                            predicted_label = self.train_model.predict(Ye[:,:-1]) 
                     
                     pool_data = np.vstack((pool_data, Ye))
 
@@ -1242,18 +1002,7 @@ class SCARGC:
                 # if |pool| == maxpoolsize
                 if len(pool_label) > self.maxpool:
                     # C <- Clustering(pool, k)
-                    if self.dataset == 'JITC':
-                        pool_data = pool_data.flatten()
-                        # past_centroid = np.squeeze(past_centroid)
-                        # past_centroid = past_centroid.reshape(1, -1)
-                        pool_data = pool_data.reshape(1, -1)
-                        # reduce pool data if shape doesn't match past_centroid shape
-                        if np.shape(pool_data)[1] != np.shape(past_centroid)[1]:
-                            pool_data = pool_data[:,:np.shape(past_centroid)[1]]
-                            
-                        temp_current_centroids = KMeans(n_clusters=self.Kclusters, init=past_centroid, n_init='auto').fit(pool_data).cluster_centers_
-                    else:
-                        temp_current_centroids = KMeans(n_clusters=self.Kclusters, init=past_centroid, n_init='auto').fit(pool_data).cluster_centers_
+                    temp_current_centroids = KMeans(n_clusters=self.Kclusters, init=past_centroid, n_init='auto').fit(pool_data).cluster_centers_
                         
                     # find the label for the current centroids               
                     # new labeled data
@@ -1277,9 +1026,14 @@ class SCARGC:
                             label_encoder = preprocessing.LabelEncoder()
                             t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
                             if self.dataset == 'JITC':
-                                nearestData = OneClassSVM(kernel='linear').fit(past_centroid, t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids)
+                                # nearestData = OneClassSVM(kernel='linear').fit(past_centroid, t_cur_centroid)
+                                # centroid_label = nearestData.predict(temp_current_centroids)
+                                # new_label_data = np.vstack(centroid_label)
+                                
+                                nearestData = SVC(kernel='rbf').fit(past_centroid[:,:-1], t_cur_centroid) 
+                                centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
                                 new_label_data = np.vstack(centroid_label)
+                        
                             else: 
                                 nearestData = SVC(kernel='rbf').fit(past_centroid[:,:-1], t_cur_centroid) 
                                 centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
@@ -1288,259 +1042,135 @@ class SCARGC:
                         elif self.classifier == 'logistic_regression':
                             label_encoder = preprocessing.LabelEncoder()
                             t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
-                            if self.dataset == 'JITC':
-                                nearestData = LogisticRegression().fit(X=past_centroid, y= t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids)
-                                new_label_data = np.vstack(centroid_label)
-                            else:
-                                nearestData = LogisticRegression().fit(X=past_centroid[:,:-1], y= t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
-                                new_label_data = np.vstack(centroid_label)
+                            nearestData = LogisticRegression().fit(X=past_centroid[:,:-1], y= t_cur_centroid)
+                            centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
+                            new_label_data = np.vstack(centroid_label)
 
                         elif self.classifier == 'random_forest':
                             label_encoder = preprocessing.LabelEncoder()
                             t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
-                            if self.dataset == 'JITC':
-                                nearestData = RandomForestClassifier().fit(past_centroid, t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids)
-                                new_label_data = np.vstack(centroid_label)
-                            else:
-                                nearestData = RandomForestClassifier().fit(past_centroid[:,:-1], t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
-                                new_label_data = np.vstack(centroid_label)
+                            nearestData = RandomForestClassifier().fit(past_centroid[:,:-1], t_cur_centroid)
+                            centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
+                            new_label_data = np.vstack(centroid_label)
                         
                         elif self.classifier == 'adaboost':
                             label_encoder = preprocessing.LabelEncoder()
                             t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
-                            if self.dataset == 'JITC':
-                                nearestData = RandomForestClassifier().fit(past_centroid, t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids)
-                                new_label_data = np.vstack(centroid_label)
-                            else:
-                                nearestData = RandomForestClassifier().fit(past_centroid[:,:-1], t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
-                                new_label_data = np.vstack(centroid_label)
+                            nearestData = RandomForestClassifier().fit(past_centroid[:,:-1], t_cur_centroid)
+                            centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
+                            new_label_data = np.vstack(centroid_label)
 
                         elif self.classifier == 'decision_tree':
                             label_encoder = preprocessing.LabelEncoder()
                             t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
-                            if self.dataset == 'JITC':
-                                nearestData = tree.DecisionTreeClassifier().fit(past_centroid, t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids)
-                                new_label_data = np.vstack(centroid_label)
-                            else:
-                                nearestData = tree.DecisionTreeClassifier().fit(past_centroid[:,:-1], t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
-                                new_label_data = np.vstack(centroid_label)
+                            nearestData = tree.DecisionTreeClassifier().fit(past_centroid[:,:-1], t_cur_centroid)
+                            centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
+                            new_label_data = np.vstack(centroid_label)
 
                         elif self.classifier == 'knn':
                             label_encoder = preprocessing.LabelEncoder()
                             t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
-                            if self.dataset == 'JITC':
-                                nearestData = KNeighborsClassifier(n_neighbors=10).fit(past_centroid, t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids)
-                                new_label_data = np.vstack(centroid_label)
-                            else:
-                                nearestData = KNeighborsClassifier(n_neighbors=10).fit(past_centroid[:,:-1], t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
-                                new_label_data = np.vstack(centroid_label)
+                            nearestData = KNeighborsClassifier(n_neighbors=10).fit(past_centroid[:,:-1], t_cur_centroid)
+                            centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
+                            new_label_data = np.vstack(centroid_label)
 
                         elif self.classifier == 'mlp':
-                            if self.dataset == 'JITC':
-                                label_encoder = preprocessing.LabelEncoder()
-                                t_cur_centroid = label_encoder.fit_transform(temp_current_centroids)
-                                nearestData = MLPClassifier(random_state=1, max_iter=300).fit(past_centroid, t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids)
-                                new_label_data = np.vstack(centroid_label)
-                            else:
-                                label_encoder = preprocessing.LabelEncoder()
-                                t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
-                                nearestData = MLPClassifier(random_state=1, max_iter=300).fit(past_centroid[:,:-1], t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
-                                new_label_data = np.vstack(centroid_label)
+                            label_encoder = preprocessing.LabelEncoder()
+                            t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
+                            nearestData = MLPClassifier(random_state=1, max_iter=300).fit(past_centroid[:,:-1], t_cur_centroid)
+                            centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
+                            new_label_data = np.vstack(centroid_label)
 
                         elif self.classifier == 'naive_bayes':
-                            if self.dataset == 'JITC':
-                                label_encoder = preprocessing.LabelEncoder()
-                                t_cur_centroid = label_encoder.fit_transform(temp_current_centroids)
-                                nearestData = BernoulliNB().fit(past_centroid, t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids)
-                                new_label_data = np.vstack(centroid_label)
-                            else: 
-                                label_encoder = preprocessing.LabelEncoder()
-                                t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
-                                nearestData = BernoulliNB().fit(past_centroid[:,:-1], t_cur_centroid)
-                                centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
-                                new_label_data = np.vstack(centroid_label)
+                            label_encoder = preprocessing.LabelEncoder()
+                            t_cur_centroid = label_encoder.fit_transform(temp_current_centroids[:,-1])
+                            nearestData = BernoulliNB().fit(past_centroid[:,:-1], t_cur_centroid)
+                            centroid_label = nearestData.predict(temp_current_centroids[k:,:-1])
+                            new_label_data = np.vstack(centroid_label)
                         
                         elif self.classifier == 'lstm':
-                            if self.dataset == 'JITC':
-                                # Define the input shapeinput_shape = (timesteps, input_dim)  
-                                # adjust the values according to your data
-                                tsteps = np.shape(past_centroid)[0] 
-                                input_dim = np.shape(past_centroid)[1]   # np.shape(past_centroid[:,:-1])[1]
+                            # Define the input shapeinput_shape = (timesteps, input_dim)  
+                            # adjust the values according to your data
+                            tsteps = np.shape(past_centroid)[0] 
+                            input_dim = np.shape(past_centroid)[1]   # np.shape(past_centroid[:,:-1])[1]
 
-                                # Define the LSTM model
-                                nearestData = Sequential() 
-                                nearestData.add(LSTM(32, input_shape= (tsteps, input_dim), activation='softmax', return_sequences=True ))
-                                nearestData.add(LSTM(16,  activation='softmax', return_sequences=True))
-                                nearestData.add(LSTM(16,  activation='softmax', return_sequences=True))
-                                # nearestData.add(Dense(1, activation='sigmoid'))
-                                nearestData.add(Dense(1, activation='softmax'))
+                            # Define the LSTM model
+                            nearestData = Sequential() 
+                            nearestData.add(LSTM(32, input_shape= (tsteps, input_dim), activation='softmax', return_sequences=True ))
+                            nearestData.add(LSTM(16,  activation='softmax', return_sequences=True))
+                            nearestData.add(LSTM(16,  activation='softmax', return_sequences=True))
+                            # nearestData.add(Dense(1, activation='sigmoid'))
+                            nearestData.add(Dense(1, activation='softmax'))
 
-                                nearestData.add(Flatten())
+                            nearestData.add(Flatten())
 
-                                # Compile the model
-                                nearestData.compile(loss='categorical_crossentropy',
-                                            optimizer='adam',
-                                            metrics=['accuracy'])
+                            # Compile the model
+                            nearestData.compile(loss='categorical_crossentropy',
+                                        optimizer='adam',
+                                        metrics=['accuracy'])
 
-                                # Print the model summary
-                                nearestData.summary()
-                                # Train the model
-                                trainDataReshaped = np.expand_dims(past_centroid, axis=1) #past_centroid[:,:-1] 
-                                nearestData.fit(trainDataReshaped, temp_current_centroids, batch_size= 1000, epochs=3, validation_split=0.25, 
-                                                callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2)
-                                testDataReshaped = np.expand_dims(temp_current_centroids, axis=1)
-                                testDataReshaped = pad_sequences(testDataReshaped, maxlen=1000, padding='post', dtype='float32')
-                                centroid_label = nearestData.predict(testDataReshaped)
-                                new_label_data = tf.argmax(centroid_label, axis=1).numpy()
-                                
-                                # new_label_data = np.vstack(predicted_label)
-                            else:
-                                    # Define the input shapeinput_shape = (timesteps, input_dim)  
-                                # adjust the values according to your data
-                                tsteps = np.shape(past_centroid)[0] 
-                                input_dim = np.shape(past_centroid)[1]   # np.shape(past_centroid[:,:-1])[1]
-
-                                # Define the LSTM model
-                                nearestData = Sequential() 
-                                nearestData.add(LSTM(32, input_shape= (tsteps, input_dim), activation='softmax', return_sequences=True ))
-                                nearestData.add(LSTM(16,  activation='softmax', return_sequences=True))
-                                nearestData.add(LSTM(16,  activation='softmax', return_sequences=True))
-                                # nearestData.add(Dense(1, activation='sigmoid'))
-                                nearestData.add(Dense(1, activation='softmax'))
-
-                                nearestData.add(Flatten())
-
-                                # Compile the model
-                                nearestData.compile(loss='categorical_crossentropy',
-                                            optimizer='adam',
-                                            metrics=['accuracy'])
-
-                                # Print the model summary
-                                nearestData.summary()
-                                # Train the model
-                                trainDataReshaped = np.expand_dims(past_centroid, axis=1) #past_centroid[:,:-1] 
-                                nearestData.fit(trainDataReshaped, temp_current_centroids, batch_size= 1000, epochs=3, validation_split=0.25, 
-                                                callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2)
-                                testDataReshaped = np.expand_dims(temp_current_centroids, axis=1)
-                                testDataReshaped = pad_sequences(testDataReshaped, maxlen=1000, padding='post', dtype='float32')
-                                centroid_label = nearestData.predict(testDataReshaped)
-                                new_label_data = tf.argmax(centroid_label, axis=1).numpy()
+                            # Print the model summary
+                            nearestData.summary()
+                            # Train the model
+                            trainDataReshaped = np.expand_dims(past_centroid, axis=1) #past_centroid[:,:-1] 
+                            nearestData.fit(trainDataReshaped, temp_current_centroids, batch_size= 1000, epochs=3, validation_split=0.25, 
+                                            callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2)
+                            testDataReshaped = np.expand_dims(temp_current_centroids, axis=1)
+                            testDataReshaped = pad_sequences(testDataReshaped, maxlen=1000, padding='post', dtype='float32')
+                            centroid_label = nearestData.predict(testDataReshaped)
+                            new_label_data = tf.argmax(centroid_label, axis=1).numpy()
                                 
                                 # new_label_data = np.vstack(predicted_label)
                         
                         elif self.classifier == 'gru':
-                            if self.dataset == 'JITC':
-                                num_classes = len(set(temp_current_centroids))
-                                trainLabel = tf.keras.utils.to_categorical(temp_current_centroids, num_classes=num_classes)
-                                sequence_length = 1000 
-                                input_dim = np.shape(past_centroid)[1] 
-                                # Define the input shape and number of hidden units
-                                input_shape = (sequence_length, input_dim)  # e.g., (10, 32)
-                                hidden_units = 32
-                                nearestData = tf.keras.Sequential()
-                                nearestData.add(tf.keras.layers.GRU(hidden_units, input_shape=input_shape))
-                                nearestData.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
+                            num_classes = len(set(temp_current_centroids[:,-1]))
+                            trainLabel = tf.keras.utils.to_categorical(temp_current_centroids[:,-1], num_classes=num_classes)
+                            sequence_length = 1000 
+                            input_dim = np.shape(past_centroid[:,:-1])[1] 
+                            # Define the input shape and number of hidden units
+                            input_shape = (sequence_length, input_dim)  # e.g., (10, 32)
+                            hidden_units = 32
+                            nearestData = tf.keras.Sequential()
+                            nearestData.add(tf.keras.layers.GRU(hidden_units, input_shape=input_shape))
+                            nearestData.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
 
-                                # Compile the model
-                                nearestData.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+                            # Compile the model
+                            nearestData.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-                                # Train the model
-                                trainDataReshaped = np.expand_dims(past_centroid, axis=1)
-                                gruData = pad_sequences(trainDataReshaped, maxlen=sequence_length, padding='post', dtype='float32')
-                                nearestData.fit(gruData, trainLabel, batch_size=32, epochs=10, validation_split=0.2)
-                                testDataReshaped = np.expand_dims(temp_current_centroids, axis=1)
-                                testDataReshaped = pad_sequences(testDataReshaped, maxlen=sequence_length, padding='post', dtype='float32')
-                                centroid_label = nearestData.predict(testDataReshaped)
-                                new_label_data = tf.argmax(centroid_label, axis=1).numpy()
-                                # new_label_data = np.vstack(predicted_label)
-                            else:
-                                num_classes = len(set(temp_current_centroids[:,-1]))
-                                trainLabel = tf.keras.utils.to_categorical(temp_current_centroids[:,-1], num_classes=num_classes)
-                                sequence_length = 1000 
-                                input_dim = np.shape(past_centroid[:,:-1])[1] 
-                                # Define the input shape and number of hidden units
-                                input_shape = (sequence_length, input_dim)  # e.g., (10, 32)
-                                hidden_units = 32
-                                nearestData = tf.keras.Sequential()
-                                nearestData.add(tf.keras.layers.GRU(hidden_units, input_shape=input_shape))
-                                nearestData.add(tf.keras.layers.Dense(num_classes, activation='softmax'))
-
-                                # Compile the model
-                                nearestData.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-
-                                # Train the model
-                                trainDataReshaped = np.expand_dims(past_centroid[:,:-1], axis=1)
-                                gruData = pad_sequences(trainDataReshaped, maxlen=sequence_length, padding='post', dtype='float32')
-                                nearestData.fit(gruData, trainLabel, batch_size=32, epochs=10, validation_split=0.2)
-                                testDataReshaped = np.expand_dims(temp_current_centroids[k:,:-1], axis=1)
-                                testDataReshaped = pad_sequences(testDataReshaped, maxlen=sequence_length, padding='post', dtype='float32')
-                                centroid_label = nearestData.predict(testDataReshaped)
-                                new_label_data = tf.argmax(centroid_label, axis=1).numpy()
-                                # new_label_data = np.vstack(predicted_label)
+                            # Train the model
+                            trainDataReshaped = np.expand_dims(past_centroid[:,:-1], axis=1)
+                            gruData = pad_sequences(trainDataReshaped, maxlen=sequence_length, padding='post', dtype='float32')
+                            nearestData.fit(gruData, trainLabel, batch_size=32, epochs=10, validation_split=0.2)
+                            testDataReshaped = np.expand_dims(temp_current_centroids[k:,:-1], axis=1)
+                            testDataReshaped = pad_sequences(testDataReshaped, maxlen=sequence_length, padding='post', dtype='float32')
+                            centroid_label = nearestData.predict(testDataReshaped)
+                            new_label_data = tf.argmax(centroid_label, axis=1).numpy()
+                            # new_label_data = np.vstack(predicted_label)
 
                         elif self.classifier == '1dcnn':
-                            if self.dataset == 'JITC':
-                            
-                                num_classes = len(set(temp_current_centroids))
-                                trainLabel = tf.keras.utils.to_categorical(temp_current_centroids, num_classes=num_classes) 
-                                tsteps = 1000
-                                input_dim = np.shape(past_centroid[:,:-1])[1]
-                                input_shape = (tsteps, input_dim)
-                                model = tf.keras.Sequential([
-                                    tf.keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu', input_shape=input_shape),
-                                    tf.keras.layers.MaxPooling1D(pool_size=2),
-                                    # Add more Conv1D and MaxPooling1D layers as needed
-                                    tf.keras.layers.Flatten(),
-                                    tf.keras.layers.Dense(64, activation='relu'),
-                                    tf.keras.layers.Dense(num_classes, activation='softmax')  # Assuming you have multiple classes to predict
-                                ])
+                            num_classes = len(set(temp_current_centroids[:,-1]))
+                            trainLabel = tf.keras.utils.to_categorical(temp_current_centroids[:,-1], num_classes=num_classes) 
+                            tsteps = 1000
+                            input_dim = np.shape(past_centroid[:,:-1])[1]
+                            input_shape = (tsteps, input_dim)
+                            model = tf.keras.Sequential([
+                                tf.keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu', input_shape=input_shape),
+                                tf.keras.layers.MaxPooling1D(pool_size=2),
+                                # Add more Conv1D and MaxPooling1D layers as needed
+                                tf.keras.layers.Flatten(),
+                                tf.keras.layers.Dense(64, activation='relu'),
+                                tf.keras.layers.Dense(num_classes, activation='softmax')  # Assuming you have multiple classes to predict
+                            ])
 
-                                # Step 3: Training
-                                model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-                                trainDataReshaped = np.expand_dims(past_centroid, axis=1)
-                                cnnData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
-                                model.fit(cnnData, trainLabel, batch_size=32, epochs=10)
-                                testDataReshaped = np.expand_dims(temp_current_centroids, axis=1)
-                                testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
-                                centroid_label = model.predict(testDataReshaped)
-                                new_label_data = tf.argmax(centroid_label, axis=1).numpy()
-                            else:
-                                num_classes = len(set(temp_current_centroids[:,-1]))
-                                trainLabel = tf.keras.utils.to_categorical(temp_current_centroids[:,-1], num_classes=num_classes) 
-                                tsteps = 1000
-                                input_dim = np.shape(past_centroid[:,:-1])[1]
-                                input_shape = (tsteps, input_dim)
-                                model = tf.keras.Sequential([
-                                    tf.keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu', input_shape=input_shape),
-                                    tf.keras.layers.MaxPooling1D(pool_size=2),
-                                    # Add more Conv1D and MaxPooling1D layers as needed
-                                    tf.keras.layers.Flatten(),
-                                    tf.keras.layers.Dense(64, activation='relu'),
-                                    tf.keras.layers.Dense(num_classes, activation='softmax')  # Assuming you have multiple classes to predict
-                                ])
-
-                                # Step 3: Training
-                                model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-                                trainDataReshaped = np.expand_dims(past_centroid[:,:-1], axis=1)
-                                cnnData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
-                                model.fit(cnnData, trainLabel, batch_size=32, epochs=10)
-                                testDataReshaped = np.expand_dims(temp_current_centroids[k:,:-1], axis=1)
-                                testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
-                                centroid_label = model.predict(testDataReshaped)
-                                new_label_data = tf.argmax(centroid_label, axis=1).numpy() 
+                            # Step 3: Training
+                            model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+                            trainDataReshaped = np.expand_dims(past_centroid[:,:-1], axis=1)
+                            cnnData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
+                            model.fit(cnnData, trainLabel, batch_size=32, epochs=10)
+                            testDataReshaped = np.expand_dims(temp_current_centroids[k:,:-1], axis=1)
+                            testDataReshaped = pad_sequences(testDataReshaped, maxlen=tsteps, padding='post', dtype='float32')
+                            centroid_label = model.predict(testDataReshaped)
+                            new_label_data = tf.argmax(centroid_label, axis=1).numpy() 
                                 
                                                 
                     new_label_data = list(new_label_data)
@@ -1558,10 +1188,7 @@ class SCARGC:
                         past_centroid = temp_current_centroids
                     
                     Ye = np.squeeze(Ye)
-                    if self.dataset == "JITC":
-                        continue
-                    else:
-                        Ye = np.array(Ye[:,-1])
+                    Ye = np.array(Ye[:,-1])
 
                     # reset 
                     pool_data = np.zeros(np.shape(pool_data)[1])
@@ -1570,37 +1197,12 @@ class SCARGC:
                 
                 t_end = time.time() 
                 # needed to have same shape as preds and test
-                if self.dataset == 'JITC':
-                    # indx = np.arange(np.shape(self.preds[t])) 
-                    first_dim_size = np.shape([self.preds[t]])
-                    # if first_dim_size[0] > 1:
-                    indx = np.arange(first_dim_size[0])
-                    # else:
-                    #     indx = first_dim_size
-
-                    perf_metric = cp.PerformanceMetrics(timestep=t, preds=self.preds[t], test=Ye,
-                                                        dataset=self.dataset, method='',
-                                                        classifier=self.classifier, tstart=t_start, tend=t_end)
-                    self.performance_metric[t] = perf_metric.findClassifierMetrics(preds=np.squeeze(self.preds[t]), test=Ye)
-                else:
-                    try:
-                        shape = np.shape(self.preds[t])
-                        if len(shape) == 0:
-                            raise ValueError(f"The shape of self.preds[{t}] is {shape}, which is not valid")
-                        first_dim_size = shape[0]
-                    except IndexError as e:
-                        print(f"IndexError: {e}")
-                        print(f"self.preds[{t}] = {self.preds[t]}")
-                        print(f"Shape of self.preds[{t}] = {np.shape(self.preds[t])}")
-                        raise
-
-                    indx = np.arange(first_dim_size)
-                    indx = np.squeeze(indx)
-
-                    perf_metric = cp.PerformanceMetrics(timestep=t, preds=self.preds[t], test=Ye[indx],
-                                                        dataset=self.dataset, method='',
-                                                        classifier=self.classifier, tstart=t_start, tend=t_end)
-                    self.performance_metric[t] = perf_metric.findClassifierMetrics(preds=np.squeeze(self.preds[t]), test=Ye[indx])
+                indx = np.arange(np.shape(self.preds[t])[0])
+                indx = np.squeeze(indx) 
+                perf_metric = cp.PerformanceMetrics(timestep= t, preds= self.preds[t], test= Ye[indx], \
+                                                    dataset= self.dataset , method= '' , \
+                                                    classifier= self.classifier, tstart=t_start, tend=t_end)
+                self.performance_metric[t] = perf_metric.findClassifierMetrics(preds= self.preds[t], test= Ye[indx])
 
             total_time_end = time.time()
 
@@ -1609,6 +1211,6 @@ class SCARGC:
             self.avg_perf_metric = avg_metrics.findAvePerfMetrics(total_time=self.total_time, perf_metrics= self.performance_metric)
             return self.avg_perf_metric
 
-
-# run_scargc_svm = SCARGC(classifier = 'mlp', dataset= 'JITC', datasource='UNSW', resample=False).run()
+# ton_iot_fridge
+# run_scargc_svm = SCARGC(classifier = 'svm', dataset= 'JITC', datasource='UNSW', resample=False).run()
 # print(run_scargc_svm)
