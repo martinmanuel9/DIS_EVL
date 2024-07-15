@@ -51,6 +51,7 @@ import classifier_performance as cp
 from scipy import stats
 from sklearn.metrics import silhouette_score
 import time 
+import os
 from matplotlib import pyplot as plt
 from matplotlib import patches as mpatches
 from matplotlib.axes._axes import _log as matplotlib_axes_logger
@@ -426,6 +427,80 @@ class MClassification():
                 self.Y = dict_test
                 self.all_data = train['Dataset']
                 self.all_data_test = test['Dataset']
+                
+            elif self.dataset == 'JITC':
+                ## comment out if running in debug vs code
+                os.chdir('../')
+                print(os.getcwd())
+                X_train = pd.read_pickle('data/JITC_Data/artifacts/X_train.pkl')
+                X_test = pd.read_pickle('data/JITC_Data/artifacts/X_test.pkl')
+                y_train = pd.read_pickle('data/JITC_Data/artifacts/y_train.pkl')
+                y_test = pd.read_pickle('data/JITC_Data/artifacts/y_test.pkl')
+                # x_test_features = pd.read_pickle('data/JITC_Data/artifacts/X_train_features.pkl')
+                
+                # transformations
+                x_train = X_train.to_numpy()
+                x_test = X_test.to_numpy()
+                y_train = y_train.to_numpy()
+                y_test = y_test.to_numpy()
+                
+                x_train = x_train.astype(int)
+                x_test = x_test.astype(int)
+                y_train = y_train.astype(int)
+                y_test = y_test.astype(int)
+                
+                # change chunck size if need to test smaller batches
+                chunk_size = 100000
+                
+                # for testing add [:1000] to the end of each of the variables
+                x_train = x_train
+                y_train = y_train
+                x_test = x_test
+                y_test = y_test
+                
+                ts = 0
+                # set data (all the features)
+                for i in range(0, len(x_train[0])):
+                    self.data[ts] = x_train[0][i]
+                    ts += 1
+                # set all the labels 
+                ts = 0
+                for k in range(0, len(y_train)):
+                    self.labeled[ts] = y_train[k]
+                    ts += 1
+                
+                ## all data 
+                # join x_train and y_train
+                # print(x_train.shape, y_train.shape)
+                x_train = np.array(list(x_train))
+                y_train = np.array(list(y_train))
+                all_train_data = np.concatenate((x_train, y_train), axis=1)
+                dict_train = {}
+                
+                for i in range(0, len(x_train), chunk_size):
+                    chunk = all_train_data[i:i + chunk_size]
+                    key = i // chunk_size
+                    dict_train[key] = chunk
+                    
+                # dict_y_train = {}
+                # for i in range(0, len(y_train)):
+                #     dict_y_train[i] = y_train[i]
+                
+                y_test = np.array(list(y_test))
+                all_test_data = np.concatenate((x_test, y_test), axis=1)
+                dict_test = {}
+                for j in range(0, len(x_test), chunk_size):
+                    chunk = all_test_data[j:j + chunk_size]
+                    key = j // chunk_size
+                    dict_test[key] = chunk
+                
+                self.Xinit = dict_train
+                self.Yinit = dict_test
+                
+
+                self.X = dict_train
+                self.Y = dict_test
+                self.all_data = all_train_data
 
     def findClosestMC(self, x, MC_Centers):
         """
@@ -1030,6 +1105,6 @@ class MClassification():
         return self.avg_perf_metric
 
 # test mclass
-# run_mclass = MClassification(classifier='1dcnn', method = 'kmeans', dataset='ton_iot_fridge', datasource='UNSW', graph=False).run()
-# print(run_mclass) # ton_iot_fridge UG_2C_2D
+run_mclass = MClassification(classifier='svm', method = 'kmeans', dataset='JITC', datasource='UNSW', graph=False).run()
+print(run_mclass) # ton_iot_fridge UG_2C_2D
 #%%

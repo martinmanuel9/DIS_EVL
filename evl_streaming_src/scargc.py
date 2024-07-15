@@ -503,8 +503,6 @@ class SCARGC:
             X_test = pd.read_pickle('data/JITC_Data/artifacts/X_test.pkl')
             y_train = pd.read_pickle('data/JITC_Data/artifacts/y_train.pkl')
             y_test = pd.read_pickle('data/JITC_Data/artifacts/y_test.pkl')
-            # x_test_features = pd.read_pickle('data/JITC_Data/artifacts/X_test_features.pkl')
-            # x_train_features = pd.read_pickle('data/JITC_Data/artifacts/X_train_features.pkl')
             
             # transformations
             x_train = X_train.to_numpy()
@@ -517,15 +515,14 @@ class SCARGC:
             y_train = y_train.astype(int)
             y_test = y_test.astype(int)
             
-            # TODO: up it to 100 and remove the limit constraint
+            # change chunck size if need to test smaller batches
+            chunk_size = 100000
             
-            chunk_size = 100
-            
-            # for testing
-            x_train = x_train[:1000]
-            y_train = y_train[:1000]
-            x_test = x_test[:1000]
-            y_test = y_test[:1000]
+            # for testing add [:1000] to the end of each of the variables
+            x_train = x_train
+            y_train = y_train
+            x_test = x_test
+            y_test = y_test
             
             ts = 0
             # set data (all the features)
@@ -540,7 +537,6 @@ class SCARGC:
             
             ## all data 
             # join x_train and y_train
-            # print(x_train.shape, y_train.shape)
             x_train = np.array(list(x_train))
             y_train = np.array(list(y_train))
             all_train_data = np.concatenate((x_train, y_train), axis=1)
@@ -551,10 +547,6 @@ class SCARGC:
                 key = i // chunk_size
                 dict_train[key] = chunk
                 
-            # dict_y_train = {}
-            # for i in range(0, len(y_train)):
-            #     dict_y_train[i] = y_train[i]
-            
             y_test = np.array(list(y_test))
             all_test_data = np.concatenate((x_test, y_test), axis=1)
             dict_test = {}
@@ -562,10 +554,6 @@ class SCARGC:
                 chunk = all_test_data[j:j + chunk_size]
                 key = j // chunk_size
                 dict_test[key] = chunk
-            
-            # dict_y_test = {}
-            # for i in range (0, len(y_test)):
-            #     dict_y_test[i] = y_test[i]
 
             self.Xinit = dict_train
             self.Yinit = dict_test
@@ -573,12 +561,7 @@ class SCARGC:
 
             self.X = dict_train
             self.Y = dict_test
-            # self.Xtest = dict_test
-            # self.Ytest = dict_y_test
             self.all_data = all_train_data
-            # self.X_train_features = x_train_features 
-            # self.X_test_features = x_test_features
-            
 
         # get the number of classes in the dataset 
         self.nclasses = len(np.unique(self.Y))
@@ -1212,5 +1195,5 @@ class SCARGC:
             return self.avg_perf_metric
 
 # ton_iot_fridge
-# run_scargc_svm = SCARGC(classifier = 'svm', dataset= 'JITC', datasource='UNSW', resample=False).run()
-# print(run_scargc_svm)
+run_scargc_svm = SCARGC(classifier = 'svm', dataset= 'JITC', datasource='UNSW', resample=False).run()
+print(run_scargc_svm)

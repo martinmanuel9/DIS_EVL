@@ -84,9 +84,8 @@ class Grapher():
         for i, item in enumerate(data.keys()):
             # sns.set_theme(style='darkgrid')
             sns.set_style('whitegrid')
-            # plt.plot(data[item]['Timesteps'][::8], data[item]['Accuracy'][::8], label=item, linestyle= plotline[i], linewidth=3)
-            plt.plot(data[item]['Timesteps'], data[item]['Accuracy'], label=item, linestyle= plotline[i], linewidth=3)
-            
+            plt.plot(data[item]['Timesteps'][::8], data[item]['Accuracy'][::8], label=item, linestyle= plotline[i], linewidth=3)
+
         font = {'family': 'serif',
                 'weight' : 'normal',
                 'size': 18}
@@ -265,7 +264,7 @@ class Grapher():
         
 
 
-# graph = Grapher()
-# graph.run()
+graph = Grapher()
+graph.run()
 
 # %%

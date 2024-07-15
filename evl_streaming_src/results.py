@@ -39,20 +39,32 @@ import numpy as np
 import os
 
 class Results:
+    
+    def persistent_load(self, persid):
+        # Define how to handle persistent IDs
+        # This is just a placeholder implementation
+        # Replace with actual logic
+        return persid
+    
     def provide_results(self):
+        print(os.getcwd())
         path = os.getcwd() + "/evl_streaming_src/results"
         os.chdir(path)
         list_dir = os.listdir(path)
         result = {}
         for i in range(len(list_dir)):
-            result[i] = pickle.load(open(list_dir[i], "rb"))
-            # print(result[i], "\n")
-            # loc[0] for dataset
-            # loc[1] for classifier
-            # loc[14] for Experiment
-            # loc[4]  for avg accuracy
-            # loc[10]  for total exec time
-            # result[0].loc[12].at[1]
+            with open(list_dir[i], "rb") as f:
+                unpickler = pickle.Unpickler(f)
+                unpickler.persistent_load = self.persistent_load
+                result[i] = unpickler.load()
+                # result[i] = pickle.load(open(list_dir[i], "rb"))
+                # print(result[i], "\n")
+                # loc[0] for dataset
+                # loc[1] for classifier
+                # loc[14] for Experiment
+                # loc[4]  for avg accuracy
+                # loc[10]  for total exec time
+                # result[0].loc[12].at[1]
 
         dataset = {}
         experiment = {}
