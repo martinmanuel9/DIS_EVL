@@ -805,8 +805,8 @@ class SCARGC:
                     model.summary()
                     # Train the modet
                     trainDataReshaped = np.expand_dims(self.all_data[:,:-1], axis=1) #self.all_data[:,:-1]
-                    lstmData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')                     
-                    model.fit(lstmData, trainLabel, batch_size=1000, epochs=3, validation_split=0.25, 
+                    modelData = pad_sequences(trainDataReshaped, maxlen=tsteps, padding='post', dtype='float32')                     
+                    model.fit(modelData, trainLabel, batch_size=1000, epochs=3, validation_split=0.25, 
                                 callbacks = [callbacks.EarlyStopping(monitor='val_loss', patience=100, verbose=1)], verbose=2) 
                     self.train_model = model
                     testDataReshaped = np.expand_dims(Yts[0][:,:-1], axis=1)
@@ -1195,5 +1195,5 @@ class SCARGC:
             return self.avg_perf_metric
 
 # ton_iot_fridge
-run_scargc_svm = SCARGC(classifier = 'svm', dataset= 'JITC', datasource='UNSW', resample=False).run()
+run_scargc_svm = SCARGC(classifier = 'gru', dataset= 'JITC', datasource='UNSW', resample=False).run()
 print(run_scargc_svm)

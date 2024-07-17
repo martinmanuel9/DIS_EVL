@@ -45,19 +45,6 @@ from skmultiflow.drift_detection.adwin import ADWIN
 from skmultiflow.drift_detection import KSWIN
 
 
-# from tensorflow.keras import initializers
-# from tensorflow.compat.v1.keras.models import Model
-# from tensorflow.compat.v1.keras.layers import Input, Dense, Dropout
-# from tensorflow.compat.v1.keras.callbacks import ModelCheckpoint
-# from tensorflow.compat.v1.keras import backend as K
-# from tensorflow.compat.v1.keras import regularizers
-
-# from skmultiflow.drift_detection.hddm_a import HDDM_A
-# from skmultiflow.drift_detection.hddm_w import HDDM_W
-# from skmultiflow.drift_detection.adwin import ADWIN
-# from skmultiflow.drift_detection import KSWIN
-
-
 rs = 1
 np.random.seed(rs)
 rn.seed(rs)
@@ -66,7 +53,9 @@ session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1,
 
 tf.compat.v1.set_random_seed(rs)
 sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
-K.set_session(sess)
+
+
+# K.set_session(sess)
 
 ae_model = 'models/ae_offline_model_Windows'
 ae_scaler = 'models/ae_offline_scaler_Windows'
@@ -125,18 +114,25 @@ def autoencoder(X_train, X_val,
 
     autoencoder_model.compile(optimizer='sgd', loss='mse', metrics=['mse', 'mae'])
 
+    # check if there if I am on the models directory
+    if not os.path.exists('models'):
+        os.chdir(os.getcwd() + "/models")
+    # print(os.getcwd())
+    # model = tf.keras.models.load_model('ae_offline_model_Windows_application.h5')
+    # tf.keras.models.save_model(model, 'ae_offline_model_Windows_application.keras')
+    
     checkpointer = ModelCheckpoint(
-        filepath=ae_model + layer + '.h5',
+        filepath='ae_offline_model_Windows_application'+ '.keras',
         verbose=0,
         save_best_only=True)
 
     # use one-class data to train
     autoencoder_model.fit(X_train_de, X_train,
-                          epochs=epoch_train,
-                          batch_size=1,
-                          shuffle=True,
-                          verbose=1,
-                          callbacks=[checkpointer])
+                            epochs=epoch_train,
+                            batch_size=1,
+                            shuffle=True,
+                            verbose=1,
+                            callbacks=[checkpointer])
     # autoencoder_model.summary()
 
     pred_val = autoencoder_model.predict(X_val_de)
@@ -155,7 +151,7 @@ def autoencoder(X_train, X_val,
         percentiles=[.80, .90, .95, .96, .97, .98, .99])
     # print(res_stat_val)
     population_threshold = res_stat_val[res_stat_val.index == 'mean'][0] + num_sigma * \
-                           res_stat_val[res_stat_val.index == 'std'][0]
+                        res_stat_val[res_stat_val.index == 'std'][0]
     # max_recserror = res_stat_train[res_stat_train.index == 'max'][0]
 
     if cross_validation:
@@ -171,12 +167,15 @@ def autoencoder(X_train, X_val,
 
 
 def train_multiple_layer(n_folds: int, noise_factor: float, layer: str, epoch: int, activation_func: str,
-                         hidden_neurons: list, num_sigma: float, change_detection_model: str, remove_cv_outlier):
+                        hidden_neurons: list, num_sigma: float, change_detection_model: str, remove_cv_outlier):
     # layer = 'application'
     normal_train_data_dir = kafka_data_collection_dir + '_' + layer
     kafka_normal_dataset_list = []
+    print(os.getcwd())
+    os.chdir(os.getcwd() + "/evl_streaming_src")
+    print(os.getcwd())
 
-    for filename in os.listdir(normal_train_data_dir):
+    for filename in os.listdir("kafka_data_collection_train_application"):
         file_path = os.path.join(normal_train_data_dir, filename)
         df_file = pd.read_csv(file_path)
         kafka_normal_dataset_list.append(df_file)
@@ -286,15 +285,15 @@ def get_ae_config():
     # append SGD autoencoders for each layer
     config["autoencoders"].append(
         {"n_folds": 5, "type": "application", "noise_factor": 0.1, "hidden_neurons": [30, 15, 30], "num_sigma": 6,
-         "epoch": 5, "activation_func": "relu"})
+        "epoch": 5, "activation_func": "relu"})
 
     config["autoencoders"].append(
         {"n_folds": 5, "type": "network", "noise_factor": 0.1, "hidden_neurons": [5, 3, 5], "num_sigma": 5,
-         "epoch": 5, "activation_func": "relu"})
+        "epoch": 5, "activation_func": "relu"})
 
     config["autoencoders"].append(
         {"n_folds": 5, "type": "system", "noise_factor": 0.1, "hidden_neurons": [15, 10, 15], "num_sigma": 5,
-         "epoch": 5, "activation_func": "relu"})
+        "epoch": 5, "activation_func": "relu"})
 
     config["change_detector"] = 'KSWIN'
 
@@ -331,14 +330,14 @@ def main():
         print('********' + layer + '*********')
         print(layer_config)
         train_multiple_layer(layer=layer,
-                             n_folds=layer_config["n_folds"],
-                             noise_factor=layer_config["noise_factor"],
-                             hidden_neurons=layer_config["hidden_neurons"],
-                             num_sigma=layer_config["num_sigma"],
-                             epoch=layer_config["epoch"],
-                             activation_func=layer_config["activation_func"],
-                             change_detection_model=ae_config["change_detector"],
-                             remove_cv_outlier=ae_config["remove cross-validation outlier"])
+                            n_folds=layer_config["n_folds"],
+                            noise_factor=layer_config["noise_factor"],
+                            hidden_neurons=layer_config["hidden_neurons"],
+                            num_sigma=layer_config["num_sigma"],
+                            epoch=layer_config["epoch"],
+                            activation_func=layer_config["activation_func"],
+                            change_detection_model=ae_config["change_detector"],
+                            remove_cv_outlier=ae_config["remove cross-validation outlier"])
 
 
 if __name__ == '__main__':
