@@ -108,6 +108,7 @@ class SCARGC:
         self.avg_perf_metric = {}
         self.preds = {}
         self.n_cores = []
+        self.scargc_dataset = {}
 
     def set_data(self):
         if self.datasource == 'synthetic':
@@ -1186,16 +1187,28 @@ class SCARGC:
                                                     classifier= self.classifier, tstart=t_start, tend=t_end)
                 self.performance_metric[t] = perf_metric.findClassifierMetrics(preds= self.preds[t], test= Ye[indx])
                 
-                # create the dataset pkl based on Yts[:,-1] and self.preds[t]
-                # save the dataset pkl in the dataset folder
-                print(Yts[0])
-                print(self.preds[t])
+                # get values of Yts to create scargc dataset 
+                feature_set = Yts[t][:,:-1]
+                feature_set = np.vstack(feature_set)
+                feature_set = np.squeeze(feature_set)
+                label_set = self.preds[t].reshape(-1,1)
+                # concatenate the features and labels
+                scargc_step_data = np.concatenate((feature_set, label_set), axis=1)
+                self.scargc_data[t] = scargc_step_data
 
             total_time_end = time.time()
-
             self.total_time = total_time_end - total_time_start
             avg_metrics = cp.PerformanceMetrics(tstart= total_time_start, tend= total_time_end)
             self.avg_perf_metric = avg_metrics.findAvePerfMetrics(total_time=self.total_time, perf_metrics= self.performance_metric)
+            
+            # convert self.scargc_data dictionary to a dataframe
+            
+            scargc_DF = pd.DataFrame(self.scargc_data)
+            
+            # save sacrgcDF to a pickle file under datasets directory
+            print(os.getcwd())
+            scargc_DF.to_pickle('scargc_data.pkl')
+            
             return self.avg_perf_metric
 
 # ton_iot_fridge
