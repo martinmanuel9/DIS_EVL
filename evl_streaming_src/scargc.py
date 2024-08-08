@@ -1194,7 +1194,7 @@ class SCARGC:
                 label_set = self.preds[t].reshape(-1,1)
                 # concatenate the features and labels
                 scargc_step_data = np.concatenate((feature_set, label_set), axis=1)
-                self.scargc_data[t] = scargc_step_data
+                self.scargc_dataset[t] = scargc_step_data
 
             total_time_end = time.time()
             self.total_time = total_time_end - total_time_start
@@ -1202,15 +1202,20 @@ class SCARGC:
             self.avg_perf_metric = avg_metrics.findAvePerfMetrics(total_time=self.total_time, perf_metrics= self.performance_metric)
             
             # convert self.scargc_data dictionary to a dataframe
+            scargc_array = np.concatenate(list(self.scargc_dataset.values()))
+            scargc_array = np.squeeze(scargc_array)
+            scargc_DF = pd.DataFrame(scargc_array)
+            # rename the last column as label
+            scargc_DF.rename(columns={scargc_DF.columns[-1]: 'label'}, inplace=True)
             
-            scargc_DF = pd.DataFrame(self.scargc_data)
-            
+            # change directory to models
+            os.chdir('evl_streaming_src/datasets')
             # save sacrgcDF to a pickle file under datasets directory
-            print(os.getcwd())
-            scargc_DF.to_pickle('scargc_data.pkl')
+            scargc_DF.to_pickle('scargc_dataset_'+ self.dataset + '_' + self.classifier + '.pkl')
+            os.chdir('../../')
             
             return self.avg_perf_metric
 
 # ton_iot_fridge
-run_scargc_svm = SCARGC(classifier = 'mlp', dataset= 'JITC', datasource='UNSW', resample=False).run()
-print(run_scargc_svm)
+# run_scargc_svm = SCARGC(classifier = 'mlp', dataset= 'JITC', datasource='UNSW', resample=False).run()
+# print(run_scargc_svm)
