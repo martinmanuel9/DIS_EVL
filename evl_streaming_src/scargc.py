@@ -519,14 +519,14 @@ class SCARGC:
             print('Training set shape:', np.shape(x_train))
             print('Testing set shape:' , np.shape(x_test))
             
-            # change chunck size if need to test smaller batches
-            chunk_size = 100
+            # change chunck size if need to test smaller batches original is 100000
+            chunk_size = 100000
             
             # for testing add [:1000] to the end of each of the variables
-            x_train = x_train[:1000]
-            y_train = y_train[:1000]
-            x_test = x_test[:1000]
-            y_test = y_test[:1000]
+            x_train = x_train
+            y_train = y_train
+            x_test = x_test
+            y_test = y_test
             
             ts = 0
             # set data (all the features)
@@ -1211,7 +1211,7 @@ class SCARGC:
             # change directory to models
             os.chdir('evl_streaming_src/datasets')
             # save sacrgcDF to a pickle file under datasets directory
-            scargc_DF.to_pickle('scargc_dataset_'+ self.dataset + '_' + self.classifier + '.pkl')
+            scargc_DF.to_pickle('scargc_dataset_'+ self.dataset + '_' + self.classifier + '_test' '.pkl')
             os.chdir('../../')
             
             return self.avg_perf_metric
