@@ -63,7 +63,8 @@ PduTypeDecoders = {
     , 71: Modbus
     , 72: Garage
     , 73: Light
- }
+    , 74: JITC
+}
 
 
 def getPdu(inputStream):

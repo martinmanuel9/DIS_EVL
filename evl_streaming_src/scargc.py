@@ -515,14 +515,17 @@ class SCARGC:
             y_train = y_train.astype(int)
             y_test = y_test.astype(int)
             
+            print('Training set shape:', np.shape(x_train))
+            print('Testing set shape:' , np.shape(x_test))
+            
             # change chunck size if need to test smaller batches
-            chunk_size = 100000
+            chunk_size = 100
             
             # for testing add [:1000] to the end of each of the variables
-            x_train = x_train
-            y_train = y_train
-            x_test = x_test
-            y_test = y_test
+            x_train = x_train[:1000]
+            y_train = y_train[:1000]
+            x_test = x_test[:1000]
+            y_test = y_test[:1000]
             
             ts = 0
             # set data (all the features)
@@ -883,15 +886,11 @@ class SCARGC:
             pool_index = 0
             past_centroid = self.cluster.cluster_centers_
 
-            # if self.dataset == "JITC":
-            #     labeled_data_labels = self.Ytest
-            #     labeled_data = self.Xtest
-            # else:
             labeled_data_labels = Yts
             labeled_data = Xts
             
             # run the experiment 
-            for t in tqdm(range(self.T-1), position=0, leave=True): 
+            for t in tqdm(range(self.T), position=0, leave=True): 
                 # get the data from time T and resample if required
                 # it seems that the algo takes in the labeled data labels and the labeled data as inputs 
                 if self.datasource == 'synthetic':
@@ -1186,6 +1185,11 @@ class SCARGC:
                                                     dataset= self.dataset , method= '' , \
                                                     classifier= self.classifier, tstart=t_start, tend=t_end)
                 self.performance_metric[t] = perf_metric.findClassifierMetrics(preds= self.preds[t], test= Ye[indx])
+                
+                # create the dataset pkl based on Yts[:,-1] and self.preds[t]
+                # save the dataset pkl in the dataset folder
+                print(Yts[0])
+                print(self.preds[t])
 
             total_time_end = time.time()
 
@@ -1195,5 +1199,5 @@ class SCARGC:
             return self.avg_perf_metric
 
 # ton_iot_fridge
-run_scargc_svm = SCARGC(classifier = 'gru', dataset= 'JITC', datasource='UNSW', resample=False).run()
+run_scargc_svm = SCARGC(classifier = 'mlp', dataset= 'JITC', datasource='UNSW', resample=False).run()
 print(run_scargc_svm)
