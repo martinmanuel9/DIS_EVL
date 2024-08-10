@@ -1211,7 +1211,7 @@ class SCARGC:
             # change directory to models
             os.chdir('evl_streaming_src/datasets')
             # save sacrgcDF to a pickle file under datasets directory
-            scargc_DF.to_pickle('scargc_dataset_'+ self.dataset + '_' + self.classifier + '_test' '.pkl')
+            scargc_DF.to_pickle('scargc_dataset_'+ self.dataset + '_' + self.classifier + '.pkl')
             os.chdir('../../')
             
             return self.avg_perf_metric
