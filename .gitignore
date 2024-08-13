@@ -22,4 +22,5 @@ pyvenv/include/**
 pyvenv/lib/**
 pyvenv/lib64/**
 /data/JITC_Data/files/**
+/data/JITC_Data/dataframe/**
 /evl_streaming_src/df_train_sel_feat_application.csv

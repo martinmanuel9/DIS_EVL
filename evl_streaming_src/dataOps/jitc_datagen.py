@@ -73,14 +73,14 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         ###  debug mode ---------------------------
-        # testPath = str(path) + '/data/JITC_Data/'
-        # os.chdir(testPath)
+        testPath = str(path) + '/data/JITC_Data/files/'
+        os.chdir(testPath)
         #------------------------------------------
         ### run mode: change path to data directory
-        print(path)
-        changed_path = path + '/JITC_Data'
-        # os.chdir(changed_path)
-        print(os.getcwd())
+        # print(path)
+        # changed_path = path + '/JITC_Data/files'
+        # # os.chdir(changed_path)
+        # print(os.getcwd())
 
     def process_directory(self, directory):
         with ThreadPoolExecutor() as executor:
