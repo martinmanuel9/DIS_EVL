@@ -97,6 +97,25 @@ class JITC_DATAOPS:
         self.process_directory(os.getcwd())
         self.dataframe = pd.DataFrame.from_dict(self.data, orient='index', columns=['binary'])
         self.dataframe.index.name = 'filename'
+        
+        # for each key determine how many bytes are in the binary string I need to break it down 8 bits per byte
+        self.dataframe['num_bytes'] = self.dataframe['binary'].apply(lambda x: len(x) // 8)
+        
+        print(self.dataframe.head())
+        
+        # find the average num_bytes in all of the files within the dataframe
+        avg_bytes = self.dataframe['num_bytes'].mean()
+        print('Average number of bytes: ', avg_bytes)
+        median_bytes = self.dataframe['num_bytes'].median()
+        print('Median number of bytes: ', median_bytes)
+        
+        # save the dataframe to as a pickle file on evl_streaming_src/datasets with the name of the dataset and date
+        os.chdir('../dataframe/')
+        # get date as YYYYMMDD_HHMMSS
+        date = pd.Timestamp.now().strftime('%Y%m%d_%H%M%S')
+        self.dataframe.to_pickle('JITC_Dataframe_'+ date + '.pkl')
+        
+        os.chdir('../files')
 
     # def find_silhoette_score(self, X):
     #     """
