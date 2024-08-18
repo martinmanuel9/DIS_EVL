@@ -2,9 +2,9 @@
 
 """
 Application:        JITC processing
-File name:          jitc_datagen.py
+File name:          jitc_datagen_ngrams.py
 Author:             Martin Manuel Lopez
-Creation:           05/06/2024
+Creation:           08/17/2024
 
 The University of Arizona
 Department of Electrical and Computer Engineering
@@ -34,22 +34,14 @@ import json
 import pandas as pd
 import numpy as np
 from pathlib import Path
-from sklearn.model_selection import train_test_split
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-import tensorflow as tf
-from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.optimizers import Adam
-from sklearn.mixture import GaussianMixture
-from sklearn.cluster import KMeans
-from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import silhouette_score
-import matplotlib.pyplot as plt
-import plotly.graph_objects as go
+from collections import Counter
+from nltk.util import ngrams
 from concurrent.futures import ThreadPoolExecutor
-from sklearn.decomposition import PCA
+import pandas as pd
+import numpy as np
+import os
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.cluster import DBSCAN
 
 class JITC_DATAOPS:
     def __init__(self, dataset):
@@ -79,8 +71,8 @@ class JITC_DATAOPS:
         # os.chdir(testPath)
         #------------------------------------------
         ### run mode: change path to data directory
-        print(path)
-        changed_path = '../../data/JITC_Data/files/'
+        # print(path)
+        changed_path = path + '/data/JITC_Data/files'
         os.chdir(changed_path)
         print(os.getcwd())
 
@@ -89,18 +81,42 @@ class JITC_DATAOPS:
             json_files = [os.path.join(directory, filename) for filename in os.listdir(directory) if filename.endswith('.json')]
             executor.map(self.process_json_file, json_files)
 
-    def process_json_file(self, json_file):
+    def process_json_file(self, json_file, n=4):
         with open(json_file, 'r') as f:
             json_data = json.load(f)  # Load JSON data
-            self.data[os.path.basename(json_file)] = json_data['binary']
 
+            # Process binary data for n-grams
+            binary_sequence = json_data['binary']
+            ngrams = self.get_ngrams(binary_sequence, n)
+            ngram_freq = self.get_ngrams_frequency(ngrams)
+
+            # Store the binary data, n-grams, and their frequencies
+            self.data[os.path.basename(json_file)] = {
+                'binary': binary_sequence,
+                'ngrams': ngrams,
+                'ngrams_freq': ngram_freq
+            }
+
+    def get_ngrams(self, sequence, n):
+        """
+        Generate n-grams from a given sequence.
+        """
+        ngrams = [sequence[i:i+n] for i in range(len(sequence) - n + 1)]
+        return ngrams
+
+    def get_ngrams_frequency(self, ngrams):
+        """
+        Count the frequency of each n-gram.
+        """
+        return dict(Counter(ngrams))
+
+        
     def import_data(self):
         self.change_directory()
         self.process_directory(os.getcwd())
-        self.dataframe = pd.DataFrame.from_dict(self.data, orient='index', columns=['binary'])
+        self.dataframe = pd.DataFrame.from_dict(self.data, orient='index', columns=['binary', 'ngrams', 'ngrams_freq'])
         self.dataframe.index.name = 'filename'
 
-        print(len(self.dataframe))
 
         # for each key determine how many bytes are in the binary string I need to break it down 8 bits per byte
         self.dataframe['num_bytes'] = self.dataframe['binary'].apply(lambda x: len(x) // 8)
@@ -123,102 +139,36 @@ class JITC_DATAOPS:
 
         os.chdir('../files')
 
-    # def find_silhoette_score(self, X):
-    #     """
-    #     Find Silhoette Scores allows us to get the optimal number of clusters for the data
-    #     """
-    #     X = np.array(X)
-    #     X = X.astype(int)
-    #     X = X.reshape(-1, 1)
-
-    #     sil_score = {}
-    #     for c in range(2, 30):
-
-    #         kmeans_model = KMeans(n_clusters=c, n_init='auto').fit(X)
-    #         score = silhouette_score(X, kmeans_model.labels_, metric='euclidean')
-    #         sil_score[c] = score
-    #     optimal_cluster = max(sil_score, key=sil_score.get)
-    #     return optimal_cluster
-
-    # def convert_binary_string(self, binary_string):
-    #     return [int(b) for b in binary_string]
-
     def develop_dataset(self):
-        # # Convert binary strings to lists of integers using parallel processing
-        # with ThreadPoolExecutor() as executor:
-        #     self.dataframe['binary'] = list(executor.map(self.convert_binary_string, self.dataframe['binary']))
+        # read the dataframe 
+        df_jitc_ngrams = self.dataframe['ngrams_freq']
+        # drop filename column
+        df_jitc_ngrams = df_jitc_ngrams.drop(columns=['filename'])
+        # create new dataframe with columns as the keys of the dictionary
+        df_jitc_ngrams = pd.DataFrame(df_jitc_ngrams.tolist(), columns=df_jitc_ngrams.iloc[0].keys())
+        print(df_jitc_ngrams)
+        
+        print(df_jitc_ngrams)
+        
+        # Step 1: Standardize the data
+        scaler = MinMaxScaler()
+        X_scaled = scaler.fit_transform(df_jitc_ngrams)
+        
+        # Step 2: Run DBSCAN
+        dbscan = DBSCAN(eps=0.1, min_samples=4)  # You may need to tune eps and min_samples
+        labels = dbscan.fit_predict(X_scaled)
 
-        # Flatten the array of arrays into a single list of bits
-        flat_data = [bit for array in self.dataframe['binary'] for bit in array]
+        # Step 3: Count unique labels (excluding noise)
+        unique_labels = set(labels) - {-1}  # Exclude noise points with label -1
+        n_clusters = len(unique_labels)
 
-        # Group the bits into chunks of 8
-        bytes_list = [flat_data[i:i + 8] for i in range(0, len(flat_data), 8)]
-        bytes_list = np.array(bytes_list)
-        bytes_list = bytes_list.astype(int)
-
-        print(np.shape(bytes_list))
-
-        # nClusters = self.find_silhoette_score(bytes_list)
-        # nClusters = 30
-
-        # # GMM clustering
-        # GMMCluster = GaussianMixture(n_components=nClusters, random_state=42).fit(bytes_list)
-        # gmm_labels = GMMCluster.predict(bytes_list)
-
-        # KMeans clustering
-        # KMeanCluster = KMeans(n_clusters=nClusters, random_state=42).fit(bytes_list)
-        # kmeans_labels = KMeanCluster.labels_
-
-        # DBSCAN
-        # normalize data
-        scaler = StandardScaler()
-        bytes_list = scaler.fit_transform(bytes_list)
-        dbscan = DBSCAN(eps=0.5, min_samples=5).fit(bytes_list)
-        dbscan_labels = dbscan.labels_
-        n_clusters = len(set(dbscan_labels)) - (1 if -1 in dbscan_labels else 0)
-        n_noise = list(dbscan_labels).count(-1)
-
-        # Identify noise points
-        n_noise = list(dbscan_labels).count(-1)
-        print(f'Number of noise points: {n_noise}')
-
-        # Plot the clusters
-        plt.scatter(bytes_list[:, 0], bytes_list[:, 1], c=dbscan_labels, cmap='plasma')
-        plt.title('DBSCAN Clustering')
-        plt.savefig('DBSCAN.png')
-        plt.show()
-
-
-        # Dimensionality reduction for visualization
-        # pca = PCA(n_components=2)
-        # bytes_list_2D = pca.fit_transform(bytes_list)
-
-        # # Graph GMM Cluster
-        # plt.scatter(bytes_list_2D[:, 0], bytes_list_2D[:, 1], c=gmm_labels, s=40, cmap='viridis')
-        # plt.title('GMM Clustering')
-        # plt.show()
-        # plt.savefig('GMMCluster.png')
-
-        # # Graph KMeans Cluster
-        # plt.scatter(bytes_list_2D[:, 0], bytes_list_2D[:, 1], c=kmeans_labels, s=40, cmap='viridis')
-        # plt.title('KMeans Clustering')
-        # plt.show()
-        # plt.savefig('KmeansCluster.png')
-
-
-        # # show figure using plotly graph objects based on on the plt
-        # fig = go.Figure(data=[go.Scatter(x=bytes_list[:, 0], y=bytes_list[:, 1], mode='markers', marker=dict(color=KMeanCluster.predict(bytes_list)))])
-        # fig.show()
-
-        # split data into train and test
-        X_train, X_test = train_test_split(bytes_list, test_size=0.8, random_state=42)
-
-        # create classes & labels based on the clusters identified
-        y_train = DBSCAN(eps=0.5, min_samples=5).fit_predict(X_train)
-        y_test = DBSCAN(eps=0.5, min_samples=5).fit_predict(X_test)
-
+        print(f"Number of clusters: {n_clusters}")
+        print(f"Labels: {labels}")
+        
+        print('stop')
 
         return X_train, X_test, y_train, y_test
+
 
 
 if __name__ == "__main__":

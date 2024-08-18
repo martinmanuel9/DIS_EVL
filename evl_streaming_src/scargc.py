@@ -497,9 +497,9 @@ class SCARGC:
             self.all_data = train['Dataset']
             
         elif self.dataset == 'JITC':
-            ## comment out if running in debug vs code
+            ## comment out if running in debug within vs code
             # os.chdir('../')
-            # print(os.getcwd())
+            print(os.getcwd())
             X_train = pd.read_pickle('data/JITC_Data/artifacts/X_train.pkl')
             X_test = pd.read_pickle('data/JITC_Data/artifacts/X_test.pkl')
             y_train = pd.read_pickle('data/JITC_Data/artifacts/y_train.pkl')
