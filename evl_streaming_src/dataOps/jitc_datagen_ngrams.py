@@ -42,6 +42,9 @@ import numpy as np
 import os
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import DBSCAN
+from sklearn.model_selection import train_test_split
+import umap
+import matplotlib.pyplot as plt
 
 class JITC_DATAOPS:
     def __init__(self, dataset):
@@ -67,14 +70,14 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         ###  debug mode ---------------------------
-        # testPath = str(path) + '/data/JITC_Data/files/'
-        # os.chdir(testPath)
+        testPath = str(path) + '/data/JITC_Data/files/'
+        os.chdir(testPath)
         #------------------------------------------
         ### run mode: change path to data directory
         # print(path)
-        changed_path = path + '/data/JITC_Data/files'
-        os.chdir(changed_path)
-        print(os.getcwd())
+        # changed_path = path + '/drive/MyDrive/JITC_Data/files'
+        # os.chdir(changed_path)
+        # print(os.getcwd())
 
     def process_directory(self, directory):
         with ThreadPoolExecutor() as executor:
@@ -146,13 +149,17 @@ class JITC_DATAOPS:
         df_jitc_ngrams = df_jitc_ngrams.drop(columns=['filename'])
         # create new dataframe with columns as the keys of the dictionary
         df_jitc_ngrams = pd.DataFrame(df_jitc_ngrams.tolist(), columns=df_jitc_ngrams.iloc[0].keys())
-        print(df_jitc_ngrams)
-        
-        print(df_jitc_ngrams)
+        print(df_jitc_ngrams.head())
         
         # Step 1: Standardize the data
         scaler = MinMaxScaler()
         X_scaled = scaler.fit_transform(df_jitc_ngrams)
+        
+        X_train, X_test = train_test_split(X_scaled, test_size=0.8, random_state=42)
+        
+        # create classes & labels based on the clusters identified
+        y_train = DBSCAN(eps=0.5, min_samples=5).fit_predict(X_train)
+        y_test = DBSCAN(eps=0.5, min_samples=5).fit_predict(X_test)
         
         # Step 2: Run DBSCAN
         dbscan = DBSCAN(eps=0.1, min_samples=4)  # You may need to tune eps and min_samples
@@ -164,8 +171,60 @@ class JITC_DATAOPS:
 
         print(f"Number of clusters: {n_clusters}")
         print(f"Labels: {labels}")
+
+        # Apply UMAP to reduce to 2D
+        reducer = umap.UMAP(n_components=2, random_state=42)
+        X_umap = reducer.fit_transform(X_scaled)
         
-        print('stop')
+        # Plotting the UMAP results
+        plt.figure(figsize=(8, 6))
+        unique_labels = set(labels)
+
+        # Colors for the plot
+        colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
+
+        for k, col in zip(unique_labels, colors):
+            if k == -1:
+                # Black used for noise (points labeled as -1)
+                col = [0, 0, 0, 1]
+
+            class_member_mask = (labels == k)
+
+            plt.plot(X_umap[class_member_mask, 0], X_umap[class_member_mask, 1], 'o',
+                    markerfacecolor=tuple(col),
+                    markeredgecolor='k',
+                    markersize=6)
+
+        plt.title('DBSCAN Clusters Visualized using UMAP')
+        plt.xlabel('UMAP Component 1')
+        plt.ylabel('UMAP Component 2')
+        plt.savefig('DBSCAN_Clusters_Visualized_using_UMAP_2D.png')
+        plt.show()
+        
+        # Apply UMAP to reduce to 3D
+        reducer = umap.UMAP(n_components=3, random_state=42)
+        X_umap_3d = reducer.fit_transform(X_scaled)
+
+        # 3D Plotting
+        from mpl_toolkits.mplot3d import Axes3D
+
+        fig = plt.figure(figsize=(10, 8))
+        ax = fig.add_subplot(111, projection='3d')
+
+        for k, col in zip(unique_labels, colors):
+            if k == -1:
+                col = [0, 0, 0, 1]
+
+            class_member_mask = (labels == k)
+
+            ax.scatter(X_umap_3d[class_member_mask, 0], X_umap_3d[class_member_mask, 1], X_umap_3d[class_member_mask, 2],
+                    c=[tuple(col)],
+                    edgecolor='k',
+                    s=50)
+
+        ax.set_title('DBSCAN Clusters Visualized using UMAP in 3D')
+        plt.savefig('DBSCAN_Clusters_Visualized_using_UMAP_3D.png')
+        plt.show()
 
         return X_train, X_test, y_train, y_test
 
