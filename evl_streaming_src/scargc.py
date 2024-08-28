@@ -289,8 +289,6 @@ class SCARGC:
                 self.labeled[ts] = labels[0][k]
                 ts += 1
                 
-            
-
             dict_train = {}
             for i in range(0, len(train['Data'][0])):
                 dict_train[i] = train['Data'][0][i]
@@ -505,47 +503,49 @@ class SCARGC:
             y_train = pd.read_pickle('data/JITC_Data/artifacts/y_train.pkl')
             y_test = pd.read_pickle('data/JITC_Data/artifacts/y_test.pkl')
             
+            jitc_data = pd.read_pickle('data/JITC_Data/dataframe/JITC_Dataframe.pkl')
+            
             # transformations
             x_train = X_train.to_numpy()
             x_test = X_test.to_numpy()
             y_train = y_train.to_numpy()
             y_test = y_test.to_numpy()
             
-            x_train = x_train.astype(int)
-            x_test = x_test.astype(int)
-            y_train = y_train.astype(int)
-            y_test = y_test.astype(int)
+            # x_train = x_train.astype(int)
+            # x_test = x_test.astype(int)
+            # y_train = y_train.astype(int)
+            # y_test = y_test.astype(int)
             
             print('Training set shape:', np.shape(x_train))
             print('Testing set shape:' , np.shape(x_test))
             
-            # change chunck size if need to test smaller batches original is 24350.0 is the mean byte size of the jitc data files
-            chunk_size = 24350.0
-            
             # for testing add [:1000] to the end of each of the variables
-            x_train = x_train
-            y_train = y_train
-            x_test = x_test
-            y_test = y_test
+            # x_train = x_train
+            # y_train = y_train
+            # x_test = x_test
+            # y_test = y_test
             
             ts = 0
             # set data (all the features)
-            for i in range(0, len(x_train[0])):
+            for i in range(len(x_train[0])):
                 self.data[ts] = x_train[0][i]
                 ts += 1
+            
             # set all the labels 
             ts = 0
-            for k in range(0, len(y_train)):
+            for k in range(len(y_train)):
                 self.labeled[ts] = y_train[k]
                 ts += 1
-            
+                
             ## all data 
             # join x_train and y_train
-            x_train = np.array(list(x_train))
-            y_train = np.array(list(y_train))
+            x_train = np.array(x_train)
+            y_train = np.array(y_train)
             all_train_data = np.concatenate((x_train, y_train), axis=1)
-            dict_train = {}
             
+            chunk_size = 100
+            
+            dict_train = {}
             for i in range(0, len(x_train), chunk_size):
                 chunk = all_train_data[i:i + chunk_size]
                 key = i // chunk_size
@@ -558,11 +558,10 @@ class SCARGC:
                 chunk = all_test_data[j:j + chunk_size]
                 key = j // chunk_size
                 dict_test[key] = chunk
-
+                
             self.Xinit = dict_train
             self.Yinit = dict_test
             
-
             self.X = dict_train
             self.Y = dict_test
             self.all_data = all_train_data
@@ -1217,5 +1216,5 @@ class SCARGC:
             return self.avg_perf_metric
 
 # ton_iot_fridge
-# run_scargc_svm = SCARGC(classifier = 'mlp', dataset= 'JITC', datasource='UNSW', resample=False).run()
-# print(run_scargc_svm)
+run_scargc_svm = SCARGC(classifier = 'svm', dataset= 'JITC', datasource='UNSW', resample=False).run()
+print(run_scargc_svm)
