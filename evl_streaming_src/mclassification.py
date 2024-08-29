@@ -152,7 +152,6 @@ class MClassification():
                 self.Y = dict_test
                 self.all_data = train['Dataset']
                 self.all_data_test = test['Dataset']
-             
 
             elif self.dataset == 'ton_iot_garage':
                 datagen = ton_iot.TON_IoT_Datagen()
@@ -430,7 +429,7 @@ class MClassification():
                 
             elif self.dataset == 'JITC':
                 ## comment out if running in debug vs code
-                os.chdir('../')
+                # os.chdir('../')
                 print(os.getcwd())
                 X_train = pd.read_pickle('data/JITC_Data/artifacts/X_train.pkl')
                 X_test = pd.read_pickle('data/JITC_Data/artifacts/X_test.pkl')
@@ -444,13 +443,8 @@ class MClassification():
                 y_train = y_train.to_numpy()
                 y_test = y_test.to_numpy()
                 
-                x_train = x_train.astype(int)
-                x_test = x_test.astype(int)
-                y_train = y_train.astype(int)
-                y_test = y_test.astype(int)
-                
                 # change chunck size if need to test smaller batches
-                chunk_size = 100000
+                chunk_size = 100
                 
                 # for testing add [:1000] to the end of each of the variables
                 x_train = x_train
@@ -472,8 +466,8 @@ class MClassification():
                 ## all data 
                 # join x_train and y_train
                 # print(x_train.shape, y_train.shape)
-                x_train = np.array(list(x_train))
-                y_train = np.array(list(y_train))
+                x_train = np.array(x_train)
+                y_train = np.array(y_train)
                 all_train_data = np.concatenate((x_train, y_train), axis=1)
                 dict_train = {}
                 
@@ -482,10 +476,6 @@ class MClassification():
                     key = i // chunk_size
                     dict_train[key] = chunk
                     
-                # dict_y_train = {}
-                # for i in range(0, len(y_train)):
-                #     dict_y_train[i] = y_train[i]
-                
                 y_test = np.array(list(y_test))
                 all_test_data = np.concatenate((x_test, y_test), axis=1)
                 dict_test = {}
@@ -886,8 +876,7 @@ class MClassification():
 
         updatedClusters = updatedModel.predict(inData)
         updatedClusterCenters = updatedModel.cluster_centers_
-        return updatedMicroCluster, updatedClusters, updatedClusterCenters
-      
+        return updatedMicroCluster, updatedClusters, updatedClusterCenters 
 
     def initLabelData(self, ts, inData, inLabels):
         self.cluster(X= inData, y= inLabels, ts=ts )
@@ -901,7 +890,7 @@ class MClassification():
                                             classifier= self.classifier, tstart=t_start, tend=t_end)
             self.performance_metric[ts] = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.X[ts+1][:,-1])
         elif self.datasource == 'UNSW':
-             # classify based on the clustered predictions (self.preds) done in the init step
+            # classify based on the clustered predictions (self.preds) done in the init step
             
             self.preds[ts] = self.classify(trainData= inData , trainLabel= inLabels, testData= self.all_data_test[:np.shape(inData)[0]])
             t_end = time.time()

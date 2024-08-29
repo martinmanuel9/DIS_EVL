@@ -158,7 +158,7 @@ class RunExperiment:
 
 if __name__ == '__main__':
     experiments = [ 'scargc']
-    classifiers = ['svm', 'mlp','naive_bayes', 'lstm', 'random_forest', 'logistic_regression']
+    classifiers = ['svm', 'mlp','naive_bayes', 'lstm', 'random_forest', 'logistic_regression', 'gru', '1dcnn', 'adaboost', '1nn', 'knn', 'decision_tree']
     datasets = ['JITC']
     datasources = ['UNSW']
     methods = ['kmeans']

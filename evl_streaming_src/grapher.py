@@ -48,7 +48,15 @@ class Grapher():
         path = os.getcwd()
         print(os.getcwd())
         path = path + "/results/" 
-        os.chdir(path)
+        
+        # check if I am under results directory
+        if not os.path.exists(path):
+            os.mkdir(path)
+            os.chdir(path)
+        else:
+            os.chdir(path)
+        
+
         list_dir = os.listdir(path)
         result = {}
         for i in range(len(list_dir)):

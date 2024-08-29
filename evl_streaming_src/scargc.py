@@ -160,36 +160,6 @@ class SCARGC:
             self.Xinit = self.X
             self.Yinit = self.Y
 
-        # elif self.datasource == 'unsw':
-        #     # dataset = UNSW_NB15_Datagen()
-        #     # gen_train_features = dataset.generateFeatTrain
-        #     # gen_test_features =dataset.generateFeatTest 
-        #     # X, y = dataset.create_dataset(train=gen_train_features, test=gen_test_features)
-        #     # we have the following categoires : flow, basic, time, content, generated 
-        #     unsw_gen = unsw.UNSW_NB15_Datagen()
-        #     # type of unsw features : generated, time, content, basic, allFeatures
-        #     gen_train_features = unsw_gen.allFeatTrain
-        #     gen_test_features = unsw_gen.allFeatTest
-        #     train , test = unsw_gen.create_dataset(train = gen_train_features, test = gen_test_features)
-        #     data = train['Data']
-        #     dataset = train['Dataset']
-        #     labels = train['Labels']
-        #     testDataset = train['Dataset']
-        #     testData = test['Data']
-        #     testLabels = test['Labels']
-            
-        #     ts = 0
-        #     # set data (all the features)
-        #     for i in range(0, len(data[0])):
-        #         self.data[ts] = data[0][i]
-        #         ts += 1
-        #     # set all the labels 
-        #     ts = 0
-        #     for k in range(0, len(labels[0])):
-        #         self.labeled[ts] = labels[0][k]
-        #         ts += 1
-
-
         if self.dataset == 'ton_iot_fridge':
             datagen = ton_iot.TON_IoT_Datagen()
             # need to select what IoT data you want fridge, garage, GPS, modbus, light, thermostat, weather 
@@ -496,7 +466,7 @@ class SCARGC:
             
         elif self.dataset == 'JITC':
             ## comment out if running in debug within vs code
-            # os.chdir('../')
+            os.chdir('../')
             print(os.getcwd())
             X_train = pd.read_pickle('data/JITC_Data/artifacts/X_train.pkl')
             X_test = pd.read_pickle('data/JITC_Data/artifacts/X_test.pkl')
@@ -511,19 +481,9 @@ class SCARGC:
             y_train = y_train.to_numpy()
             y_test = y_test.to_numpy()
             
-            # x_train = x_train.astype(int)
-            # x_test = x_test.astype(int)
-            # y_train = y_train.astype(int)
-            # y_test = y_test.astype(int)
             
             print('Training set shape:', np.shape(x_train))
             print('Testing set shape:' , np.shape(x_test))
-            
-            # for testing add [:1000] to the end of each of the variables
-            # x_train = x_train
-            # y_train = y_train
-            # x_test = x_test
-            # y_test = y_test
             
             ts = 0
             # set data (all the features)
@@ -1216,5 +1176,5 @@ class SCARGC:
             return self.avg_perf_metric
 
 # ton_iot_fridge
-run_scargc_svm = SCARGC(classifier = 'svm', dataset= 'JITC', datasource='UNSW', resample=False).run()
-print(run_scargc_svm)
+# run_scargc_svm = SCARGC(classifier = 'svm', dataset= 'JITC', datasource='UNSW', resample=True).run()
+# print(run_scargc_svm)
