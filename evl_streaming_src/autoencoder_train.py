@@ -57,19 +57,19 @@ sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=sessi
 
 # K.set_session(sess)
 
-ae_model = 'models/ae_offline_model_Windows'
-ae_scaler = 'models/ae_offline_scaler_Windows'
-change_detector_path = 'models/change_detector_Windows'
-universal_feat_path = 'files/feature_set_universal'
+ae_model = 'ae_offline_model'
+ae_scaler = 'ae_offline_scaler'
+change_detector_path = 'change_detector'
+# universal_feat_path = 'files/feature_set_universal'
 stream_threshold = 'stream_threshold.csv'
-kafka_data_collection_dir = 'kafka_data_collection_train'
+# kafka_data_collection_dir = 'kafka_data_collection_train'
 use_cv_threshold = True
 
 
 def autoencoder(X_train, X_val,
                 noise_factor, epoch_train,
                 activation_func, hidden_neurons, num_sigma,
-                layer, cross_validation):
+                cross_validation):
     K.clear_session()
     pt = MinMaxScaler()
     # pt = StandardScaler()
@@ -114,15 +114,8 @@ def autoencoder(X_train, X_val,
 
     autoencoder_model.compile(optimizer='sgd', loss='mse', metrics=['mse', 'mae'])
 
-    # check if there if I am on the models directory
-    if not os.path.exists('models'):
-        os.chdir(os.getcwd() + "/models")
-    # print(os.getcwd())
-    # model = tf.keras.models.load_model('ae_offline_model_Windows_application.h5')
-    # tf.keras.models.save_model(model, 'ae_offline_model_Windows_application.keras')
-    
     checkpointer = ModelCheckpoint(
-        filepath='ae_offline_model_Windows_application'+ '.keras',
+        filepath='ae_offline_model_JITC'+ '.keras',
         verbose=0,
         save_best_only=True)
 
@@ -159,35 +152,43 @@ def autoencoder(X_train, X_val,
         return population_threshold  # learn threshold by cross validation
 
     elif not cross_validation:
-        joblib.dump(pt, ae_scaler + '_' + layer + '.pkl')
-        autoencoder_model.save(ae_model + '_' + layer + '.h5')
+        joblib.dump(pt, ae_scaler + '_' + 'JITC' + '.pkl')
+        autoencoder_model.save(ae_model + '_' + 'JITC' + '.h5')
         autoencoder_model.summary()
-        print('\n' + layer + ' layer population threshold without cross validation: ', population_threshold)
+        print('\n' + 'JITC' + ' layer population threshold without cross validation: ', population_threshold)
         return population_threshold  # for comparison
 
 
-def train_multiple_layer(n_folds: int, noise_factor: float, layer: str, epoch: int, activation_func: str,
+def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activation_func: str,
                         hidden_neurons: list, num_sigma: float, change_detection_model: str, remove_cv_outlier):
-    # layer = 'application'
-    normal_train_data_dir = kafka_data_collection_dir + '_' + layer
-    kafka_normal_dataset_list = []
-    print(os.getcwd())
-    os.chdir(os.getcwd() + "/evl_streaming_src")
-    print(os.getcwd())
-
-    for filename in os.listdir("kafka_data_collection_train_application"):
-        file_path = os.path.join(normal_train_data_dir, filename)
-        df_file = pd.read_csv(file_path)
-        kafka_normal_dataset_list.append(df_file)
-
-    train_data = pd.concat(kafka_normal_dataset_list).reset_index(drop=True)
-    train_data = train_data.drop(labels=['date_time'], axis=1)
+    
+    file_path = os.getcwd() + '/data/JITC_Data/dataframe/JITC_Dataframe.pkl'
+    # Open the pickle file in read-binary mode
+    with open(file_path, 'rb') as file:
+        jitc_dataframe = pickle.load(file)
+    normal_train_data_dir = file_path
+    
+    df_ngrams_freq = jitc_dataframe['ngrams_freq']
+    df_ngrams_freq = pd.DataFrame(list(df_ngrams_freq))
+    df_labels = jitc_dataframe['labels']
+    df_labels = pd.DataFrame(list(df_labels))
+    
+    # concat ngrams_freq and labels and keep column names and order of columns
+    normal_dataset = pd.concat([df_ngrams_freq, df_labels], axis=1)
+    # last column is label
+    normal_dataset.columns = list(df_ngrams_freq.columns) + ['label']
+    # reset index for dataframe normal dataset
+    normal_dataset.reset_index(drop=True, inplace=True)
+    
+    train_data = normal_dataset
+    
+    os.chdir(os.getcwd() + "/evl_streaming_src/models")
     # train_data = train_data[:]
-    train_data.to_csv('df_train_sel_feat_' + layer + '.csv', index=False)
-    print('\nstart training ' + layer + ' layer model...\n')
+    normal_dataset.to_csv('df_train_sel_feat_' + 'JITC' + '.csv', index=False)
+    print('\nStart training ' + 'JITC' + ' model...\n')
     # model_training(df_train, layer, hidden_neurons, num_sigma, use_cv_threshold=use_cv_threshold)
-
-    train_data['label'] = 0  # assign label for cross validation function
+    
+    # train_data['label'] = 0  # assign label for cross validation function
     X = train_data.drop(labels=['label'], axis=1).values
     y = train_data['label']
 
@@ -195,10 +196,10 @@ def train_multiple_layer(n_folds: int, noise_factor: float, layer: str, epoch: i
     skf.get_n_splits(X, y)
     j = 1
     base_recserror_list = []
-    print('cross validation for getting autoencoder threshold on ' + layer + ' layer...')
+    print('Cross validation for getting autoencoder threshold on ' + 'JITC' + '...')
 
     for train_index, val_index in skf.split(X, y):
-        print('\n\n******** ' + layer + ' layer cross validation round %d *******' % j)
+        print('\n\n******** ' + 'JITC' + ' layer cross validation round %d *******' % j)
         # print("train index:", train_index)
         # print("validation index:", val_index)
         ae_train, ae_val = X[train_index], X[val_index]
@@ -206,11 +207,11 @@ def train_multiple_layer(n_folds: int, noise_factor: float, layer: str, epoch: i
         print(ae_val.shape)
         base_recserror_cv = autoencoder(ae_train, ae_val,
                                         noise_factor, epoch, activation_func,
-                                        hidden_neurons, num_sigma, layer,
+                                        hidden_neurons, num_sigma,
                                         cross_validation=True)
         base_recserror_list.append(base_recserror_cv)
         j += 1
-    print('\nthreshold list: ', base_recserror_list, end='\n\n')
+    print('\nThreshold list: ', base_recserror_list, end='\n\n')
 
     def modified_z_score_outlier(cv_point, z_threshold=3.5):
         """
@@ -235,27 +236,27 @@ def train_multiple_layer(n_folds: int, noise_factor: float, layer: str, epoch: i
     if remove_cv_outlier:
         base_recserror_list = list(compress(base_recserror_list, modified_z_score_outlier(base_recserror_list)))
 
-    print("\nremoving outlier threshold by modified_z_score if necessary: ", base_recserror_list, end='\n\n')
+    print("\nRemoving outlier threshold by modified_z_score if necessary: ", base_recserror_list, end='\n\n')
 
     base_recserror = sum(base_recserror_list) / len(base_recserror_list)
-    print('cross validation finished...')
+    print('Cross validation finished...')
 
-    print('\n********* round of getting autoencoder h5 model and scaler using full data *********')
+    print('\n********* Round of getting autoencoder model and scaler using full data *********')
 
     base_recserror_non_cv = autoencoder(X, X, noise_factor, epoch, activation_func,
-                                        hidden_neurons, num_sigma, layer,
+                                        hidden_neurons, num_sigma,
                                         cross_validation=False)
-    print('\n' + layer + ' layer average population threshold of cross validation: ', base_recserror, end='\n\n')
+    print('\n' + 'JITC' + ' layer average population threshold of cross validation: ', base_recserror, end='\n\n')
 
     if use_cv_threshold:
-        pd.DataFrame({'stream_threshold': [base_recserror]}).to_csv(layer + '_' + stream_threshold, index=False)
-        print(layer + ' layer final threshold: ', base_recserror)
+        pd.DataFrame({'Stream_threshold': [base_recserror]}).to_csv('JITC' + '_' + stream_threshold, index=False)
+        print('JITC' + ' layer final threshold: ', base_recserror)
 
     elif not use_cv_threshold:
-        pd.DataFrame({'stream_threshold': [base_recserror_non_cv]}).to_csv(layer + '_' + stream_threshold, index=False)
-        print(layer + ' layer final threshold: ', base_recserror)
+        pd.DataFrame({'Stream_threshold': [base_recserror_non_cv]}).to_csv('JITC' + '_' + stream_threshold, index=False)
+        print('JITC' + ' layer final threshold: ', base_recserror)
 
-    print('\ncomplete training model...\n')
+    print('\nComplete training model...\n')
 
     if change_detection_model == "HDDM_A":
         change_detector = HDDM_A()
@@ -266,7 +267,7 @@ def train_multiple_layer(n_folds: int, noise_factor: float, layer: str, epoch: i
     elif change_detection_model == "KSWIN":
         change_detector = KSWIN(alpha=0.001)
 
-    filehandler = open(change_detector_path + '_' + layer + '.pkl', "wb")
+    filehandler = open(change_detector_path + '_' + 'JITC' + '.pkl', "wb")
     pickle.dump(change_detector, filehandler)
     filehandler.close()
 
@@ -284,22 +285,22 @@ def get_ae_config():
 
     # append SGD autoencoders for each layer
     config["autoencoders"].append(
-        {"n_folds": 5, "type": "application", "noise_factor": 0.1, "hidden_neurons": [30, 15, 30], "num_sigma": 6,
+        {"n_folds": 5, "type": "JITC", "noise_factor": 0.1, "hidden_neurons": [30, 15, 30], "num_sigma": 6,
         "epoch": 5, "activation_func": "relu"})
 
-    config["autoencoders"].append(
-        {"n_folds": 5, "type": "network", "noise_factor": 0.1, "hidden_neurons": [5, 3, 5], "num_sigma": 5,
-        "epoch": 5, "activation_func": "relu"})
+    # config["autoencoders"].append(
+    #     {"n_folds": 5, "type": "network", "noise_factor": 0.1, "hidden_neurons": [5, 3, 5], "num_sigma": 5,
+    #     "epoch": 5, "activation_func": "relu"})
 
-    config["autoencoders"].append(
-        {"n_folds": 5, "type": "system", "noise_factor": 0.1, "hidden_neurons": [15, 10, 15], "num_sigma": 5,
-        "epoch": 5, "activation_func": "relu"})
+    # config["autoencoders"].append(
+    #     {"n_folds": 5, "type": "system", "noise_factor": 0.1, "hidden_neurons": [15, 10, 15], "num_sigma": 5,
+    #     "epoch": 5, "activation_func": "relu"})
 
     config["change_detector"] = 'KSWIN'
 
     # config["select_layers"] = ["application", "network", "system"] # select the layer needed to be analyzed
 
-    config["select_layers"] = ["application"]
+    config["select_layers"] = ["JITC"]
 
     config["remove cross-validation outlier"] = True
 
@@ -329,7 +330,7 @@ def main():
         layer_config = list(filter(lambda x: x['type'] == layer, ae_config['autoencoders']))[0]
         print('********' + layer + '*********')
         print(layer_config)
-        train_multiple_layer(layer=layer,
+        train_multiple_layer(
                             n_folds=layer_config["n_folds"],
                             noise_factor=layer_config["noise_factor"],
                             hidden_neurons=layer_config["hidden_neurons"],
