@@ -54,7 +54,6 @@ session_conf = tf.compat.v1.ConfigProto(intra_op_parallelism_threads=1,
 tf.compat.v1.set_random_seed(rs)
 sess = tf.compat.v1.Session(graph=tf.compat.v1.get_default_graph(), config=session_conf)
 
-
 # K.set_session(sess)
 
 ae_model = 'ae_offline_model'
@@ -161,6 +160,10 @@ def autoencoder(X_train, X_val,
 
 def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activation_func: str,
                         hidden_neurons: list, num_sigma: float, change_detection_model: str, remove_cv_outlier):
+    
+    # comment the next two lines to troubleshoot (debug)
+    print(os.getcwd())
+    os.chdir('../')
     
     file_path = os.getcwd() + '/data/JITC_Data/dataframe/JITC_Dataframe.pkl'
     # Open the pickle file in read-binary mode
