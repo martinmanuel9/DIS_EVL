@@ -15,11 +15,11 @@ import pandas as pd
 
 from typing import Dict
 from datetime import datetime
-from tensorflow.compat.v1.keras.models import load_model
-from feature_extraction_enhencement import feat_extract_enhence
+from tensorflow.keras.models import Model
+# from feature_extraction_enhencement import feat_extract_enhence
 
 from files.feature_set import FEATURE_SET
-from files.monitored_process import MONITORED_PROCESS
+# from files.monitored_process import MONITORED_PROCESS
 
 
 warnings.filterwarnings("ignore")
@@ -37,7 +37,7 @@ class PreprocessingCollection():
 
     # path setup
 
-    save_dir = 'kafka_data_collection_train_application'
+    save_dir = 'datasets'
 
     train_sample_path = str(save_dir) + '/' + 'normal_train.csv'
 
@@ -136,9 +136,9 @@ class PreprocessingCollection():
             self.df_win_out_two = self.df_win_out_two.reset_index(drop=True)
 
             diff_cols = [col
-                         for col in df_win_out.columns
-                         if 'count' in col or 'system' in col
-                         ]
+                        for col in df_win_out.columns
+                        if 'count' in col or 'system' in col
+                        ]
 
             df_win_out[diff_cols] = self.df_win_out_two[diff_cols].diff().iloc[-1:].reset_index(drop=True)
 
