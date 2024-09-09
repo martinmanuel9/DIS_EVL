@@ -2,7 +2,7 @@
 
 """
 Application:        JITC processing
-File name:          jitc_datagen_ngrams.py
+File name:          jitc_datagen_bits.py
 Author:             Martin Manuel Lopez
 Creation:           08/17/2024
 
@@ -36,13 +36,14 @@ import numpy as np
 from pathlib import Path
 from collections import Counter
 from nltk.util import ngrams
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import pandas as pd
 import numpy as np
 import os
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import DBSCAN
 from sklearn.model_selection import train_test_split
+# !pip install umap-learn
 import umap
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -101,7 +102,7 @@ class JITC_DATAOPS:
         """
         Extract 32-bit sequences (4 bytes) from a given binary sequence.
         """
-        sequence_length = 64
+        sequence_length = 128
         sequences = [sequence[i:i+sequence_length] for i in range(0, len(sequence) - sequence_length + 1, sequence_length)]
         return sequences
 
@@ -122,6 +123,14 @@ class JITC_DATAOPS:
         # Calculate the number of bytes in the binary string
         self.dataframe['num_bytes'] = self.dataframe['binary'].apply(lambda x: len(x) // 8)
 
+    def minmax_scaler(self, array_of_bits):
+            scaler = MinMaxScaler()
+            return scaler.fit_transform(array_of_bits)
+
+    def dbscan_cluster(self, X_scaled_chunk, eps=0.1, min_samples=10):
+        dbscan = DBSCAN(eps=eps, min_samples=min_samples)
+        return dbscan.fit_predict(X_scaled_chunk)
+
     def develop_dataset(self):
         # Prepare data for clustering
         df_repeating_sequences = self.dataframe['sequences'].apply(lambda x: list(x.keys()))
@@ -130,34 +139,45 @@ class JITC_DATAOPS:
         # fill NaN values with 0
         df_repeating_sequences = df_repeating_sequences.fillna(0)
         filtered_df = df_repeating_sequences.loc[:, (df_repeating_sequences != 0).any(axis=0)]
-        
+
         array_of_bits = []
 
         # Iterate over each element in the DataFrame
         for column in filtered_df.columns:
             for item in filtered_df[column]:
                 # Check if the item is a 32-bit string and contains only '0' and '1'
-                if isinstance(item, str) and len(item) == 32 and set(item) <= {'0', '1'}:
+                if isinstance(item, str) and len(item) == 128 and set(item) <= {'0', '1'}:
                     # Convert the 32-bit string to a number
                     number = int(item, 2)
                     array_of_bits.append(number)
 
         array_of_bits = np.array(array_of_bits)
         array_of_bits = array_of_bits.reshape(-1, 1)
-        # Convert the sequences to a numerical format
-        # For simplicity, we'll treat each sequence as a binary string and convert it to an integer
-        # df_repeating_sequences = df_repeating_sequences.map(lambda seq: int(seq, 2) if seq else 0)
-        
-        # Step 1: Standardize the data
-        scaler = MinMaxScaler()
-        X_scaled = scaler.fit_transform(array_of_bits)
-        
-        # Step 2: Run DBSCAN
-        dbscan = DBSCAN(eps=0.1, min_samples=10) 
-        labels = dbscan.fit_predict(X_scaled)
+
+        # Step 1: Standardize the data using MinMaxScaler (single-threaded)
+        X_scaled = self.minmax_scaler(array_of_bits)
+
+        # Step 2: Run DBSCAN using ThreadPoolExecutor
+        n_jobs = os.cpu_count()  # Get the number of available cores
+        chunk_size = len(X_scaled) // n_jobs
+
+        # Split the scaled data into chunks for parallel processing
+        chunks = [X_scaled[i:i + chunk_size] for i in range(0, len(X_scaled), chunk_size)]
+
+        labels = np.array([], dtype=int)
+
+        with ThreadPoolExecutor(max_workers=n_jobs) as executor:
+            futures = {executor.submit(self.dbscan_cluster, chunk): i for i, chunk in enumerate(chunks)}
+            
+            for future in as_completed(futures):
+                chunk_labels = future.result()
+                labels = np.concatenate((labels, chunk_labels))
 
         # Add labels to the dataframe
-        self.dataframe['labels'] = labels
+        # concatenate the X_scaled with the labels
+        X_scaled_DF = pd.DataFrame(X_scaled)
+        labels_DF = pd.DataFrame(labels, columns=['labels'])
+        self.dataframe = pd.concat([X_scaled_DF, labels_DF], axis=1)
 
         # Save the dataframe
         if not os.path.exists('dataframe'):
@@ -167,25 +187,16 @@ class JITC_DATAOPS:
         os.chdir('../')
 
         # Step 3: Count unique labels (excluding noise)
-        unique_labels = set(labels)
+        unique_labels = np.unique(labels)
         n_clusters = len(unique_labels)
         self.unique_labels = unique_labels
         self.nKlusters = n_clusters
         print(f"Number of clusters: {self.nKlusters}")
         print(f"Labels: {self.unique_labels}")
 
-        # Create evaluation dataset
-        X_train, X_test = train_test_split(df_repeating_sequences, test_size=0.8, random_state=42)
-        X_train_scaled = scaler.fit_transform(X_train)
-        X_test_scaled = scaler.transform(X_test)
-
-        # Create classes & labels based on the clusters identified
-        y_train = DBSCAN(eps=0.1, min_samples=4).fit_predict(X_train_scaled)
-        y_test = DBSCAN(eps=0.1, min_samples=4).fit_predict(X_test_scaled)
-
         # Apply UMAP to reduce to 2D
         reducer = umap.UMAP(n_components=2, random_state=42)
-        X_umap = reducer.fit_transform(X_scaled)
+        X_umap = reducer.fit_transform(X_scaled_DF.values)
 
         # Plotting the UMAP results
         plt.figure(figsize=(8, 6))
@@ -196,20 +207,20 @@ class JITC_DATAOPS:
                 col = [0, 0, 0, 1]  # Black used for noise (points labeled as -1)
 
             class_member_mask = (labels == k)
-            plt.plot(X_umap[class_member_mask, 0], X_umap[class_member_mask, 1], 'o',
-                        markerfacecolor=tuple(col),
-                        markeredgecolor='k',
-                        markersize=6)
+            plt.plot(X_umap[class_member_mask.flatten(), 0], X_umap[class_member_mask.flatten(), 1], 'o',
+                    markerfacecolor=tuple(col),
+                    markeredgecolor='k',
+                    markersize=6)
 
-        plt.title('DBSCAN 32-bit Sequence Clusters Visualized using UMAP')
+        plt.title('DBSCAN 128-bit Sequence Clusters Visualized using UMAP')
         plt.xlabel('UMAP Component 1')
         plt.ylabel('UMAP Component 2')
-        plt.savefig('DBSCAN_32bit_Clusters_Visualized_using_UMAP_2D.png')
+        plt.savefig('DBSCAN_128bit_Clusters_Visualized_using_UMAP_2D.png')
         plt.show()
 
         # Apply UMAP to reduce to 3D
         reducer = umap.UMAP(n_components=3, random_state=42)
-        X_umap_3d = reducer.fit_transform(X_scaled)
+        X_umap_3d = reducer.fit_transform(X_scaled_DF.values)
 
         # 3D Plotting
         fig = plt.figure(figsize=(10, 8))
@@ -221,35 +232,16 @@ class JITC_DATAOPS:
 
             class_member_mask = (labels == k)
 
-            ax.scatter(X_umap_3d[class_member_mask, 0], X_umap_3d[class_member_mask, 1], X_umap_3d[class_member_mask, 2],
+            ax.scatter(X_umap_3d[class_member_mask.flatten(), 0], X_umap_3d[class_member_mask.flatten(), 1], X_umap_3d[class_member_mask.flatten(), 2],
                         c=[tuple(col)],
                         edgecolor='k',
                         s=50)
 
-        ax.set_title('DBSCAN 32-bit Sequence Clusters Visualized using UMAP in 3D')
-        plt.savefig('DBSCAN_32bit_Clusters_Visualized_using_UMAP_3D.png')
+        ax.set_title('DBSCAN 128-bit Sequence Clusters Visualized using UMAP in 3D')
+        plt.savefig('DBSCAN_128bit_Clusters_Visualized_using_UMAP_3D.png')
         plt.show()
-
-        return X_train, X_test, y_train, y_test
 
 if __name__ == "__main__":
     dataOps = JITC_DATAOPS(dataset='JITC')
     # dataOps.update_jsons(os.getcwd())
-    X_train, X_test, y_train, y_test = dataOps.develop_dataset()
-
-    # Create artifacts directory
-    if not os.path.exists('artifacts'):
-        os.mkdir('artifacts')
-        os.chdir('artifacts')
-    else:
-        os.chdir('artifacts')
-
-    # Save X_train, X_test, y_train, y_test in pickle format
-    X_train = pd.DataFrame(X_train)
-    X_test = pd.DataFrame(X_test)
-    y_train = pd.DataFrame(y_train)
-    y_test = pd.DataFrame(y_test)
-    X_train.to_pickle('X_train.pkl')
-    X_test.to_pickle('X_test.pkl')
-    y_train.to_pickle('y_train.pkl')
-    y_test.to_pickle('y_test.pkl')
+    dataOps.develop_dataset()
