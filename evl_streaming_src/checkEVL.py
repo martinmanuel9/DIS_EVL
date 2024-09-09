@@ -3,7 +3,7 @@ import os
 
 print(os.getcwd())  
 # Replace 'file_path.pkl' with the path to your pickle file
-file_path = os.getcwd() + '/data/JITC_Data/dataframe/JITC_Train_Dataframe.pkl'
+file_path = os.getcwd() + '/evl_streaming_src/datasets/JITC_Train_Dataframe.pkl'
 
 # Open the pickle file in read-binary mode
 with open(file_path, 'rb') as file:
