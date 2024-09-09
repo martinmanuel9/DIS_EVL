@@ -94,7 +94,6 @@ class JITC_DATAOPS:
                     'binary': binary_sequence,
                     'sequences': sequences
                 }
-                print(self.data)
         except (json.JSONDecodeError, KeyError) as e:
             print(f"Error processing {json_file}: {e}")
 
@@ -102,7 +101,7 @@ class JITC_DATAOPS:
         """
         Extract 32-bit sequences (4 bytes) from a given binary sequence.
         """
-        sequence_length = 32
+        sequence_length = 64
         sequences = [sequence[i:i+sequence_length] for i in range(0, len(sequence) - sequence_length + 1, sequence_length)]
         return sequences
 
@@ -130,21 +129,28 @@ class JITC_DATAOPS:
 
         # fill NaN values with 0
         df_repeating_sequences = df_repeating_sequences.fillna(0)
-        
-
-        # Filter out columns that contain only the value 0
         filtered_df = df_repeating_sequences.loc[:, (df_repeating_sequences != 0).any(axis=0)]
+        
+        array_of_bits = []
 
-        # Convert the filtered dataframe into an array of arrays
-        bit_array = filtered_df.values.tolist()
+        # Iterate over each element in the DataFrame
+        for column in filtered_df.columns:
+            for item in filtered_df[column]:
+                # Check if the item is a 32-bit string and contains only '0' and '1'
+                if isinstance(item, str) and len(item) == 32 and set(item) <= {'0', '1'}:
+                    # Convert the 32-bit string to a number
+                    number = int(item, 2)
+                    array_of_bits.append(number)
 
+        array_of_bits = np.array(array_of_bits)
+        array_of_bits = array_of_bits.reshape(-1, 1)
         # Convert the sequences to a numerical format
         # For simplicity, we'll treat each sequence as a binary string and convert it to an integer
         # df_repeating_sequences = df_repeating_sequences.map(lambda seq: int(seq, 2) if seq else 0)
         
         # Step 1: Standardize the data
         scaler = MinMaxScaler()
-        X_scaled = scaler.fit_transform(df_repeating_sequences)
+        X_scaled = scaler.fit_transform(array_of_bits)
         
         # Step 2: Run DBSCAN
         dbscan = DBSCAN(eps=0.1, min_samples=10) 
