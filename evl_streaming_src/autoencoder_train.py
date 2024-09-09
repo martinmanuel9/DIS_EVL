@@ -165,7 +165,7 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
     print(os.getcwd())
     os.chdir('../')
     
-    file_path = os.getcwd() + '/data/JITC_Data/dataframe/JITC_Dataframe.pkl'
+    file_path = os.getcwd() + '/evl_streaming_src/datasets/JITC_Train_Dataframe.pkl'
     # Open the pickle file in read-binary mode
     with open(file_path, 'rb') as file:
         jitc_dataframe = pickle.load(file)
