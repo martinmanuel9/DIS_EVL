@@ -140,7 +140,7 @@ class JITC_DATAOPS:
         df_repeating_sequences = df_repeating_sequences.fillna(0)
         filtered_df = df_repeating_sequences.loc[:, (df_repeating_sequences != 0).any(axis=0)]
 
-        array_of_bits = []
+        array_converted_bits = []
 
         # Iterate over each element in the DataFrame
         for column in filtered_df.columns:
@@ -149,13 +149,25 @@ class JITC_DATAOPS:
                 if isinstance(item, str) and len(item) == 128 and set(item) <= {'0', '1'}:
                     # Convert the 32-bit string to a number
                     number = int(item, 2)
-                    array_of_bits.append(number)
+                    array_converted_bits.append(number)
+        
+        array_of_bits = []
+        # Iterate over each element in the DataFrame
+        for column in filtered_df.columns:
+            for item in filtered_df[column]:
+                # Check if the item is a 32-bit string and contains only '0' and '1'
+                if isinstance(item, str) and len(item) == 128 and set(item) <= {'0', '1'}:
+                    # Convert the 32-bit string to a number
+                    array_of_bits.append(item)
 
         array_of_bits = np.array(array_of_bits)
         array_of_bits = array_of_bits.reshape(-1, 1)
+        
+        array_converted_bits = np.array(array_converted_bits)
+        array_converted_bits = array_converted_bits.reshape(-1, 1)
 
         # Step 1: Standardize the data using MinMaxScaler (single-threaded)
-        X_scaled = self.minmax_scaler(array_of_bits)
+        X_scaled = self.minmax_scaler(array_converted_bits)
 
         # Step 2: Run DBSCAN using ThreadPoolExecutor
         n_jobs = os.cpu_count()  # Get the number of available cores
@@ -177,13 +189,14 @@ class JITC_DATAOPS:
         # concatenate the X_scaled with the labels
         X_scaled_DF = pd.DataFrame(X_scaled)
         labels_DF = pd.DataFrame(labels, columns=['labels'])
-        self.dataframe = pd.concat([X_scaled_DF, labels_DF], axis=1)
+        bits_DF = pd.DataFrame(array_of_bits, columns=['bits'])
+        self.dataframe = pd.concat([X_scaled_DF, labels_DF, bits_DF], axis=1)
 
         # Save the dataframe
         if not os.path.exists('dataframe'):
             os.mkdir('dataframe')
         os.chdir('dataframe')
-        self.dataframe.to_pickle('JITC_Train_Dataframe.pkl')
+        self.dataframe.to_pickle('JITC_Train_Bits_Dataframe.pkl')
         os.chdir('../')
 
         # Step 3: Count unique labels (excluding noise)
