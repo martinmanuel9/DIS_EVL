@@ -43,6 +43,7 @@ from skmultiflow.drift_detection.hddm_a import HDDM_A
 from skmultiflow.drift_detection.hddm_w import HDDM_W
 from skmultiflow.drift_detection.adwin import ADWIN
 from skmultiflow.drift_detection import KSWIN
+import pickle 
 
 
 rs = 1
