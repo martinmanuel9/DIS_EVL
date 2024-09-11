@@ -9,7 +9,7 @@ import pytz
 import sys
 import time
 from sklearn.ensemble import RandomForestClassifier
-import doc 
+# import doc 
 import rich
 from art import *
 
@@ -17,11 +17,11 @@ import numpy as np
 import tensorflow as tf
 import pandas as pd
 from online_learning import IncrementalLearning
-from feature_extraction_enhencement import feat_extract_enhence
+# from feature_extraction_enhencement import feat_extract_enhence
 
 from typing import Dict
 from datetime import datetime
-from tensorflow.compat.v1.keras.models import load_model
+from tensorflow.keras.models import Model
 
 from files.feature_set import FEATURE_SET
 from files.monitored_process import MONITORED_PROCESS
@@ -57,13 +57,13 @@ class MachineLearning():
 
     stream_sample_path = 'stream_sample'
 
-    offline_train_data_path = 'df_train_sel_feat'
+    offline_train_data_path = 'df_train_sel_feat_JITC'
 
     online_models_save_dir = 'online_models'
 
-    online_model_path = 'online_models/model_online'
+    online_model_path = 'online_models/model_online_JITC'
 
-    online_scaler_path = 'online_models/scaler_online'
+    online_scaler_path = 'online_models/scaler_online_JITC'
 
     metric_path = 'metric'
 
@@ -86,14 +86,13 @@ class MachineLearning():
 
     change_detector_mode = 0  # change detector_mode 0: input reconstruction error of ae; mode 1: input prediction of ae
 
-    def __init__(self, threshold: int, layer: str, noise=0.1, mode=0, window=1000, sample_period=10000,
-                 strict_online_learning_length=20, stream_sample_window=5000, ae_pred_window_size=3,
-                 offline_n_sample=5000):
+    def __init__(self, threshold: int, noise=0.1, mode=0, window=1000, sample_period=10000,
+                    strict_online_learning_length=20, stream_sample_window=5000, ae_pred_window_size=3,
+                    offline_n_sample=5000):
         self.model = None
         self.scaler = None
         self.change_detector = None
         self.threshold = threshold
-        self.layer = layer
         self.noise = noise
         self.mode = mode
         self.data = []
@@ -106,7 +105,7 @@ class MachineLearning():
         self.offline_train_data = None
         self.strict_online_learning_length = strict_online_learning_length
         self.stream_sample_window = stream_sample_window
-        self.metric_path = MachineLearning.metric_path + '_' + self.layer + '.csv'
+        self.metric_path = MachineLearning.metric_path  + '.csv'
         self.init_threshold = threshold
         self.ae_pred_window = []
         self.ae_pred_window_size = ae_pred_window_size
@@ -133,10 +132,10 @@ class MachineLearning():
             10: 'ransomware'
         }
 
-        MachineLearning.stream_sample_path = MachineLearning.stream_sample_path + '_' + self.layer + '.csv'
-        MachineLearning.offline_train_data_path = MachineLearning.offline_train_data_path + '_' + self.layer + '.csv'
-        MachineLearning.online_model_path = MachineLearning.online_model_path + '_' + self.layer + '.h5'
-        MachineLearning.online_scaler_path = MachineLearning.online_scaler_path + '_' + self.layer + '.pkl'
+        MachineLearning.stream_sample_path = MachineLearning.stream_sample_path + '.csv'
+        MachineLearning.offline_train_data_path = MachineLearning.offline_train_data_path + '.csv'
+        MachineLearning.online_model_path = MachineLearning.online_model_path + '.h5'
+        MachineLearning.online_scaler_path = MachineLearning.online_scaler_path + '.pkl'
 
         '''
         random sampling the offline training data used for combining the stream data to
@@ -201,13 +200,13 @@ class MachineLearning():
         ok = False
         for path_ in paths:
             if platform in path_.name:
-                if ("ae_offline_model_Windows_" + self.layer) in path_.name:
-                    self.model = load_model(path_)
+                if ("ae_offline_model_JITC" ) in path_.name:
+                    self.model = Model(path_)
                     ok = True
-                elif ("ae_offline_scaler_Windows_" + self.layer) in path_.name:
+                elif ("ae_offline_scaler_JITC") in path_.name:
                     self.scaler = joblib.load(path_)
                     ok = True
-                elif ("change_detector_Windows_" + self.layer) in path_.name:
+                elif ("change_detector_JITC") in path_.name:
                     with open(path_, "rb") as detector:
                         self.change_detector = pickle.load(detector)
                     ok = True
@@ -331,7 +330,7 @@ class MachineLearning():
 
         df_win = pd.DataFrame(data=self.data)
 
-        suspecious_name_cnt = feat_extract_enhence(df_win)
+        # suspecious_name_cnt = feat_extract_enhence(df_win)
 
         df_win = df_win.drop(columns=['ExecutablePath'], axis=1)
 
@@ -366,8 +365,8 @@ class MachineLearning():
             self.df_win_out_two = self.df_win_out_two.iloc[-1:]
 
             # all the stream sample (normal and abnormal), just used for post analysis
-            df_win_out.to_csv(self.layer + '_all_stream_sample.csv', index=False, mode='a',
-                              header=not os.path.exists(self.layer + '_all_stream_sample.csv'))
+            df_win_out.to_csv('_all_stream_sample.csv', index=False, mode='a',
+                              header=not os.path.exists('_all_stream_sample.csv'))
 
             ae_pred, res_error = self.predict(df_win_out)
 
@@ -420,7 +419,7 @@ class MachineLearning():
                     df_win_out.to_csv(MachineLearning.stream_sample_path, index=False, mode='w')
                 else:
                     df_win_out.to_csv(MachineLearning.stream_sample_path, index=False, mode='a',
-                                      header=not os.path.exists(MachineLearning.stream_sample_path))
+                                        header=not os.path.exists(MachineLearning.stream_sample_path))
 
             elif res_error[0] <= self.threshold:
 
@@ -429,7 +428,7 @@ class MachineLearning():
                     df_win_out.to_csv(MachineLearning.stream_sample_path, index=False, mode='w')
                 else:
                     df_win_out.to_csv(MachineLearning.stream_sample_path, index=False, mode='a',
-                                      header=not os.path.exists(MachineLearning.stream_sample_path))
+                                        header=not os.path.exists(MachineLearning.stream_sample_path))
 
             ### updating models ###
             if os.path.exists(MachineLearning.stream_sample_path):
@@ -443,7 +442,7 @@ class MachineLearning():
 
                     self.stream_sample_load = pd.read_csv(MachineLearning.stream_sample_path)
 
-                    online_model = IncrementalLearning(self.model, layer=self.layer, strict_online_learning_mode=True)
+                    online_model = IncrementalLearning(self.model, strict_online_learning_mode=True)
                     # print(online_model)
 
                     # strict online learning AE at the sample of each step
@@ -451,36 +450,36 @@ class MachineLearning():
                     # for the c# version data collector, the strict online learning will be finished within 2 min.
                     # the "ae model (h5 file)" and "normalization scaler (pkl file)" are updated in this phase
                     online_model.incremental_build(self.stream_sample_load[-1:],
-                                                   pd.concat([self.stream_sample_load,
-                                                              self.offline_train_data])
-                                                   )
+                                                    pd.concat([self.stream_sample_load,
+                                                                self.offline_train_data])
+                                                    )
 
-                    self.model = load_model(MachineLearning.online_model_path)
+                    self.model = Model(MachineLearning.online_model_path)
                     self.scaler = joblib.load(MachineLearning.online_scaler_path)
 
                 elif change_point:
 
                     # maintain the stream sample storaging window size
                     self.stream_sample_load = pd.read_csv(MachineLearning.stream_sample_path)[
-                                              -self.stream_sample_window:]
+                                                -self.stream_sample_window:]
                     self.stream_sample_load.to_csv(MachineLearning.stream_sample_path, index=False)
 
                     print(
-                        '\n\n *** ' + self.layer + ' layer change point has been detected. Peforming incremental retraining \n\n')
+                        '\n\n *** ' +  ' layer change point has been detected. Peforming incremental retraining \n\n')
                     # self.stream_sample_load = pd.read_csv(MachineLearning.stream_sample_path)
 
-                    online_model = IncrementalLearning(self.model, layer=self.layer, strict_online_learning_mode=False)
+                    online_model = IncrementalLearning(self.model, strict_online_learning_mode=False)
                     # print(online_model)
 
                     # incremental retraining on low reconstruction error samples if drift is detected
                     # the "ae model (h5 file)", "normalization scaler (pkl file)" and "threshold" are updated in drift analysis phase.
 
                     self.threshold = online_model.incremental_build(self.stream_sample_load,
-                                                                    pd.concat([self.stream_sample_load,
-                                                                               self.offline_train_data])
+                                                                        pd.concat([self.stream_sample_load,
+                                                                                self.offline_train_data])
                                                                     )
 
-                    self.model = load_model(MachineLearning.online_model_path)
+                    self.model = Model(MachineLearning.online_model_path)
                     self.scaler = joblib.load(MachineLearning.online_scaler_path)
 
                 else:
@@ -492,7 +491,6 @@ class MachineLearning():
 
             ### recording metrics ###
             ae_one_row = {
-                'layer': self.layer,
                 'sample_index ': self.sample_index,
                 'self.sample_count_in_period': self.sample_count_in_period,
                 'prediction': ae_pred,
@@ -505,7 +503,7 @@ class MachineLearning():
             }
 
             pd.DataFrame([ae_one_row]).to_csv(self.metric_path, index=False, mode='a',
-                                              header=not os.path.exists(self.metric_path))
+                                                header=not os.path.exists(self.metric_path))
 
             self.sample_index += 1
             self.sample_count_in_period += 1
@@ -519,7 +517,7 @@ class MachineLearning():
             '''
             if MachineLearning.periodical_forgotten_scheme and self.sample_count_in_period % self.sample_period == 0:
                 self.sample_count_in_period = 0
-                self.load_models(platform="Windows")  # reset to initial "h5 model" and initial "normalization scaler".
+                self.load_models(platform="JITC")  # reset to initial "h5 model" and initial "normalization scaler".
                 self.threshold = self.init_threshold  # reset to inttial threshold
                 self.change_detector.reset()  # reset the change dector.
 

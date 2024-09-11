@@ -4,7 +4,7 @@
 Application:        JITC processing
 File name:          jitc_datagen_bits.py
 Author:             Martin Manuel Lopez
-Creation:           08/17/2024
+Creation:           09/09/2024
 
 The University of Arizona
 Department of Electrical and Computer Engineering
@@ -187,16 +187,33 @@ class JITC_DATAOPS:
 
         # Add labels to the dataframe
         # concatenate the X_scaled with the labels
-        X_scaled_DF = pd.DataFrame(X_scaled)
+        X_scaled_DF = pd.DataFrame(X_scaled, columns=['bit_number'])
         labels_DF = pd.DataFrame(labels, columns=['labels'])
         bits_DF = pd.DataFrame(array_of_bits, columns=['bits'])
-        self.dataframe = pd.concat([X_scaled_DF, labels_DF, bits_DF], axis=1)
+        
+        if isinstance(X_scaled, pd.Series):
+            X_scaled_DF = X_scaled.to_frame(name='bit_number')
+        if isinstance(array_of_bits, pd.Series):
+            bits_DF = array_of_bits.to_frame(name='bits')
+        if isinstance(labels, pd.Series):
+            labels_DF = labels.to_frame(name='labels')
+        
+        self.dataframe = pd.concat([X_scaled_DF, bits_DF, labels_DF ], axis=1)
+        
+        bitnum_DF = self.dataframe[['bit_number', 'labels']]
+        bits_DF = self.dataframe[['bits', 'labels']]
+        
+        # normalize dat
+        scaler = MinMaxScaler()
+        df_number_normalized = pd.DataFrame(scaler.fit_transform(bitnum_DF[['bit_number', 'labels']]), columns=['bit_number', 'labels'])
 
         # Save the dataframe
         if not os.path.exists('dataframe'):
             os.mkdir('dataframe')
         os.chdir('dataframe')
         self.dataframe.to_pickle('JITC_Train_Bits_Dataframe.pkl')
+        df_number_normalized.to_pickle('JITC_Train_Number_Dataframe_Normalized.pkl')
+        bits_DF.to_pickle('JITC_Train_Bits_Dataframe_Normalized_Bits.pkl')
         os.chdir('../')
 
         # Step 3: Count unique labels (excluding noise)

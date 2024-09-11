@@ -44,7 +44,7 @@ services:
       - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
       - SPARK_SSL_ENABLED=no
     ports:
-      - "8080:8080"
+      - "8585:8585"
     networks:
       datapipeline:
         ipv4_address: 172.18.0.2
@@ -81,27 +81,27 @@ services:
       datapipeline:
         ipv4_address: 172.18.0.4
 
-  cassandra:
-    image: cassandra:latest
-    container_name: cassandra
-    hostname: cassandra
-    ports:
-      - "9042:9042"
-    networks:
-      datapipeline:
-        ipv4_address: 172.18.0.5
+  # cassandra:
+  #   image: cassandra:latest
+  #   container_name: cassandra
+  #   hostname: cassandra
+  #   ports:
+  #     - "9042:9042"
+  #   networks:
+  #     datapipeline:
+  #       ipv4_address: 172.18.0.5
 
-  mysql:
-    image: mysql:latest
-    container_name: mysql_oaiids
-    ports:
-      - "3306:3306"
-    environment:
-      MYSQL_ROOT_USER: root
-      MYSQL_ROOT_PASSWORD: secret
-    networks:
-      datapipeline:
-        ipv4_address: 172.18.0.8
+  # mysql:
+  #   image: mysql:latest
+  #   container_name: mysql_oaiids
+  #   ports:
+  #     - "3306:3306"
+  #   environment:
+  #     MYSQL_ROOT_USER: root
+  #     MYSQL_ROOT_PASSWORD: secret
+  #   networks:
+  #     datapipeline:
+  #       ipv4_address: 172.18.0.8
 
   tensorflow:
     image: tensorflow/tensorflow:latest

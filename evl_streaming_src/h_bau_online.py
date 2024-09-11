@@ -81,18 +81,16 @@ if H_BAU_MODE == 1:
     print("==========================================\n\n")
     from ML_online_app import MachineLearning as ml_app
     # from ML_online_sys_net import MachineLearning as ml_sys_net
+    
+    # check if I am on the models directory
+    if os.path.basename(os.getcwd()) != 'models':
+        os.chdir(os.getcwd()+ '/evl_streaming_src/models')
+    
+    print(os.getcwd())
 
     if APPLICATION_LAYER_ANALYSIS:
-        APP_THRESHOLD = pd.read_csv('application_stream_threshold.csv')['stream_threshold'].iloc[-1]
-        print(APP_THRESHOLD)
-
-    # if SYSTEM_LAYER_ANALYSIS:
-    #     SYS_THRESHOLD = pd.read_csv('system_stream_threshold.csv')['stream_threshold'].iloc[-1]
-    #     print(SYS_THRESHOLD)
-
-    # if NETWORK_LAYER_ANALYSIS:
-    #     NET_THRESHOLD = pd.read_csv('network_stream_threshold.csv')['stream_threshold'].iloc[-1]
-    #     print(NET_THRESHOLD)
+        APP_THRESHOLD = pd.read_csv('JITC_stream_threshold.csv')['Stream_threshold'].iloc[-1]
+        print('Threshold: ', APP_THRESHOLD)
 
 multi_layer_prediction = {"application layer": None, "system layer": None, "network layer": None}
 
@@ -109,9 +107,7 @@ handler = logging.StreamHandler()
 logger = logging.getLogger("BAU_Monitor")
 logger.addHandler(handler)
 
-print('app_header', app_header)
-# print('sys_header', sys_header)
-# print('net_header', net_header)
+print('header:', app_header)
 
 
 def handler(signum, frame):
@@ -264,8 +260,8 @@ async def worker(name, queue, producer) -> None:
     try:
         process_merge_window = PROCESS_MERGED_WIN_SIZE
         if H_BAU_MODE == 1 and APPLICATION_LAYER_ANALYSIS:
-            model_app = ml_app(threshold=APP_THRESHOLD, layer='application', window=process_merge_window)
-            model_app.load_models(platform="Windows")
+            model_app = ml_app(threshold=APP_THRESHOLD, window=process_merge_window)
+            model_app.load_models(platform="JITC")
 
             model_app.load_models_attack_cls()
 
@@ -412,7 +408,7 @@ def main():
     producer_config = default_config()
     consumer_config = default_config({
         "queued.max.messages.kbytes": 128000,
-        "group.id": "tcis_research"
+        "group.id": "JITC"
     })
     asyncio.run(pipeline(consumer_config, producer_config))
 

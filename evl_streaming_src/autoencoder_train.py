@@ -61,7 +61,7 @@ ae_model = 'ae_offline_model'
 ae_scaler = 'ae_offline_scaler'
 change_detector_path = 'change_detector'
 # universal_feat_path = 'files/feature_set_universal'
-stream_threshold = 'stream_threshold.csv'
+stream_threshold = 'JITC_stream_threshold.csv'
 # kafka_data_collection_dir = 'kafka_data_collection_train'
 use_cv_threshold = True
 
@@ -166,21 +166,21 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
     print(os.getcwd())
     os.chdir('../')
     
-    file_path = os.getcwd() + '/evl_streaming_src/datasets/JITC_Train_Dataframe.pkl'
+    file_path = os.getcwd() + '/evl_streaming_src/datasets/JITC_Train_Number_Dataframe_Normalized.pkl'
     # Open the pickle file in read-binary mode
     with open(file_path, 'rb') as file:
         jitc_dataframe = pickle.load(file)
     normal_train_data_dir = file_path
     
-    df_ngrams_freq = jitc_dataframe['ngrams_freq']
-    df_ngrams_freq = pd.DataFrame(list(df_ngrams_freq))
+    df_bit_number = jitc_dataframe['bit_number']
+    df_bit_number = pd.DataFrame(list(df_bit_number))
     df_labels = jitc_dataframe['labels']
     df_labels = pd.DataFrame(list(df_labels))
     
     # concat ngrams_freq and labels and keep column names and order of columns
-    normal_dataset = pd.concat([df_ngrams_freq, df_labels], axis=1)
+    normal_dataset = pd.concat([df_bit_number, df_labels], axis=1)
     # last column is label
-    normal_dataset.columns = list(df_ngrams_freq.columns) + ['label']
+    normal_dataset.columns = list(df_bit_number.columns) + ['label']
     # reset index for dataframe normal dataset
     normal_dataset.reset_index(drop=True, inplace=True)
     

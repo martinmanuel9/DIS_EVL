@@ -27,9 +27,9 @@ warnings.filterwarnings("ignore")
 class PreprocessingCollection():
     tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
     logging.basicConfig(
-       format="%(name)s:%(levelname)s:%(asctime)s: %(message)s",
-       level=logging.WARNING,
-       datefmt="%d-%b-%y %H:%M:%S",
+        format="%(name)s:%(levelname)s:%(asctime)s: %(message)s",
+        level=logging.WARNING,
+        datefmt="%d-%b-%y %H:%M:%S",
     )
     handler = logging.StreamHandler()
     logger = logging.getLogger(__name__)
@@ -112,31 +112,31 @@ class PreprocessingCollection():
 
         df_win = pd.DataFrame(data=self.data)
 
-        suspecious_name_cnt = feat_extract_enhence(df_win)
+        # suspecious_name_cnt = feat_extract_enhence(df_win)
 
-        df_win = df_win.drop(columns=['ExecutablePath'], axis=1)
+        # df_win = df_win.drop(columns=['ExecutablePath'], axis=1)
 
-        df_win_out = self.merge_process_sequence(df_win)
+        # df_win_out = self.merge_process_sequence(df_win)
 
-        df_win_out['suspecious_name_cnt'] = suspecious_name_cnt
+        # df_win_out['suspecious_name_cnt'] = suspecious_name_cnt
 
-        df_win_out = df_win_out.reindex(sorted(df_win_out.columns), axis=1)
+        # df_win_out = df_win_out.reindex(sorted(df_win_out.columns), axis=1)
 
         #  the process of using two sample for calculating increment for some feature
 
         if self.sample_count == 0:
 
-            self.df_win_out_two = self.df_win_out_two.append(df_win_out, ignore_index=False)
+            self.df_win_out_two = self.df_win_out_two.append(df_win, ignore_index=False)
             self.sample_count += 1
 
         else:
             print('\napplication training sample count', self.sample_count)
-            self.df_win_out_two = self.df_win_out_two.append(df_win_out, ignore_index=False)
+            self.df_win_out_two = self.df_win_out_two.append(df_win, ignore_index=False)
 
             self.df_win_out_two = self.df_win_out_two.reset_index(drop=True)
 
             diff_cols = [col
-                        for col in df_win_out.columns
+                        for col in df_win.columns
                         if 'count' in col or 'system' in col
                         ]
 
