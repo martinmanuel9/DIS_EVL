@@ -47,10 +47,6 @@ class MachineLearning():
 
     # stream_sample_path = 'stream_sample.csv'
 
-    # offline_train_data_path = 'df_train_sel_feat_app.csv'
-
-    # online_models_save_dir = 'online_models'
-
     # online_model_path = 'online_models/model_online_app.h5'
 
     # online_scaler_path = 'online_models/scaler_online_app.pkl'
@@ -59,11 +55,11 @@ class MachineLearning():
 
     offline_train_data_path = 'df_train_sel_feat_JITC'
 
-    online_models_save_dir = 'online_models'
+    online_models_save_dir = 'models'
 
-    online_model_path = 'online_models/model_online_JITC'
+    online_model_path = 'models/model_online_JITC'
 
-    online_scaler_path = 'online_models/scaler_online_JITC'
+    online_scaler_path = 'models/scaler_online_JITC'
 
     metric_path = 'metric'
 
@@ -119,17 +115,7 @@ class MachineLearning():
         self.attack_cls_model = None
         self.attack_cls_scaler = None
         self.attack_val_map = {
-            0: 'abuse_msiexec',
-            1: 'abuse_regsvr',
-            2: 'abuse_rundll32',
-            3: 'application_window_discovery',
-            4: 'automated_exfiltration',
-            5: 'exfiltration_http',
-            6: 'invoke_app_path_bypass',
-            7: 'invoke_html_app',
-            8: 'malicious_copy',
-            9: 'process_injection',
-            10: 'ransomware'
+            0: 'anomalous bits'
         }
 
         MachineLearning.stream_sample_path = MachineLearning.stream_sample_path + '.csv'
@@ -277,28 +263,28 @@ class MachineLearning():
         return df_out
 
 
-    # def attack_classification(self, df):
+    def attack_classification(self, df):
 
-    #     x_cls = df.values.reshape(1, -1)
-    #     x_cls = self.attack_cls_scaler.transform(x_cls)
-    #     y_cls = self.attack_cls_model.predict(x_cls)
-    #     # y_cls = np.argmax(y_cls, axis=1)
-    #     print(y_cls)
-    #     # print(self.attack_val_map[y_cls[0]])
+        x_cls = df.values.reshape(1, -1)
+        x_cls = self.attack_cls_scaler.transform(x_cls)
+        y_cls = self.attack_cls_model.predict(x_cls)
+        # y_cls = np.argmax(y_cls, axis=1)
+        print(y_cls)
+        # print(self.attack_val_map[y_cls[0]])
 
-    #     # print("\n\nattack classification -->", self.attack_val_map[y_cls[0]])
+        # print("\n\nattack classification -->", self.attack_val_map[y_cls[0]])
 
 
-    #     s = f"""
-    #     {'-'*40}
-    #     # Attack Classification
-    #     # Host_Behaviors: 'Abnormal'
-    #     # Attack: {colored(y_cls, 'green')}
-    #     {'-'*40}
-    #     """
+        s = f"""
+        {'-'*40}
+        # Attack Classification
+        # Host_Behaviors: 'Abnormal'
+        # Attack: {colored(y_cls, 'green')}
+        {'-'*40}
+        """
 
-    #     print(s)
-    #     doc.ontology_display(y_cls)
+        print(s)
+        doc.ontology_display(y_cls)
 
 
     def attack_classification(self, df):
@@ -356,9 +342,9 @@ class MachineLearning():
             self.df_win_out_two = self.df_win_out_two.reset_index(drop=True)
 
             diff_cols = [col
-                         for col in df_win_out.columns
-                         if 'count' in col or 'system' in col
-                         ]
+                            for col in df_win_out.columns
+                            if 'count' in col or 'system' in col
+                            ]
 
             df_win_out[diff_cols] = self.df_win_out_two[diff_cols].diff().iloc[-1:].reset_index(drop=True)
 

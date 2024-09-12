@@ -24,7 +24,7 @@ from pprint import pformat, pprint
 
 os.environ['TZ'] = 'US/Arizona'
 
-KafkaData = namedtuple("KafkaData", ["JITC"])
+KafkaData = namedtuple("KafkaData", ["host_id", "platform", "data", "layer"])
 
 
 
@@ -42,27 +42,19 @@ H_BAU_MODE = 1
 
 # the c# version data collector only have application layer data
 APPLICATION_LAYER_ANALYSIS = True
-# SYSTEM_LAYER_ANALYSIS = False
-# NETWORK_LAYER_ANALYSIS = False
 
 
 # whether save raw csv data
 SAVE_RAW_APP_CSV_DATA = True
-# SAVE_RAW_SYS_CSV_DATA = False
-# SAVE_RAW_NET_CSV_DATA = False
 
 # path for raw csv data without preprocessing
 raw_csv_dir = 'datasets'
 app_raw_filename = 'raw_jitc.csv'
-# sys_raw_filename = 'raw_system.csv'
-# net_raw_filename = 'raw_network.csv'
 
 # whether rewrite
 RESET_RAW_CSV = True
 
-# APPLICATION_LAYER_ANALYSIS = True
-# SYSTEM_LAYER_ANALYSIS = False
-# NETWORK_LAYER_ANALYSIS = False
+APPLICATION_LAYER_ANALYSIS = True
 
 if H_BAU_MODE == 0:
     print("\n\n=============== BAU_MODE =================")
@@ -82,7 +74,7 @@ if H_BAU_MODE == 1:
     from ML_online_app import MachineLearning as ml_app
     # from ML_online_sys_net import MachineLearning as ml_sys_net
     
-    # check if I am on the models directory
+    # check if I am on the evl_streaming_sr/modelsc directory
     if os.path.basename(os.getcwd()) != 'models':
         os.chdir(os.getcwd()+ '/evl_streaming_src/models')
     
@@ -91,6 +83,7 @@ if H_BAU_MODE == 1:
     if APPLICATION_LAYER_ANALYSIS:
         APP_THRESHOLD = pd.read_csv('JITC_stream_threshold.csv')['Stream_threshold'].iloc[-1]
         print('Threshold: ', APP_THRESHOLD)
+        os.chdir('..')
 
 multi_layer_prediction = {"application layer": None, "system layer": None, "network layer": None}
 
@@ -144,79 +137,6 @@ def create_payload(prediction: Dict):
 
 def extract(message, first_extract):
     data = None
-
-    # if message.key() == b'system' and SYSTEM_LAYER_ANALYSIS:
-
-    #     raw_csv_sys_dir = os.path.join(raw_csv_dir, sys_raw_filename)
-
-    #     try:
-    #         data = json.loads(message.value().decode())
-    #         data["data"]["time"] = data["current_time"]
-    #         data["computer_id"] = "1"
-    #         data["data"] = data.copy()
-
-    #         if SAVE_RAW_SYS_CSV_DATA:
-
-    #             if not os.path.exists(raw_csv_dir):
-    #                 os.mkdir(raw_csv_dir)
-
-    #             if first_extract[1] and RESET_RAW_CSV:
-    #                 with open(raw_csv_sys_dir, 'w') as f:
-    #                     w = csv.DictWriter(f, sys_header)
-    #                     w.writeheader()
-    #                     w.writerow(data["data"])
-    #             else:
-    #                 exist_file = os.path.isfile(raw_csv_sys_dir)
-    #                 with open(raw_csv_sys_dir, 'a+') as f:
-    #                     w = csv.DictWriter(f, sys_header)
-    #                     if not exist_file:
-    #                         w.writeheader()
-    #                     w.writerow(data["data"])
-
-    #     except (SyntaxError, AttributeError, KeyError, json.JSONDecodeError):
-    #         logger.exception("Invalid system message data")
-    #         return None
-
-    #     return KafkaData(host_id=data["computer_id"],
-    #                      data=data["data"],
-    #                      platform=data["OSVersion"],
-    #                      layer=b'system_layer')
-
-    # if message.key() == b'network' and NETWORK_LAYER_ANALYSIS:
-
-    #     raw_csv_net_dir = os.path.join(raw_csv_dir, net_raw_filename)
-
-    #     try:
-    #         data = json.loads(message.value().decode())
-    #         data["data"]["time"] = data["current_time"]
-    #         data["computer_id"] = "id"
-
-    #         if SAVE_RAW_NET_CSV_DATA:
-
-    #             if not os.path.exists(raw_csv_dir):
-    #                 os.mkdir(raw_csv_dir)
-
-    #             if first_extract[2] and RESET_RAW_CSV:
-    #                 with open(raw_csv_net_dir, 'w') as f:
-    #                     w = csv.DictWriter(f, net_header)
-    #                     w.writeheader()
-    #                     w.writerow(data["data"])
-    #             else:
-    #                 exist_file = os.path.isfile(raw_csv_net_dir)
-    #                 with open(raw_csv_net_dir, 'a+') as f:
-    #                     w = csv.DictWriter(f, net_header)
-    #                     if not exist_file:
-    #                         w.writeheader()
-    #                     w.writerow(data["data"])
-
-    #     except (SyntaxError, AttributeError, KeyError, json.JSONDecodeError):
-    #         logger.exception("Invalid network message data")
-    #         return None
-
-    #     return KafkaData(host_id=data["computer_id"],
-    #                      data=data["data"],
-    #                      platform=data["platform"],
-    #                      layer=b'network_layer')
 
     if message.key() == b'application' and APPLICATION_LAYER_ANALYSIS:
 
@@ -316,20 +236,6 @@ async def pipeline(consumer_config, producer_config) -> None:
         producer_config
     )
 
-    # if H_BAU_MODE == 0:
-    #     if SYSTEM_LAYER_ANALYSIS:
-    #         model_sys = ml_sys_net(layer='system', threshold=None)
-    #     if NETWORK_LAYER_ANALYSIS:
-    #         model_net = ml_sys_net(layer='network', threshold=None)
-
-
-    # elif H_BAU_MODE == 1:
-    #     if SYSTEM_LAYER_ANALYSIS:
-    #         model_sys = ml_sys_net(threshold=SYS_THRESHOLD, layer='system')
-    #         model_sys.load_models(platform="Windows")
-    #     if NETWORK_LAYER_ANALYSIS:
-    #         model_net = ml_sys_net(threshold=NET_THRESHOLD, layer='network')
-    #         model_net.load_models(platform="Windows")
     first_extract = [True, True, True]
     queue = asyncio.Queue(maxsize=10)
     tasks = []
@@ -352,32 +258,6 @@ async def pipeline(consumer_config, producer_config) -> None:
 
             if value is None:
                 continue
-
-            # if value.layer == b"system_layer":
-            #     process_sys(value)
-            #     # print(value.data)
-            #     prediction = model_sys.process(value.data)
-            #     first_extract[1] = False
-
-            #     if isinstance(prediction, Dict):
-
-            #         multi_layer_prediction["system layer"] = prediction.get('prediction')
-
-            #         # print("multi_layer_prediction", multi_layer_prediction, end='\n\n')
-
-
-            # if value.layer == b"network_layer":
-            #     process_net(value)
-            #     # print(value.data)
-            #     prediction = model_net.process(value.data)
-            #     first_extract[2] = False
-
-            #     if isinstance(prediction, Dict):
-
-            #         multi_layer_prediction["network layer"] = prediction.get('prediction')
-
-            #         # print("multi_layer_prediction", multi_layer_prediction, end='\n\n')
-
 
             if value.layer == b"application_layer":
 
