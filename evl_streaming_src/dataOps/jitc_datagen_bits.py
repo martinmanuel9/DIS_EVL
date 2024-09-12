@@ -117,11 +117,24 @@ class JITC_DATAOPS:
     def import_data(self):
         self.change_directory()
         self.process_directory(os.getcwd())
-        self.dataframe = pd.DataFrame.from_dict(self.data, orient='index', columns=['binary', 'sequences'])
-        self.dataframe.index.name = 'filename'
+        bit_numbers_list = []
+        bits_list = []
+        filenames = []
 
-        # Calculate the number of bytes in the binary string
-        self.dataframe['num_bytes'] = self.dataframe['binary'].apply(lambda x: len(x) // 8)
+        for filename, data in self.data.items():
+            sequences = data['sequences']
+            bit_numbers = []
+            bits = []
+
+            for sequence in sequences:
+                if isinstance(sequence, str) and len(sequence) == 128 and set(sequence) <= {'0', '1'}:
+                    number = int(sequence, 2)
+                    bit_numbers.append(number)
+                    bits.append(sequence)
+
+            bit_numbers_list.append(np.array(bit_numbers))  # Store as an array
+            bits_list.append(np.array(bits))  # Store as an array of 128-bit strings
+            filenames.append(filename)
 
     def minmax_scaler(self, array_of_bits):
             scaler = MinMaxScaler()

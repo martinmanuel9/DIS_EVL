@@ -1,50 +1,99 @@
 import pickle
-import os
 import numpy as np
-import tensorflow as tf
 import pandas as pd
+import tensorflow as tf
 from keras.losses import MeanSquaredError
 
+# Path to the autoencoder model
 file_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/models/ae_offline_model_JITC.h5'
 
-# Load the model with custom_objects
+# Load the model with custom_objects for MeanSquaredError
 model = tf.keras.models.load_model(file_path, custom_objects={'mse': MeanSquaredError()})
 
 print(model.summary())
-test_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/JITC_Test_Number_Dataframe_Normalized.pkl'
-# load test data 
+
+# Path to the test data
+test_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/JITC_Test_Dataframe_offline.pkl'
+
+# Load test data from pickle file
 with open(test_path, 'rb') as file:
     test_data = pickle.load(file)
 
-df_bit_number = test_data['bit_number']
-df_bit_number = pd.DataFrame(list(df_bit_number))
-df_labels = test_data['labels']
-df_labels = pd.DataFrame(list(df_labels))
+# Convert test data into a dictionary with filenames as keys
+test_dict = {row['filename']: row['bit_number'] for _, row in pd.DataFrame(test_data).iterrows()}
 
-# concat ngrams_freq and labels and keep column names and order of columns
-test_dataset = pd.concat([df_bit_number, df_labels], axis=1)
-# last column is label
-test_dataset.columns = list(df_bit_number.columns) + ['label']
-# reset index for dataframe normal dataset
-test_dataset.reset_index(drop=True, inplace=True)
+# Initialize dictionaries to store results
+reconstruction_errors = {}
+anomalies = {}
+anomalous_files = []
+lengths = {}
+anomalous_elements_dict = {}
 
-test = test_dataset
+# Process each file individually to calculate overall reconstruction errors
+for filename, bit_number in test_dict.items():
+    # Store the length of the current array
+    lengths[filename] = len(bit_number)
+    
+    # Reshape the input to match the model's expected input shape
+    X_row = np.array(bit_number).reshape(-1, 1)  # Adjust this reshape according to the model's input shape
+    
+    # Predict using the autoencoder model
+    prediction = model.predict(X_row)
+    
+    # Calculate the reconstruction error (MSE for this sample)
+    error = np.mean(np.square(X_row - prediction))
+    reconstruction_errors[filename] = error
 
-# train_data['label'] = 0  # assign label for cross validation function
-X = test.drop(labels=['label'], axis=1).values
-y = test['label']
+# Define the threshold based on the 95th percentile of overall reconstruction errors
+threshold = np.percentile(list(reconstruction_errors.values()), 95)
 
-# Predict with the model
-predictions = model.predict(X)
+# Now process each file again to determine which elements are anomalous
+for filename, bit_number in test_dict.items():
+    # Reshape the input to match the model's expected input shape
+    X_row = np.array(bit_number).reshape(-1, 1)
+    
+    # Predict using the autoencoder model
+    prediction = model.predict(X_row)
+    
+    # Calculate individual reconstruction errors for each element in the array
+    errors = np.square(X_row - prediction).flatten()
 
-# Calculate the reconstruction error (MSE for each sample)
-reconstruction_errors = np.mean(np.square(X - predictions), axis=1)
+    # Determine anomalies based on the threshold and identify which elements are anomalous
+    anomalous_elements = np.where(errors > threshold)[0]
 
-# Define a threshold for anomaly detection (you may need to adjust this)
-threshold = np.percentile(reconstruction_errors, 95)  # for example, 95th percentile
+    if len(anomalous_elements) > 0:
+        anomalies[filename] = True
+        anomalous_files.append((filename, reconstruction_errors[filename]))
+        anomalous_elements_dict[filename] = anomalous_elements.tolist()
+    else:
+        anomalies[filename] = False
+        
+    print(f"File {filename}:")
+    print(f" - Length of Array: {lengths[filename]}")
+    print(f" - Reconstruction Error: {reconstruction_errors[filename]}")
+    print(f" - Anomaly Detected: {anomalies[filename]}")
+    
+    if anomalies[filename]:
+        print(f" - Anomalous Elements: {anomalous_elements.tolist()}")
 
-# Identify anomalies
-anomalies = reconstruction_errors > threshold
+# Optionally, print all anomalies detected
+print("Total Anomalies Detected:", len(anomalous_files))
+print("Anomalous Files and Their Anomalous Elements:")
+for filename, error in anomalous_files:
+    print(f"File {filename}:")
+    print(f" - Length of Array: {lengths[filename]}")
+    print(f" - Reconstruction Error: {error}")
+    print(f" - Anomalous Elements: {anomalous_elements_dict[filename]}")
 
-print("Reconstruction Errors:", reconstruction_errors)
-print("Anomalies Detected:", anomalies)
+# If you need to save the results to a file
+import pandas as pd
+
+results_df = pd.DataFrame({
+    'filename': list(anomalies.keys()),
+    'array_length': list(lengths.values()),
+    'reconstruction_error': list(reconstruction_errors.values()),
+    'is_anomaly': list(anomalies.values()),
+    'anomalous_elements': [anomalous_elements_dict.get(f, []) for f in anomalies.keys()]
+})
+
+results_df.to_csv('anomaly_detection_results.csv', index=False)
