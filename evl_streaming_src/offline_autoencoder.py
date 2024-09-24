@@ -1,7 +1,10 @@
 import pickle
 import numpy as np
-import pandas as pd
 import tensorflow as tf
+import pandas as pd
+import matplotlib.pyplot as plt
+import os
+import time  # To measure runtime
 from keras.losses import MeanSquaredError
 
 # Path to the autoencoder model
@@ -28,6 +31,7 @@ anomalies = {}
 anomalous_files = []
 lengths = {}
 anomalous_elements_dict = {}
+runtimes = []  # To store runtimes for each sample
 
 # Process each file individually to calculate overall reconstruction errors
 for filename, bit_number in test_dict.items():
@@ -35,10 +39,18 @@ for filename, bit_number in test_dict.items():
     lengths[filename] = len(bit_number)
     
     # Reshape the input to match the model's expected input shape
-    X_row = np.array(bit_number).reshape(-1, 1)  # Adjust this reshape according to the model's input shape
+    X_row = np.array(bit_number).reshape(-1, 1)
+    
+    # Measure start time
+    start_time = time.time()
     
     # Predict using the autoencoder model
     prediction = model.predict(X_row)
+    
+    # Measure end time and calculate runtime
+    end_time = time.time()
+    runtime = end_time - start_time
+    runtimes.append(runtime)
     
     # Calculate the reconstruction error (MSE for this sample)
     error = np.mean(np.square(X_row - prediction))
@@ -49,16 +61,9 @@ threshold = np.percentile(list(reconstruction_errors.values()), 95)
 
 # Now process each file again to determine which elements are anomalous
 for filename, bit_number in test_dict.items():
-    # Reshape the input to match the model's expected input shape
     X_row = np.array(bit_number).reshape(-1, 1)
-    
-    # Predict using the autoencoder model
     prediction = model.predict(X_row)
-    
-    # Calculate individual reconstruction errors for each element in the array
     errors = np.square(X_row - prediction).flatten()
-
-    # Determine anomalies based on the threshold and identify which elements are anomalous
     anomalous_elements = np.where(errors > threshold)[0]
 
     if len(anomalous_elements) > 0:
@@ -76,6 +81,33 @@ for filename, bit_number in test_dict.items():
     if anomalies[filename]:
         print(f" - Anomalous Elements: {anomalous_elements.tolist()}")
 
+# Generate runtime statistics
+runtime_summary = {
+    'min': np.min(runtimes),
+    'max': np.max(runtimes),
+    'median': np.median(runtimes),
+    'mean': np.mean(runtimes),
+    '25th_percentile': np.percentile(runtimes, 25),
+    '75th_percentile': np.percentile(runtimes, 75),
+    'standard_deviation': np.std(runtimes)
+}
+
+#change to demo directory 
+os.chdir('/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/demo')
+
+# Print the statistical summary
+print("\nStatistical Summary of Runtimes:")
+for key, value in runtime_summary.items():
+    print(f"{key.capitalize()}: {value:.2f} seconds")
+
+# Create a boxplot (parata chart) for runtimes
+plt.figure(figsize=(10, 6))
+plt.boxplot(runtimes, vert=False, patch_artist=True)
+plt.title('Boxplot of Runtimes for 500 Samples')
+plt.xlabel('Runtime (seconds)')
+plt.savefig('JITC_runtime_boxplot.png')
+plt.show()
+
 # Optionally, print all anomalies detected
 print("Total Anomalies Detected:", len(anomalous_files))
 print("Anomalous Files and Their Anomalous Elements:")
@@ -85,15 +117,14 @@ for filename, error in anomalous_files:
     print(f" - Reconstruction Error: {error}")
     print(f" - Anomalous Elements: {anomalous_elements_dict[filename]}")
 
-# If you need to save the results to a file
-import pandas as pd
-
+# Save the results to a file
 results_df = pd.DataFrame({
     'filename': list(anomalies.keys()),
-    'array_length': list(lengths.values()),
+    'Num_of_8_Bytes_in_File': list(lengths.values()),
     'reconstruction_error': list(reconstruction_errors.values()),
     'is_anomaly': list(anomalies.values()),
-    'anomalous_elements': [anomalous_elements_dict.get(f, []) for f in anomalies.keys()]
+    'Anomaly_Location': [anomalous_elements_dict.get(f, []) for f in anomalies.keys()],
+    'runtime': runtimes
 })
 
-results_df.to_csv('anomaly_detection_results.csv', index=False)
+results_df.to_csv('JITC_anomaly_detection_results.csv', index=False)

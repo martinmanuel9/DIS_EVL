@@ -84,7 +84,7 @@ class JITC_DATAOPS:
             json_files = [os.path.join(directory, filename) for filename in os.listdir(directory) if filename.endswith('.json')]
             executor.map(self.process_json_file, json_files)
 
-    def process_json_file(self, json_file, n=4):
+    def process_json_file(self, json_file, n=16:
         with open(json_file, 'r') as f:
             json_data = json.load(f)  # Load JSON data
 
