@@ -38,6 +38,7 @@ from io import BytesIO
 import numpy as np
 import pandas as pd
 import random
+import pickle
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 from opendismodel.opendis.dis7 import *
 from opendismodel.opendis.DataOutputStream import DataOutputStream
@@ -62,12 +63,25 @@ class JITCSim:
             self.KAFKA_TOPIC = 'jitc_data'
             self.producer = kp.KafkaProducer('172.18.0.4:9092', self.KAFKA_TOPIC)
         
-
+        jitc_train_dataset_path = os.getcwd() + '/evl_streaming_src/datasets/JITC_Train_Number_Dataframe_Normalized.pkl'
         # Create garage dataset and timesteps for simulation
-        fridgeDataset = ton.TON_IoT_Datagen(dataset='JITC')
-        self.fridgeTrain, self.fridgeTest = fridgeDataset.create_dataset(train_stepsize=fridgeDataset.fridgeTrainStepsize, test_stepsize=fridgeDataset.fridgeTestStepsize, 
-                                        train= fridgeDataset.completeFridgeTrainSet, test = fridgeDataset.completeFridgeTestSet)
+        with open(jitc_train_dataset_path, 'rb') as file:
+            jitc_dataframe = pickle.load(file)
+            
         
+        df_bit_number = jitc_dataframe['bit_number']
+        df_bit_number = pd.DataFrame(list(df_bit_number))
+        df_labels = jitc_dataframe['labels']
+        df_labels = pd.DataFrame(list(df_labels))
+        
+        # concat ngrams_freq and labels and keep column names and order of columns
+        normal_dataset = pd.concat([df_bit_number, df_labels], axis=1)
+        # last column is label
+        normal_dataset.columns = list(df_bit_number.columns) + ['label']
+        # reset index for dataframe normal dataset
+        normal_dataset.reset_index(drop=True, inplace=True)
+        
+        self.jitc_train = 
 
     def sendJITC_Train(self ):
         columnNames = self.fridgeTrain['Dataframe'].columns
