@@ -87,7 +87,7 @@ class ModbusSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
+                print("Sent {} PDU via UDP: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
                     + "\n Modbus Data Sent:"
                     + "\n  FC1            : {}".format(modbusPdu.fc1)
                     + "\n  FC2            : {}".format(modbusPdu.fc2)
@@ -177,7 +177,7 @@ class ModbusSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
+                print("Sent {} PDU via UDP: {} bytes".format(modbusPdu.__class__.__name__, len(data)) 
                     + "\n Modbus Data Sent:"
                     + "\n  FC1            : {}".format(modbusPdu.fc1)
                     + "\n  FC2            : {}".format(modbusPdu.fc2)

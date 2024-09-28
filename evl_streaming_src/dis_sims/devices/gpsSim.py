@@ -121,7 +121,7 @@ class GPSSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
+                print("Sent {} PDU via UDP: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
                     + "\n GPS Data Sent:"
                     + "\n  Longitude   : {} degrees".format(gpsPDU.entityLocation.x) 
                     + "\n  Latitude    : {} degrees".format(gpsPDU.entityLocation.y)
@@ -285,7 +285,7 @@ class GPSSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
+                print("Sent {} PDU via UDP: {} bytes".format(gpsPDU.__class__.__name__, len(data)) 
                     + "\n GPS Data Sent:"
                     + "\n  Longitude   : {} degrees".format(gpsPDU.entityLocation.x) 
                     + "\n  Latitude    : {} degrees".format(gpsPDU.entityLocation.y)

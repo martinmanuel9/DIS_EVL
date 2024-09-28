@@ -86,7 +86,7 @@ class ThermostatSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
+                print("Sent {} PDU via UDP: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
                     + "\n Thermostat Data Sent:"
                     + "\n  Device             : {}".format(thermostatPdu.device.decode('utf-8'))
                     + "\n  Temperature        : {}".format(thermostatPdu.temperature)
@@ -169,7 +169,7 @@ class ThermostatSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
+                print("Sent {} PDU via UDP: {} bytes".format(thermostatPdu.__class__.__name__, len(data))
                     + "\n Thermostat Data Sent:"
                     + "\n  Device             : {}".format(thermostatPdu.device.decode('utf-8'))
                     + "\n  Temperature        : {}".format(thermostatPdu.temperature)

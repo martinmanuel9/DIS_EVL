@@ -90,7 +90,7 @@ class FridgeSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
+                print("Sent {} PDU via UDP: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
                     + "\n Fridge Data Sent:"
                     + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
                     + "\n  Temperature  : {}".format(fridgeEnvPdu.temperature)
@@ -178,7 +178,7 @@ class FridgeSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
+                print("Sent {} PDU via UDP: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
                     + "\n Fridge Data Sent:"
                     + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
                     + "\n  Temperature  : {}".format(fridgeEnvPdu.temperature)
@@ -245,5 +245,5 @@ class FridgeSim:
 
 
 if __name__ == "__main__":
-    FridgeSim = FridgeSim(transmission= 'kafka_pdu', speed='fast')
+    FridgeSim = FridgeSim(transmission= 'kafka_pdu', speed='slow')
     FridgeSim.sendFridgeTrain()

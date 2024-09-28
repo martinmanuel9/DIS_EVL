@@ -66,51 +66,67 @@ class JITCSim:
         jitc_train_dataset_path = os.getcwd() + '/evl_streaming_src/datasets/JITC_Train_Number_Dataframe_Normalized.pkl'
         # Create garage dataset and timesteps for simulation
         with open(jitc_train_dataset_path, 'rb') as file:
-            jitc_dataframe = pickle.load(file)
+            jitc_train_dataframe = pickle.load(file)
             
         
-        df_bit_number = jitc_dataframe['bit_number']
-        df_bit_number = pd.DataFrame(list(df_bit_number))
-        df_labels = jitc_dataframe['labels']
-        df_labels = pd.DataFrame(list(df_labels))
+        df_bit_train_number = jitc_train_dataframe['bit_number']
+        df_bit_train_number = pd.DataFrame(list(df_bit_train_number))
+        df_train_labels = jitc_train_dataframe['labels']
+        df_train_labels = pd.DataFrame(list(df_train_labels))
         
         # concat ngrams_freq and labels and keep column names and order of columns
-        normal_dataset = pd.concat([df_bit_number, df_labels], axis=1)
+        normal_dataset_train = pd.concat([df_bit_train_number, df_train_labels], axis=1)
         # last column is label
-        normal_dataset.columns = list(df_bit_number.columns) + ['label']
+        normal_dataset_train.columns = list(df_bit_train_number.columns) + ['label']
         # reset index for dataframe normal dataset
-        normal_dataset.reset_index(drop=True, inplace=True)
+        normal_dataset_train.reset_index(drop=True, inplace=True)
+        # rename the first column to 'jitc_message'
+        normal_dataset_train.rename(columns={0: 'jitc_normalized'}, inplace=True)
+        self.jitc_train = normal_dataset_train
+        # the self.jitc_train takes the normalized dataset
         
-        self.jitc_train = 
-
+        jitc_test_dataset_path = os.getcwd() + '/evl_streaming_src/datasets/JITC_Test_Number_Dataframe_Normalized.pkl'
+        # Create garage dataset and timesteps for simulation
+        with open(jitc_test_dataset_path, 'rb') as test_file:
+            jitc_test_dataframe = pickle.load(test_file)
+            
+        
+        df_bit_test_number = jitc_test_dataframe['bit_number']
+        df_bit_test_number = pd.DataFrame(list(df_bit_test_number))
+        df_test_labels = jitc_test_dataframe['labels']
+        df_test_labels = pd.DataFrame(list(df_test_labels))
+        
+        # concat ngrams_freq and labels and keep column names and order of columns
+        normal_dataset_test = pd.concat([df_bit_test_number, df_test_labels], axis=1)
+        # last column is label
+        normal_dataset_test.columns = list(df_bit_test_number.columns) + ['label']
+        # reset index for dataframe normal dataset
+        normal_dataset_test.reset_index(drop=True, inplace=True)
+        # rename the first column to 'jitc_message'
+        normal_dataset_test.rename(columns={0: 'jitc_normalized'}, inplace=True)
+        self.jitc_test = normal_dataset_test
+        
     def sendJITC_Train(self ):
-        columnNames = self.fridgeTrain['Dataframe'].columns
+        columnNames = self.jitc_train.columns
         # print(self.fridgeTrain['Dataframe'].head())
-        for i in range(len(self.fridgeTrain['Dataframe'])):
+        for i in range(len(self.jitc_train)):
             """Sending via PDU and UDP Protocol via Open DIS """
             if self.transmission == 'pdu':
-                fridgeEnvPdu = Environment()
-                device = "Fridge"
-                fridgeEnvPdu.device = device.encode('utf-8')
-                fridgeEnvPdu.temperature = self.fridgeTrain['Dataframe']['fridge_temperature'][i] # fridge 
-                fridgeEnvPdu.condition = self.fridgeTrain['Dataframe']['temp_condition'][i].encode('utf-8')
-                fridgeEnvPdu.attack = self.fridgeTrain['Dataframe']['type'][i].encode('utf-8') # attack
-                fridgeEnvPdu.label = int(self.fridgeTrain['Dataframe']['label'][i])  #label
+                jitcPdu = JITC()
+                jitcPdu.jitc_normalized = self.jitc_train['jitc_normalized'].iloc[i] # jitc message
+                jitcPdu.label = self.jitc_train['label'].iloc[i]  #label
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
-                fridgeEnvPdu.serialize(outputStream)
+                jitcPdu.serialize(outputStream)
                 data = memoryStream.getvalue()
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
-                    + "\n Fridge Data Sent:"
-                    + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
-                    + "\n  Temperature  : {}".format(fridgeEnvPdu.temperature)
-                    + "\n  Condition    : {}".format(fridgeEnvPdu.condition.decode('utf-8'))
-                    + "\n  Attack       : {}".format(fridgeEnvPdu.attack.decode('utf-8'))
-                    + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
+                print("Sent {} PDU via UDP: {} bytes".format(jitcPdu.__class__.__name__, len(data))
+                    + "\n JITC Data Sent:"
+                    + "\n  JITC Message : {}".format(jitcPdu.jitc_normalized)
+                    + "\n  Label        : {}\n".format(jitcPdu.label)
                 )
                 
                 if self.speed == 'slow':
@@ -119,11 +135,9 @@ class JITCSim:
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
                 # Create an XML element for the data
-                root = ET.Element("FridgeData")
-                ET.SubElement(root, "FridgeTempRow").text = str(self.fridgeTrain['Dataframe']['fridge_temperature'][i])
-                ET.SubElement(root, "FridgeTempCondition").text = str(self.fridgeTrain['Dataframe']['temp_condition'][i])
-                ET.SubElement(root, "Attack").text = str(self.fridgeTrain['Dataframe']['type'][i])
-                ET.SubElement(root, "Label").text = str(self.fridgeTrain['Dataframe']['label'][i])
+                root = ET.Element("JITC_Data")
+                ET.SubElement(root, "jitc_normalized").text = str(self.jitc_train['jitc_normalized'].iloc[i])
+                ET.SubElement(root, "Label").text = str(self.jitc_train['label'].iloc[i])
 
                 # Convert the XML element to a string
                 xml_data = ET.tostring(root, encoding='utf-8')
@@ -131,86 +145,69 @@ class JITCSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print("Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
-                    + "\n Fridge Data Sent:"
-                    + "\n Temperature     : {}".format(self.fridgeTrain['Dataframe']['fridge_temperature'][i])
-                    + "\n Temp Condition  : {}".format(self.fridgeTrain['Dataframe']['temp_condition'][i])
-                    + "\n Attack          : {}".format(self.fridgeTrain['Dataframe']['type'][i])
-                    + "\n Label           : {}\n".format(self.fridgeTrain['Dataframe']['label'][i])
+                print("Sent {} PDU: {} bytes".format("JITC_Data", len(xml_data))
+                    + "\n JITC Data Sent:"
+                    + "\n  JITC Message : {}".format(self.jitc_train['jitc_normalized'].iloc[i])
+                    + "\n  Label        : {}\n".format(self.jitc_train['label'].iloc[i])
                     )
                 
                 if self.speed == 'slow':
                     time.sleep(2)
             
             if self.transmission == 'kafka_pdu':
-                # send pdu via kafka
-                fridgeEnvPdu = Environment()
-                device = "Fridge"
-                fridgeEnvPdu.device = device.encode('utf-8')
-                fridgeEnvPdu.temperature = self.fridgeTrain['Dataframe']['fridge_temperature'][i] # fridge 
-                fridgeEnvPdu.condition = self.fridgeTrain['Dataframe']['temp_condition'][i].encode('utf-8')
-                fridgeEnvPdu.attack = self.fridgeTrain['Dataframe']['type'][i].encode('utf-8') # attack
-                fridgeEnvPdu.label = int(self.fridgeTrain['Dataframe']['label'][i])  #label
+                
+                jitcPdu = JITC()
+                jitcPdu.jitc_normalized = self.jitc_train['jitc_normalized'].iloc[i] # jitc message
+                jitcPdu.label = self.jitc_train['label'].iloc[i]  #label
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
-                fridgeEnvPdu.serialize(outputStream)
+                jitcPdu.serialize(outputStream)
                 data = memoryStream.getvalue()
 
                 self.producer.produce_message(data)
-
-                print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
-                    + "\n Fridge Data Sent:"
-                    + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
-                    + "\n  Temperature  : {}".format(fridgeEnvPdu.temperature)
-                    + "\n  Condition    : {}".format(fridgeEnvPdu.condition.decode('utf-8'))
-                    + "\n  Attack       : {}".format(fridgeEnvPdu.attack.decode('utf-8'))
-                    + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
+                
+                print("Sent {} PDU: {} bytes".format(jitcPdu.__class__.__name__, len(data))
+                    + "\n JITC Data Sent:"
+                    + "\n  JITC Message : {}".format(jitcPdu.jitc_normalized)
+                    + "\n  Label        : {}\n".format(jitcPdu.label)
                 )
                 
                 if self.speed == 'slow':
                     time.sleep(2)
 
-    def sendFridgeTest(self):
-        columnNames = self.fridgeTest['Dataframe'].columns
-        # print(self.fridgeTest['Dataframe'].head())
-        for i in range(len(self.fridgeTest['Dataframe'])):
+    def sendJITCTest(self):
+        columnNames = self.jitc_test.columns
+        # print(self.fridgeTrain['Dataframe'].head())
+        for i in range(len(self.jitc_test)):
             """Sending via PDU and UDP Protocol via Open DIS """
             if self.transmission == 'pdu':
-                fridgeEnvPdu = Environment()
-                device = "Fridge"
-                fridgeEnvPdu.device = device.encode('utf-8')
-                fridgeEnvPdu.temperature = self.fridgeTest['Dataframe']['fridge_temperature'][i] # fridge row  
-                fridgeEnvPdu.condition = self.fridgeTest['Dataframe']['temp_condition'][i].encode('utf-8')
-                fridgeEnvPdu.attack = self.fridgeTest['Dataframe']['type'][i].encode('utf-8') # attack
-                fridgeEnvPdu.label = int(self.fridgeTest['Dataframe']['label'][i])  #label
+                jitcPdu = JITC()
+                jitcPdu.jitc_normalized = self.jitc_test['jitc_normalized'].iloc[i] # jitc message
+                jitcPdu.label = self.jitc_test['label'].iloc[i]  #label
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
-                fridgeEnvPdu.serialize(outputStream)
+                jitcPdu.serialize(outputStream)
                 data = memoryStream.getvalue()
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
-                    + "\n Fridge Data Sent:"
-                    + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
-                    + "\n  Temperature  : {}".format(fridgeEnvPdu.temperature)
-                    + "\n  Condition    : {}".format(fridgeEnvPdu.condition.decode('utf-8'))
-                    + "\n  Attack       : {}".format(fridgeEnvPdu.attack.decode('utf-8'))
-                    + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
+                print("Sent {} PDU via UDP: {} bytes".format(jitcPdu.__class__.__name__, len(data))
+                    + "\n JITC Data Sent:"
+                    + "\n  JITC Message : {}".format(jitcPdu.jitc_normalized)
+                    + "\n  Label        : {}\n".format(jitcPdu.label)
                 )
+                
                 if self.speed == 'slow':
                     time.sleep(2)
 
             """Sending via Kafka Producer"""
             if self.transmission == 'kafka':
                 # Create an XML element for the data
-                root = ET.Element("FridgeData")
-                ET.SubElement(root, "FridgeTempRow").text = str(self.fridgeTest['Dataframe']['fridge_temperature'][i])
-                ET.SubElement(root, "FridgeTempCondition").text = str(self.fridgeTest['Dataframe']['temp_condition'][i])
-                ET.SubElement(root, "Attack").text = str(self.fridgeTest['Dataframe']['type'][i])
-                ET.SubElement(root, "Label").text = str(self.fridgeTest['Dataframe']['label'][i])
+                root = ET.Element("JITC_Data")
+                ET.SubElement(root, "jitc_normalized").text = str(self.jitc_test['jitc_normalized'].iloc[i])
+                ET.SubElement(root, "Label").text = str(self.jitc_test['label'].iloc[i])
 
                 # Convert the XML element to a string
                 xml_data = ET.tostring(root, encoding='utf-8')
@@ -218,46 +215,39 @@ class JITCSim:
                 # Send the XML data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print("Sent {} PDU: {} bytes".format("FridgeData", len(xml_data))
-                    + "\n Fridge Data Sent:"
-                    + "\n Temperature     : {}".format(self.fridgeTest['Dataframe']['fridge_temperature'][i])
-                    + "\n Temp Condition  : {}".format(self.fridgeTest['Dataframe']['temp_condition'][i])
-                    + "\n Attack          : {}".format(self.fridgeTest['Dataframe']['type'][i])
-                    + "\n Label           : {}\n".format(self.fridgeTest['Dataframe']['label'][i])
+                print("Sent {} PDU: {} bytes".format("JITC_Data", len(xml_data))
+                    + "\n JITC Data Sent:"
+                    + "\n  JITC Message : {}".format(self.jitc_train['jitc_normalized'].iloc[i])
+                    + "\n  Label        : {}\n".format(self.jitc_train['label'].iloc[i])
                     )
+                
                 if self.speed == 'slow':
                     time.sleep(2)
-
+            
             if self.transmission == 'kafka_pdu':
-                # send pdu via kafka
-                fridgeEnvPdu = Environment()
-                device = "Fridge"
-                fridgeEnvPdu.device = device.encode('utf-8')
-                fridgeEnvPdu.temperature = self.fridgeTest['Dataframe']['fridge_temperature'][i] # fridge 
-                fridgeEnvPdu.condition = self.fridgeTest['Dataframe']['temp_condition'][i].encode('utf-8')
-                fridgeEnvPdu.attack = self.fridgeTest['Dataframe']['type'][i].encode('utf-8') # attack
-                fridgeEnvPdu.label = int(self.fridgeTest['Dataframe']['label'][i])  #label
+                
+                jitcPdu = JITC()
+                jitcPdu.jitc_normalized = self.jitc_test['jitc_normalized'].iloc[i] # jitc message
+                jitcPdu.label = self.jitc_test['label'].iloc[i]  #label
 
                 memoryStream = BytesIO()
                 outputStream = DataOutputStream(memoryStream)
-                fridgeEnvPdu.serialize(outputStream)
+                jitcPdu.serialize(outputStream)
                 data = memoryStream.getvalue()
 
                 self.producer.produce_message(data)
-
-                print("Sent {} PDU: {} bytes".format(fridgeEnvPdu.__class__.__name__, len(data))
-                    + "\n Fridge Data Sent:"
-                    + "\n  Device       : {}".format(fridgeEnvPdu.device.decode('utf-8'))
-                    + "\n  Temperature  : {}".format(fridgeEnvPdu.temperature)
-                    + "\n  Condition    : {}".format(fridgeEnvPdu.condition.decode('utf-8'))
-                    + "\n  Attack       : {}".format(fridgeEnvPdu.attack.decode('utf-8'))
-                    + "\n  Label        : {}\n".format(fridgeEnvPdu.label)
+                
+                print("Sent {} PDU: {} bytes".format(jitcPdu.__class__.__name__, len(data))
+                    + "\n JITC Data Sent:"
+                    + "\n  JITC Message : {}".format(jitcPdu.jitc_normalized)
+                    + "\n  Label        : {}\n".format(jitcPdu.label)
                 )
+                
                 if self.speed == 'slow':
                     time.sleep(2)
                 
 
 
 if __name__ == "__main__":
-    FridgeSim = FridgeSim(transmission= 'kafka_pdu', speed='fast')
-    FridgeSim.sendFridgeTrain()
+    jitc_sim = JITCSim(transmission= 'kafka_pdu', speed='slow')
+    jitc_sim.sendJITCTest()

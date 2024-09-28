@@ -86,7 +86,7 @@ class LightSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(lightTrainPdu.__class__.__name__, len(data)) 
+                print("Sent {} PDU via UDP: {} bytes".format(lightTrainPdu.__class__.__name__, len(data)) 
                     + "\n Light Data Sent:"
                     + "\n  Motion Status : {}".format(lightTrainPdu.motion_status)
                     + "\n  Light Status  : {}".format(lightTrainPdu.light_status.decode('utf-8'))
@@ -164,7 +164,7 @@ class LightSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(lightPdu.__class__.__name__, len(data)) 
+                print("Sent {} PDU via UDP: {} bytes".format(lightPdu.__class__.__name__, len(data)) 
                     + "\n Light Data Sent:"
                     + "\n  Motion Status : {}".format(lightPdu.motion_status)
                     + "\n  Light Status  : {}".format(lightPdu.light_status.decode('utf-8'))

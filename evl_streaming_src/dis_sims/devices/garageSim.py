@@ -113,7 +113,7 @@ class GarageSim:
                 # send xml data to Kafka
                 self.producer.produce_message(xml_data)
 
-                print("Sent {} PDU: {} bytes".format("GarageData", len(xml_data)) 
+                print("Sent {} PDU via UDP: {} bytes".format("GarageData", len(xml_data)) 
                     + "\n Garage Data Sent:"
                     + "\n  Door State     : {}".format(self.garageTrain['Dataframe']['door_state'][i])
                     + "\n  Sphone         : {}".format(self.garageTrain['Dataframe']['sphone_signal'][i])
@@ -168,7 +168,7 @@ class GarageSim:
 
                 self.udpSocket.sendto(data, (self.DESTINATION_ADDRESS, self.UDP_PORT))
 
-                print("Sent {} PDU: {} bytes".format(garagePdu.__class__.__name__, len(data)) 
+                print("Sent {} PDU via UDP: {} bytes".format(garagePdu.__class__.__name__, len(data)) 
                     + "\n Garage Data Sent:"
                     + "\n  Door State     : {}".format(garagePdu.door_state.decode('utf-8'))
                     + "\n  Sphone         : {}".format(garagePdu.sphone)
