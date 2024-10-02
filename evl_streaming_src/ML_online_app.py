@@ -14,14 +14,17 @@ import rich
 from art import *
 
 import numpy as np
+np.float = float
 import tensorflow as tf
+tf.get_logger().setLevel('ERROR')
+
 import pandas as pd
 from online_learning import IncrementalLearning
 # from feature_extraction_enhencement import feat_extract_enhence
 
 from typing import Dict
 from datetime import datetime
-from tensorflow.keras.models import Model
+from tensorflow.keras.models import load_model
 
 from files.feature_set import FEATURE_SET
 from files.monitored_process import MONITORED_PROCESS
@@ -53,13 +56,13 @@ class MachineLearning():
 
     stream_sample_path = 'stream_sample'
 
-    offline_train_data_path = 'df_train_sel_feat_JITC'
+    offline_train_data_path = 'models/df_train_sel_feat_JITC' 
 
     online_models_save_dir = 'models'
 
-    online_model_path = 'models/model_online_JITC'
+    online_model_path = 'models/ae_offline_model_JITC.h5' # model_online_JITC
 
-    online_scaler_path = 'models/scaler_online_JITC'
+    online_scaler_path = 'models/ae_offline_scaler_JITC'  # scaler_online_JITC
 
     metric_path = 'metric'
 
@@ -187,7 +190,8 @@ class MachineLearning():
         for path_ in paths:
             if platform in path_.name:
                 if ("ae_offline_model_JITC" ) in path_.name:
-                    self.model = Model(path_)
+                    self.model = load_model(path_, custom_objects={'mse': 'mse'}) 
+                    self.model.compile(optimizer='adam', loss='mse', metrics=['accuracy'])
                     ok = True
                 elif ("ae_offline_scaler_JITC") in path_.name:
                     self.scaler = joblib.load(path_)

@@ -26,12 +26,10 @@ os.environ['TZ'] = 'US/Arizona'
 
 KafkaData = namedtuple("KafkaData", ["host_id", "platform", "data", "layer"])
 
-
-
 # OS_SUPPORT = {"Windows", "Linux"}
 
-PRODUCER_TOPIC = os.environ.get("PRODUCER_TOPIC", "JITC")
-CONSUMER_TOPIC = os.environ.get("CONSUMER_TOPIC", "JITC")
+PRODUCER_TOPIC = os.environ.get("PRODUCER_TOPIC", "jitc_data")
+CONSUMER_TOPIC = os.environ.get("CONSUMER_TOPIC", "jitc_data")
 
 # H_BAU_MODE 0: data collection and preprocessing
 # H_BAU_MODE 1: real-time prediction
@@ -78,8 +76,6 @@ if H_BAU_MODE == 1:
     if os.path.basename(os.getcwd()) != 'models':
         os.chdir(os.getcwd()+ '/evl_streaming_src/models')
     
-    print(os.getcwd())
-
     if APPLICATION_LAYER_ANALYSIS:
         APP_THRESHOLD = pd.read_csv('JITC_stream_threshold.csv')['Stream_threshold'].iloc[-1]
         print('Threshold: ', APP_THRESHOLD)
@@ -183,7 +179,7 @@ async def worker(name, queue, producer) -> None:
             model_app = ml_app(threshold=APP_THRESHOLD, window=process_merge_window)
             model_app.load_models(platform="JITC")
 
-            model_app.load_models_attack_cls()
+            # model_app.load_models_attack_cls() # may not need for JITC
 
         elif H_BAU_MODE == 0 and APPLICATION_LAYER_ANALYSIS:
             model_app = ml_app(threshold=APP_THRESHOLD, window=process_merge_window)
@@ -288,7 +284,7 @@ def main():
     producer_config = default_config()
     consumer_config = default_config({
         "queued.max.messages.kbytes": 128000,
-        "group.id": "JITC"
+        "group.id": "jitc_data"
     })
     asyncio.run(pipeline(consumer_config, producer_config))
 

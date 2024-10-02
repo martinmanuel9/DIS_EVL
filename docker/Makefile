@@ -22,7 +22,7 @@ env-up:
 	@make status
 	@echo "Waiting for services to start..."
 	sleep 90
-	./env.sh
+	# ./env.sh
 
 env-down:
 	@for file in $(COMPOSE_FILES); do \
