@@ -68,8 +68,8 @@ class JITC_DATAOPS:
 
     def change_directory(self):
         path = os.getcwd()
-        # print(path)
-        changed_path = path + '/data/JITC_Data/files/'
+        print(path)
+        changed_path = path + '/data/synthetic_jitc/train_dataset'
         os.chdir(changed_path)
         print(os.getcwd())
 
@@ -87,7 +87,7 @@ class JITC_DATAOPS:
                 binary_sequence = json_data['binary']
                 sequences = self.get_bit_sequences(binary_sequence)
 
-                # Identify repeating 32-bit sequences
+                # Identify repeating N-bit sequences
                 sequences = self.get_repeating_sequences(sequences)
 
                 # Store the binary data and repeating 32-bit sequences
@@ -218,15 +218,17 @@ class JITC_DATAOPS:
         
         # normalize dat
         scaler = MinMaxScaler()
-        df_number_normalized = pd.DataFrame(scaler.fit_transform(bitnum_DF[['bit_number', 'labels']]), columns=['bit_number', 'labels'])
+        df_number_normalized = pd.DataFrame(scaler.fit_transform(bitnum_DF[['bit_number']]), columns=['bit_number'])
+        # add the labels back
+        df_number_normalized['labels'] = bitnum_DF['labels']
 
         # Save the dataframe
         if not os.path.exists('dataframe'):
             os.mkdir('dataframe')
         os.chdir('dataframe')
-        self.dataframe.to_pickle('JITC_Train_Bits_Dataframe.pkl')
-        df_number_normalized.to_pickle('JITC_Train_Number_Dataframe_Normalized.pkl')
-        bits_DF.to_pickle('JITC_Train_Bits_Dataframe_Normalized_Bits.pkl')
+        self.dataframe.to_pickle('UA_JITC_Train_Bits_Dataframe.pkl')
+        df_number_normalized.to_pickle('UA_JITC_Train_Number_Dataframe_Normalized.pkl')
+        bits_DF.to_pickle('UA_JITC_Train_Bits_Dataframe_Normalized_Bits.pkl')
         os.chdir('../')
 
         # Step 3: Count unique labels (excluding noise)
@@ -285,6 +287,6 @@ class JITC_DATAOPS:
         plt.show()
 
 if __name__ == "__main__":
-    dataOps = JITC_DATAOPS(dataset='JITC')
-    # dataOps.update_jsons(os.getcwd())
+    dataOps = JITC_DATAOPS(dataset='UA_JITC')
+    dataOps.update_jsons(os.getcwd())
     dataOps.develop_dataset()
