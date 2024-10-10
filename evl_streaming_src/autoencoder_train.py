@@ -163,10 +163,10 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
                         hidden_neurons: list, num_sigma: float, change_detection_model: str, remove_cv_outlier):
     
     # comment the next two lines to troubleshoot (debug)
-    print(os.getcwd())
+    # print(os.getcwd())
     os.chdir('../')
     
-    file_path = os.getcwd() + '/evl_streaming_src/datasets/JITC_Train_Number_Dataframe_Normalized.pkl'
+    file_path = os.getcwd() + '/evl_streaming_src/datasets/UA_JITC_Train_Number_Dataframe_Normalized.pkl'
     # Open the pickle file in read-binary mode
     with open(file_path, 'rb') as file:
         jitc_dataframe = pickle.load(file)

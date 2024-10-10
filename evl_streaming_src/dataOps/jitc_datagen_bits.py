@@ -69,7 +69,7 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         print(path)
-        changed_path = path + '/data/synthetic_jitc/train_dataset'
+        changed_path = path + '/data/synthetic_jitc/test_dataset'
         os.chdir(changed_path)
         print(os.getcwd())
         
@@ -103,7 +103,6 @@ class JITC_DATAOPS:
                 else:
                     # Handle cases where 'binary' is not a list (optional)
                     print(f"'binary' key missing or not a list in file {filename}")
-        self.import_data()
 
 
     def process_directory(self, directory):
@@ -263,9 +262,9 @@ class JITC_DATAOPS:
         if not os.path.exists('dataframe'):
             os.mkdir('dataframe')
         os.chdir('dataframe')
-        self.dataframe.to_pickle('UA_JITC_Train_Bits_Dataframe.pkl')
-        df_number_normalized.to_pickle('UA_JITC_Train_Number_Dataframe_Normalized.pkl')
-        bits_DF.to_pickle('UA_JITC_Train_Bits_Dataframe_Normalized_Bits.pkl')
+        self.dataframe.to_pickle('UA_JITC_Test_Bits_Dataframe.pkl')
+        df_number_normalized.to_pickle('UA_JITC_Test_Number_Dataframe_Normalized.pkl')
+        bits_DF.to_pickle('UA_JITC_Test_Bits_Dataframe_Normalized_Bits.pkl')
         os.chdir('../')
 
         # Step 3: Count unique labels (excluding noise)
@@ -325,9 +324,10 @@ class JITC_DATAOPS:
 
 if __name__ == "__main__":
     dataOps = JITC_DATAOPS(dataset='UA_JITC')
+    dataOps.import_data()
     #### need to run this function only once ####
     # dataOps.update_jsons(os.getcwd()) 
-    #### need to run this function only onc ####
+    #### need to run this function only once ####
     # path = os.getcwd()
     # input_dir = path + '/data/synthetic_jitc/train_dataset'
     # output_dir = path + '/data/synthetic_jitc/train_dataset'
