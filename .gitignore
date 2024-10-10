@@ -27,3 +27,4 @@ pyvenv/lib64/**
 /evl_streaming_src/datasets/**
 /data/JITC_Test/** 
 /data/synthetic_data/**
+/data/synthetic_jitc/**

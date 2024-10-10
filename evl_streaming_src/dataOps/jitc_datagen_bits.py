@@ -54,7 +54,7 @@ class JITC_DATAOPS:
         self.dataset = dataset
         self.data = {}  # dict to store processed data
         self.dataframe = pd.DataFrame()
-        self.import_data()
+        
 
     def update_jsons(self, directory):
         for filename in os.listdir(directory):
@@ -72,6 +72,39 @@ class JITC_DATAOPS:
         changed_path = path + '/data/synthetic_jitc/train_dataset'
         os.chdir(changed_path)
         print(os.getcwd())
+        
+
+    def convert_json_bits_to_string(self, input_dir, output_dir):
+        """
+        Converts JSON files containing 'binary' as a list of bits to 'binary' as a string of bits.
+
+        Args:
+            input_dir (str): Directory containing the original JSON files.
+            output_dir (str): Directory to save the updated JSON files.
+        """
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        for filename in os.listdir(input_dir):
+            if filename.endswith(".json"):
+                input_path = os.path.join(input_dir, filename)
+                output_path = os.path.join(output_dir, filename)
+
+                with open(input_path, 'r') as f_in:
+                    data = json.load(f_in)
+
+                if 'binary' in data and isinstance(data['binary'], list):
+                    # Convert list of bits to string
+                    bit_string = ''.join(str(bit) for bit in data['binary'])
+                    data['binary'] = bit_string
+
+                    with open(output_path, 'w') as f_out:
+                        json.dump(data, f_out)
+                else:
+                    # Handle cases where 'binary' is not a list (optional)
+                    print(f"'binary' key missing or not a list in file {filename}")
+        self.import_data()
+
 
     def process_directory(self, directory):
         with ThreadPoolExecutor() as executor:
@@ -117,9 +150,7 @@ class JITC_DATAOPS:
     def import_data(self):
         self.change_directory()
         self.process_directory(os.getcwd())
-        bit_numbers_list = []
-        bits_list = []
-        filenames = []
+        records = []
 
         for filename, data in self.data.items():
             sequences = data['sequences']
@@ -132,9 +163,15 @@ class JITC_DATAOPS:
                     bit_numbers.append(number)
                     bits.append(sequence)
 
-            bit_numbers_list.append(np.array(bit_numbers))  # Store as an array
-            bits_list.append(np.array(bits))  # Store as an array of 128-bit strings
-            filenames.append(filename)
+            records.append({
+                'filename': filename,
+                'bit_numbers': np.array(bit_numbers),
+                'bits': np.array(bits),
+                'sequences': sequences
+            })
+
+        # Create the DataFrame from the records
+        self.dataframe = pd.DataFrame(records)
 
     def minmax_scaler(self, array_of_bits):
             scaler = MinMaxScaler()
@@ -288,5 +325,11 @@ class JITC_DATAOPS:
 
 if __name__ == "__main__":
     dataOps = JITC_DATAOPS(dataset='UA_JITC')
-    dataOps.update_jsons(os.getcwd())
+    #### need to run this function only once ####
+    # dataOps.update_jsons(os.getcwd()) 
+    #### need to run this function only onc ####
+    # path = os.getcwd()
+    # input_dir = path + '/data/synthetic_jitc/train_dataset'
+    # output_dir = path + '/data/synthetic_jitc/train_dataset'
+    # dataOps.convert_json_bits_to_string(input_dir=input_dir, output_dir=output_dir)
     dataOps.develop_dataset()
