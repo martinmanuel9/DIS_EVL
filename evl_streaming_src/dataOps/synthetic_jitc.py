@@ -37,10 +37,6 @@ from faker import Faker  # Install using: pip install faker
 def generate_html_files(num_files, output_dir):
     """
     Generates HTML files with varying content and proper English words.
-
-    Args:
-        num_files (int): Number of HTML files to generate.
-        output_dir (str): Directory to save the generated HTML files.
     """
     fake = Faker()
     if not os.path.exists(output_dir):
@@ -52,13 +48,13 @@ def generate_html_files(num_files, output_dir):
             content_types = ['paragraphs', 'tables', 'lists', 'headers']
             content_choice = random.choice(content_types)
             if content_choice == 'paragraphs':
-                num_paragraphs = random.randint(1, 5)
+                num_paragraphs = random.randint(2, 20)
                 for _ in range(num_paragraphs):
-                    paragraph = fake.paragraph(nb_sentences=5)
+                    paragraph = fake.paragraph(nb_sentences=20)
                     f.write(f"<p>{paragraph}</p>\n")
             elif content_choice == 'tables':
-                num_rows = random.randint(2, 5)
-                num_cols = random.randint(2, 5)
+                num_rows = random.randint(2, 20)
+                num_cols = random.randint(2, 20)
                 f.write("<table border='1'>\n")
                 for _ in range(num_rows):
                     f.write("<tr>\n")
@@ -68,16 +64,16 @@ def generate_html_files(num_files, output_dir):
                     f.write("</tr>\n")
                 f.write("</table>\n")
             elif content_choice == 'lists':
-                num_items = random.randint(3, 7)
+                num_items = random.randint(3, 10)
                 f.write("<ul>\n")
                 for _ in range(num_items):
                     item_text = fake.sentence()
                     f.write(f"<li>{item_text}</li>\n")
                 f.write("</ul>\n")
             elif content_choice == 'headers':
-                num_headers = random.randint(1, 5)
+                num_headers = random.randint(2, 20)
                 for _ in range(num_headers):
-                    header_level = random.randint(1, 6)
+                    header_level = random.randint(2, 6)
                     header_text = fake.sentence()
                     f.write(f"<h{header_level}>{header_text}</h{header_level}>\n")
             f.write("</body>\n</html>")
@@ -85,10 +81,6 @@ def generate_html_files(num_files, output_dir):
 def convert_html_files_to_json_bits(input_dir, output_dir):
     """
     Converts HTML files into JSON files containing arrays of 0s and 1s.
-
-    Args:
-        input_dir (str): Directory containing the HTML files.
-        output_dir (str): Directory to save the JSON files.
     """
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)

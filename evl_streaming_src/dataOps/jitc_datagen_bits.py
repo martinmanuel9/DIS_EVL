@@ -69,7 +69,7 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         print(path)
-        changed_path = path + '/data/synthetic_jitc/test_dataset'
+        changed_path = path + '/data/synthetic_jitc/train_dataset'
         os.chdir(changed_path)
         print(os.getcwd())
         
@@ -103,7 +103,18 @@ class JITC_DATAOPS:
                 else:
                     # Handle cases where 'binary' is not a list (optional)
                     print(f"'binary' key missing or not a list in file {filename}")
+                    
+                if 'anomaly_positions' in data in isinstance(data['anomaly_positions'], list):
+                    # Convert list of bits to string
+                    bit_string = ''.join(str(bit) for bit in data['anomaly_positions'])
+                    data['anomaly_positions'] = bit_string
 
+                    with open(output_path, 'w') as f_out:
+                        json.dump(data, f_out)
+                else:
+                    # Handle cases where 'binary' is not a list (optional)
+                    print(f"'anomaly_positions' key missing or not a list in file {filename}")
+                    
 
     def process_directory(self, directory):
         with ThreadPoolExecutor() as executor:
@@ -115,24 +126,34 @@ class JITC_DATAOPS:
             with open(json_file, 'r') as f:
                 json_data = json.load(f)  # Load JSON data
 
-                # Process binary data for 32-bit sequences
+                # Process binary data for 128-bit sequences
                 binary_sequence = json_data['binary']
                 sequences = self.get_bit_sequences(binary_sequence)
+                # print(sequences)
 
                 # Identify repeating N-bit sequences
                 sequences = self.get_repeating_sequences(sequences)
+                # print(sequences)
+                
+                # determine if there is an anomaly
+                if 'anomaly_positions' in json_data:
+                    anomaly_positions = json_data['anomaly_positions']
+                else:
+                    anomaly_positions = []
+                    
 
-                # Store the binary data and repeating 32-bit sequences
+                # Store the binary data and repeating 128-bit sequences
                 self.data[os.path.basename(json_file)] = {
                     'binary': binary_sequence,
-                    'sequences': sequences
+                    'sequences': sequences,
+                    'anomaly_positions': anomaly_positions
                 }
         except (json.JSONDecodeError, KeyError) as e:
             print(f"Error processing {json_file}: {e}")
 
     def get_bit_sequences(self, sequence):
         """
-        Extract 32-bit sequences (4 bytes) from a given binary sequence.
+        Extract 128-bit sequences (4 bytes) from a given binary sequence.
         """
         sequence_length = 128
         sequences = [sequence[i:i+sequence_length] for i in range(0, len(sequence) - sequence_length + 1, sequence_length)]
@@ -140,7 +161,7 @@ class JITC_DATAOPS:
 
     def get_repeating_sequences(self, sequences):
         """
-        Identify and return repeating 32-bit sequences.
+        Identify and return repeating bit sequences.
         """
         sequence_counts = Counter(sequences)
         repeating_sequences = {seq: count for seq, count in sequence_counts.items() if count > 1}
@@ -153,6 +174,7 @@ class JITC_DATAOPS:
 
         for filename, data in self.data.items():
             sequences = data['sequences']
+            anomaly_positions = data['anomaly_positions']
             bit_numbers = []
             bits = []
 
@@ -166,21 +188,26 @@ class JITC_DATAOPS:
                 'filename': filename,
                 'bit_numbers': np.array(bit_numbers),
                 'bits': np.array(bits),
-                'sequences': sequences
+                'sequences': sequences,
+                'anomaly_positions': anomaly_positions
             })
 
         # Create the DataFrame from the records
         self.dataframe = pd.DataFrame(records)
+        
+        if not os.path.exists('../dataframe'):
+            os.mkdir('../dataframe')
+        os.chdir('../dataframe/')
 
     def minmax_scaler(self, array_of_bits):
-            scaler = MinMaxScaler()
-            return scaler.fit_transform(array_of_bits)
+        scaler = MinMaxScaler()
+        return scaler.fit_transform(array_of_bits)
 
     def dbscan_cluster(self, X_scaled_chunk, eps=0.1, min_samples=10):
         dbscan = DBSCAN(eps=eps, min_samples=min_samples)
         return dbscan.fit_predict(X_scaled_chunk)
 
-    def develop_dataset(self):
+    def develop_dataset(self, type= ''):
         # Prepare data for clustering
         df_repeating_sequences = self.dataframe['sequences'].apply(lambda x: list(x.keys()))
         df_repeating_sequences = pd.DataFrame(list(df_repeating_sequences))
@@ -188,25 +215,25 @@ class JITC_DATAOPS:
         # fill NaN values with 0
         df_repeating_sequences = df_repeating_sequences.fillna(0)
         filtered_df = df_repeating_sequences.loc[:, (df_repeating_sequences != 0).any(axis=0)]
+        df_anomaly_positions = self.dataframe['anomaly_positions']
 
         array_converted_bits = []
-
         # Iterate over each element in the DataFrame
         for column in filtered_df.columns:
             for item in filtered_df[column]:
-                # Check if the item is a 32-bit string and contains only '0' and '1'
+                # Check if the item is a 128-bit string and contains only '0' and '1'
                 if isinstance(item, str) and len(item) == 128 and set(item) <= {'0', '1'}:
-                    # Convert the 32-bit string to a number
+                    # Convert the 128-bit string to a number
                     number = int(item, 2)
                     array_converted_bits.append(number)
-        
+                    
         array_of_bits = []
         # Iterate over each element in the DataFrame
         for column in filtered_df.columns:
             for item in filtered_df[column]:
-                # Check if the item is a 32-bit string and contains only '0' and '1'
+                # Check if the item is a 128-bit string and contains only '0' and '1'
                 if isinstance(item, str) and len(item) == 128 and set(item) <= {'0', '1'}:
-                    # Convert the 32-bit string to a number
+                    # Convert the 128-bit string to a number
                     array_of_bits.append(item)
 
         array_of_bits = np.array(array_of_bits)
@@ -246,8 +273,8 @@ class JITC_DATAOPS:
             bits_DF = array_of_bits.to_frame(name='bits')
         if isinstance(labels, pd.Series):
             labels_DF = labels.to_frame(name='labels')
-        
-        self.dataframe = pd.concat([X_scaled_DF, bits_DF, labels_DF ], axis=1)
+            
+        self.dataframe = pd.concat([X_scaled_DF, bits_DF, df_anomaly_positions, labels_DF  ], axis=1)
         
         bitnum_DF = self.dataframe[['bit_number', 'labels']]
         bits_DF = self.dataframe[['bits', 'labels']]
@@ -259,13 +286,15 @@ class JITC_DATAOPS:
         df_number_normalized['labels'] = bitnum_DF['labels']
 
         # Save the dataframe
+        os.chdir('../')
         if not os.path.exists('dataframe'):
             os.mkdir('dataframe')
         os.chdir('dataframe')
-        self.dataframe.to_pickle('UA_JITC_Test_Bits_Dataframe.pkl')
-        df_number_normalized.to_pickle('UA_JITC_Test_Number_Dataframe_Normalized.pkl')
-        bits_DF.to_pickle('UA_JITC_Test_Bits_Dataframe_Normalized_Bits.pkl')
-        os.chdir('../')
+        print(self.dataframe.columns)
+        self.dataframe.to_pickle('UA_JITC_'+ type + '_Bits_Dataframe.pkl')
+        df_number_normalized.to_pickle('UA_JITC_' + type + '_Number_Dataframe_Normalized.pkl')
+        bits_DF.to_pickle('UA_JITC_'+ type +'_Bits_Dataframe_Normalized_Bits.pkl')
+        # os.chdir('../')
 
         # Step 3: Count unique labels (excluding noise)
         unique_labels = np.unique(labels)
@@ -324,12 +353,15 @@ class JITC_DATAOPS:
 
 if __name__ == "__main__":
     dataOps = JITC_DATAOPS(dataset='UA_JITC')
-    dataOps.import_data()
-    #### need to run this function only once ####
-    # dataOps.update_jsons(os.getcwd()) 
-    #### need to run this function only once ####
+    #### ----------- need to run this function only once ---------- ####
+    # update_json_path = os.getcwd()
+    # update_json_path = update_json_path + '/data/synthetic_jitc/train_dataset'
+    # dataOps.update_jsons(update_json_path) 
+    # #### ----------- need to run this function only once ---------- ####
     # path = os.getcwd()
     # input_dir = path + '/data/synthetic_jitc/train_dataset'
     # output_dir = path + '/data/synthetic_jitc/train_dataset'
     # dataOps.convert_json_bits_to_string(input_dir=input_dir, output_dir=output_dir)
-    dataOps.develop_dataset()
+    #### --------------------------------------------------------- ####
+    dataOps.import_data()
+    dataOps.develop_dataset(type= 'train')

@@ -28,3 +28,8 @@ pyvenv/lib64/**
 /data/JITC_Test/** 
 /data/synthetic_data/**
 /data/synthetic_jitc/**
+data/synthetic_jitc/html_files/**
+data/synthetic_jitc/original_json_files/**
+data/synthetic_jitc/train_dataset/**
+data/synthetic_jitc/test_dataset/**
+data/synthetic_jitc/dataframe/**

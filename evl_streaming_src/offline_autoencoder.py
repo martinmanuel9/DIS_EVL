@@ -16,7 +16,7 @@ model = tf.keras.models.load_model(file_path, custom_objects={'mse': MeanSquared
 print(model.summary())
 
 # Path to the test data
-test_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/JITC_Test_Dataframe_offline.pkl'
+test_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/UA_JITC_Test_Bits_offline.pkl'
 
 # Load test data from pickle file
 with open(test_path, 'rb') as file:
@@ -105,7 +105,7 @@ plt.figure(figsize=(10, 6))
 plt.boxplot(runtimes, vert=False, patch_artist=True)
 plt.title('Boxplot of Runtimes for 500 Samples')
 plt.xlabel('Runtime (seconds)')
-plt.savefig('JITC_runtime_boxplot.png')
+plt.savefig('UA_JITC_runtime_boxplot.png')
 plt.show()
 
 # Optionally, print all anomalies detected
@@ -127,4 +127,4 @@ results_df = pd.DataFrame({
     'runtime': runtimes
 })
 
-results_df.to_csv('JITC_anomaly_detection_results.csv', index=False)
+results_df.to_csv('UA_JITC_anomaly_detection_results.csv', index=False)
