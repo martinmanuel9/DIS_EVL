@@ -1,34 +1,3 @@
-#!/usr/bin/env python
-
-"""
-Application:        JITC processing
-File name:          synthetic_jitc.py
-Author:             Martin Manuel Lopez
-Creation:           10/07/2024
-
-The University of Arizona
-Department of Electrical and Computer Engineering
-College of Engineering
-"""
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
 import os
 import random
 import json
@@ -37,45 +6,78 @@ from faker import Faker  # Install using: pip install faker
 def generate_html_files(num_files, output_dir):
     """
     Generates HTML files with varying content and proper English words.
+    Ensures each file has more than 32 bytes worth of data.
     """
     fake = Faker()
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
+    
     for i in range(1, num_files + 1):
         filename = os.path.join(output_dir, f"file_{i}.html")
         with open(filename, 'w', encoding='utf-8') as f:
             f.write("<html>\n<head>\n<title>Sample HTML File</title>\n</head>\n<body>\n")
             content_types = ['paragraphs', 'tables', 'lists', 'headers']
             content_choice = random.choice(content_types)
-            if content_choice == 'paragraphs':
-                num_paragraphs = random.randint(2, 20)
-                for _ in range(num_paragraphs):
+            content_size = 0
+            
+            # Keep adding content until file size exceeds 32 bytes
+            while content_size <= 32:
+                if content_choice == 'paragraphs':
+                    # Generate one paragraph to repeat
                     paragraph = fake.paragraph(nb_sentences=20)
+                    num_paragraphs = random.randint(1, 10)
+                    for _ in range(num_paragraphs):
+                        f.write(f"<p>{paragraph}</p>\n")  # Repeat same paragraph
+                        content_size += len(paragraph)
+                    # Add the repeated content at least once
                     f.write(f"<p>{paragraph}</p>\n")
-            elif content_choice == 'tables':
-                num_rows = random.randint(2, 20)
-                num_cols = random.randint(2, 20)
-                f.write("<table border='1'>\n")
-                for _ in range(num_rows):
+                    content_size += len(paragraph)
+                
+                elif content_choice == 'tables':
+                    num_rows = random.randint(1, 10)
+                    num_cols = random.randint(1, 10)
+                    f.write("<table border='1'>\n")
+                    # Generate a row to repeat
+                    repeated_row = [fake.sentence() for _ in range(num_cols)]
+                    for _ in range(num_rows):
+                        f.write("<tr>\n")
+                        for cell_text in repeated_row:
+                            f.write(f"<td>{cell_text}</td>\n")  # Repeat the same row
+                            content_size += len(cell_text)
+                        f.write("</tr>\n")
+                    # Add the repeated row again at least once
                     f.write("<tr>\n")
-                    for _ in range(num_cols):
-                        cell_text = fake.sentence()
-                        f.write(f"<td>{cell_text}</td>\n")
+                    for cell_text in repeated_row:
+                        f.write(f"<td>{cell_text}</td>\n")  # Repeat row again
+                        content_size += len(cell_text)
                     f.write("</tr>\n")
-                f.write("</table>\n")
-            elif content_choice == 'lists':
-                num_items = random.randint(3, 10)
-                f.write("<ul>\n")
-                for _ in range(num_items):
-                    item_text = fake.sentence()
-                    f.write(f"<li>{item_text}</li>\n")
-                f.write("</ul>\n")
-            elif content_choice == 'headers':
-                num_headers = random.randint(2, 20)
-                for _ in range(num_headers):
-                    header_level = random.randint(2, 6)
-                    header_text = fake.sentence()
-                    f.write(f"<h{header_level}>{header_text}</h{header_level}>\n")
+                    f.write("</table>\n")
+                
+                elif content_choice == 'lists':
+                    # Generate one list item to repeat
+                    repeated_item = fake.sentence()
+                    num_items = random.randint(1, 10)
+                    f.write("<ul>\n")
+                    for _ in range(num_items):
+                        f.write(f"<li>{repeated_item}</li>\n")  # Repeat the same list item
+                        content_size += len(repeated_item)
+                    # Add the repeated item at least once more
+                    f.write(f"<li>{repeated_item}</li>\n")
+                    content_size += len(repeated_item)
+                    f.write("</ul>\n")
+                
+                elif content_choice == 'headers':
+                    # Generate a header to repeat
+                    repeated_header = fake.sentence()
+                    header_level = random.randint(1, 5)
+                    num_headers = random.randint(1, 5)
+                    for _ in range(num_headers):
+                        f.write(f"<h{header_level}>{repeated_header}</h{header_level}>\n")  # Repeat same header
+                        content_size += len(repeated_header)
+                    # Add the repeated header at least once more
+                    f.write(f"<h{header_level}>{repeated_header}</h{header_level}>\n")
+                    content_size += len(repeated_header)
+            
             f.write("</body>\n</html>")
 
 def convert_html_files_to_json_bits(input_dir, output_dir):

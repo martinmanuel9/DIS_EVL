@@ -132,7 +132,7 @@ class JITC_DATAOPS:
                 # print(sequences)
 
                 # Identify repeating N-bit sequences
-                sequences = self.get_repeating_sequences(sequences)
+                # sequences = self.get_repeating_sequences(sequences)
                 # print(sequences)
                 
                 # determine if there is an anomaly
@@ -175,17 +175,19 @@ class JITC_DATAOPS:
         for filename, data in self.data.items():
             sequences = data['sequences']
             anomaly_positions = data['anomaly_positions']
+            binary = data['binary']
             bit_numbers = []
             bits = []
 
             for sequence in sequences:
-                if isinstance(sequence, str) and len(sequence) == 128 and set(sequence) <= {'0', '1'}:
+                if set(sequence) <= {'0', '1'}:  # isinstance(sequence, str) and len(sequence) == 128 and
                     number = int(sequence, 2)
                     bit_numbers.append(number)
                     bits.append(sequence)
 
             records.append({
                 'filename': filename,
+                'binary': binary,
                 'bit_numbers': np.array(bit_numbers),
                 'bits': np.array(bits),
                 'sequences': sequences,
@@ -194,6 +196,11 @@ class JITC_DATAOPS:
 
         # Create the DataFrame from the records
         self.dataframe = pd.DataFrame(records)
+        
+        # for each key determine how many bytes are in the binary string I need to break it down 8 bits per byte
+        self.dataframe['num_bytes'] = self.dataframe['binary'].apply(lambda x: len(x) // 8)
+
+        print(self.dataframe.head())
         
         if not os.path.exists('../dataframe'):
             os.mkdir('../dataframe')
@@ -209,73 +216,94 @@ class JITC_DATAOPS:
 
     def develop_dataset(self, type= ''):
         # Prepare data for clustering
-        df_repeating_sequences = self.dataframe['sequences'].apply(lambda x: list(x.keys()))
-        df_repeating_sequences = pd.DataFrame(list(df_repeating_sequences))
+        # df_repeating_sequences = self.dataframe['sequences'].apply(lambda x: list(x.keys()))
+        # df_repeating_sequences = pd.DataFrame(list(df_repeating_sequences))
+        all_sequences = self.dataframe['sequences'].explode().reset_index(drop=True)
 
         # fill NaN values with 0
-        df_repeating_sequences = df_repeating_sequences.fillna(0)
-        filtered_df = df_repeating_sequences.loc[:, (df_repeating_sequences != 0).any(axis=0)]
+        # df_repeating_sequences = df_repeating_sequences.fillna(0)
+        # filtered_df = df_repeating_sequences.loc[:, (df_repeating_sequences != 0).any(axis=0)]
         df_anomaly_positions = self.dataframe['anomaly_positions']
-
-        array_converted_bits = []
-        # Iterate over each element in the DataFrame
-        for column in filtered_df.columns:
-            for item in filtered_df[column]:
-                # Check if the item is a 128-bit string and contains only '0' and '1'
-                if isinstance(item, str) and len(item) == 128 and set(item) <= {'0', '1'}:
-                    # Convert the 128-bit string to a number
-                    number = int(item, 2)
-                    array_converted_bits.append(number)
-                    
-        array_of_bits = []
-        # Iterate over each element in the DataFrame
-        for column in filtered_df.columns:
-            for item in filtered_df[column]:
-                # Check if the item is a 128-bit string and contains only '0' and '1'
-                if isinstance(item, str) and len(item) == 128 and set(item) <= {'0', '1'}:
-                    # Convert the 128-bit string to a number
-                    array_of_bits.append(item)
-
-        array_of_bits = np.array(array_of_bits)
-        array_of_bits = array_of_bits.reshape(-1, 1)
         
-        array_converted_bits = np.array(array_converted_bits)
-        array_converted_bits = array_converted_bits.reshape(-1, 1)
+        # Convert sequences to numbers
+        valid_sequences = all_sequences[all_sequences.apply(lambda x: isinstance(x, str) and len(x) == 128 and set(x) <= {'0', '1'})]
+        bit_numbers = valid_sequences.apply(lambda x: int(x, 2)).values.reshape(-1, 1)
+        bits = valid_sequences.values.reshape(-1, 1)
+
+
+        # array_converted_bits = []
+        # # Iterate over each element in the DataFrame
+        # for column in filtered_df.columns:
+        #     for item in filtered_df[column]:
+        #         # Check if the item is a 128-bit string and contains only '0' and '1'
+        #         if isinstance(item, str) and len(item) == 128 and set(item) <= {'0', '1'}:
+        #             # Convert the 128-bit string to a number
+        #             number = int(item, 2)
+        #             array_converted_bits.append(number)
+                    
+        # array_of_bits = []
+        # # Iterate over each element in the DataFrame
+        # for column in filtered_df.columns:
+        #     for item in filtered_df[column]:
+        #         # Check if the item is a 128-bit string and contains only '0' and '1'
+        #         if isinstance(item, str) and len(item) == 128 and set(item) <= {'0', '1'}:
+        #             # Convert the 128-bit string to a number
+        #             array_of_bits.append(item)
+
+        # array_of_bits = np.array(array_of_bits)
+        # array_of_bits = array_of_bits.reshape(-1, 1)
+        
+        # array_converted_bits = np.array(array_converted_bits)
+        # array_converted_bits = array_converted_bits.reshape(-1, 1)
 
         # Step 1: Standardize the data using MinMaxScaler (single-threaded)
-        X_scaled = self.minmax_scaler(array_converted_bits)
+        # X_scaled = self.minmax_scaler(array_converted_bits)
 
         # Step 2: Run DBSCAN using ThreadPoolExecutor
-        n_jobs = os.cpu_count()  # Get the number of available cores
-        chunk_size = len(X_scaled) // n_jobs
+        # n_jobs = os.cpu_count()  # Get the number of available cores
+        # chunk_size = len(X_scaled) // n_jobs
 
-        # Split the scaled data into chunks for parallel processing
-        chunks = [X_scaled[i:i + chunk_size] for i in range(0, len(X_scaled), chunk_size)]
+        # # Split the scaled data into chunks for parallel processing
+        # chunks = [X_scaled[i:i + chunk_size] for i in range(0, len(X_scaled), chunk_size)]
+        # labels = np.array([], dtype=int)
 
-        labels = np.array([], dtype=int)
-
-        with ThreadPoolExecutor(max_workers=n_jobs) as executor:
-            futures = {executor.submit(self.dbscan_cluster, chunk): i for i, chunk in enumerate(chunks)}
+        # with ThreadPoolExecutor(max_workers=n_jobs) as executor:
+        #     futures = {executor.submit(self.dbscan_cluster, chunk): i for i, chunk in enumerate(chunks)}
             
-            for future in as_completed(futures):
-                chunk_labels = future.result()
-                labels = np.concatenate((labels, chunk_labels))
+        #     for future in as_completed(futures):
+        #         chunk_labels = future.result()
+        #         labels = np.concatenate((labels, chunk_labels))
 
-        # Add labels to the dataframe
-        # concatenate the X_scaled with the labels
+        # # Add labels to the dataframe
+        # # concatenate the X_scaled with the labels
+        # X_scaled_DF = pd.DataFrame(X_scaled, columns=['bit_number'])
+        # labels_DF = pd.DataFrame(labels, columns=['labels'])
+        # bits_DF = pd.DataFrame(array_of_bits, columns=['bits'])
+        
+        # if isinstance(X_scaled, pd.Series):
+        #     X_scaled_DF = X_scaled.to_frame(name='bit_number')
+        # if isinstance(array_of_bits, pd.Series):
+        #     bits_DF = array_of_bits.to_frame(name='bits')
+        # if isinstance(labels, pd.Series):
+        #     labels_DF = labels.to_frame(name='labels')
+            
+        # self.dataframe = pd.concat([X_scaled_DF, bits_DF, df_anomaly_positions, labels_DF  ], axis=1)
+        
+        
+        # Scale the data
+        X_scaled = self.minmax_scaler(bit_numbers)
+
+        # Cluster the data
+        labels = self.dbscan_cluster(X_scaled)
+
+        # Create DataFrame for clustering results
         X_scaled_DF = pd.DataFrame(X_scaled, columns=['bit_number'])
         labels_DF = pd.DataFrame(labels, columns=['labels'])
-        bits_DF = pd.DataFrame(array_of_bits, columns=['bits'])
-        
-        if isinstance(X_scaled, pd.Series):
-            X_scaled_DF = X_scaled.to_frame(name='bit_number')
-        if isinstance(array_of_bits, pd.Series):
-            bits_DF = array_of_bits.to_frame(name='bits')
-        if isinstance(labels, pd.Series):
-            labels_DF = labels.to_frame(name='labels')
-            
-        self.dataframe = pd.concat([X_scaled_DF, bits_DF, df_anomaly_positions, labels_DF  ], axis=1)
-        
+        bits_DF = pd.DataFrame(bits, columns=['bits'])
+
+        # Combine into a single DataFrame
+        self.dataframe = pd.concat([X_scaled_DF, bits_DF, labels_DF], axis=1)
+
         bitnum_DF = self.dataframe[['bit_number', 'labels']]
         bits_DF = self.dataframe[['bits', 'labels']]
         
@@ -357,7 +385,7 @@ if __name__ == "__main__":
     # update_json_path = os.getcwd()
     # update_json_path = update_json_path + '/data/synthetic_jitc/train_dataset'
     # dataOps.update_jsons(update_json_path) 
-    # #### ----------- need to run this function only once ---------- ####
+    # # #### ----------- need to run this function only once ---------- ####
     # path = os.getcwd()
     # input_dir = path + '/data/synthetic_jitc/train_dataset'
     # output_dir = path + '/data/synthetic_jitc/train_dataset'
