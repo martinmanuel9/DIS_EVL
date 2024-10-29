@@ -118,11 +118,11 @@ if __name__ == "__main__":
     max_anomalies = 5                    # Maximum anomalies per file
     output_pkl_file = "UA_JITC_anomalies.pkl"
 
-    # inject_anomalies_to_test_dataset(
-    #     train_dir=train_dataset_dir,
-    #     test_dir=test_dataset_dir,
-    #     num_files=num_files,
-    #     min_anomalies=min_anomalies,
-    #     max_anomalies=max_anomalies
-    # )
+    inject_anomalies_to_test_dataset(
+        train_dir=train_dataset_dir,
+        test_dir=test_dataset_dir,
+        num_files=num_files,
+        min_anomalies=min_anomalies,
+        max_anomalies=max_anomalies
+    )
     anomalies_df = extract_anomalies(anomalies_dir=test_dataset_dir, output_pkl_file=output_pkl_file, num_files=num_files)

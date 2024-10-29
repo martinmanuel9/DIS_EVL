@@ -39,6 +39,7 @@ from nltk.util import ngrams
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.cluster import DBSCAN
+import hdbscan
 from sklearn.model_selection import train_test_split
 import umap
 import matplotlib.pyplot as plt
@@ -211,7 +212,7 @@ class JITC_DATAOPS:
         combined_df['bit_number_scaled'] = scaler.fit_transform(combined_df['bit_number'].values.reshape(-1, 1))
 
         # Apply DBSCAN clustering
-        dbscan = DBSCAN(eps=0.1, min_samples=10)
+        dbscan = hdbscan.HDBSCAN(min_cluster_size=5, metric='euclidean')
         combined_df['labels'] = dbscan.fit_predict(combined_df[['bit_number_scaled']])
 
         # Save this combined DataFrame for plotting
