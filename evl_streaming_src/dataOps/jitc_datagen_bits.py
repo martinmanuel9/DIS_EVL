@@ -166,6 +166,40 @@ class JITC_DATAOPS:
         sequence_counts = Counter(sequences)
         repeating_sequences = {seq: count for seq, count in sequence_counts.items() if count > 1}
         return repeating_sequences
+    
+    def visualize_clusters(self):
+        for index, row in self.clustered_dataframe.iterrows():
+            bit_numbers_scaled = row['bit_numbers_scaled']
+            labels = row['labels']
+            filename = row['filename']
+
+            # Ensure data is in the correct shape
+            X_scaled = bit_numbers_scaled.reshape(-1, 1)
+
+            # Apply UMAP for dimensionality reduction to 2D
+            reducer = umap.UMAP(n_components=2, random_state=42)
+            X_umap = reducer.fit_transform(X_scaled)
+
+            # Plotting
+            unique_labels = np.unique(labels)
+            colors = [plt.cm.Spectral(each) for each in np.linspace(0, 1, len(unique_labels))]
+
+            plt.figure(figsize=(8, 6))
+            for k, col in zip(unique_labels, colors):
+                if k == -1:
+                    col = [0, 0, 0, 1]  # Black for noise
+
+                class_member_mask = (labels == k)
+                plt.plot(X_umap[class_member_mask, 0], X_umap[class_member_mask, 1], 'o',
+                            markerfacecolor=tuple(col),
+                            markeredgecolor='k',
+                            markersize=6)
+
+            plt.title(f'DBSCAN Clusters for {filename}')
+            plt.xlabel('UMAP Component 1')
+            plt.ylabel('UMAP Component 2')
+            plt.savefig(f'DBSCAN_Clusters_{filename}_UMAP_2D.png')
+            plt.show()
 
     def import_data(self):
         self.change_directory()
@@ -200,7 +234,7 @@ class JITC_DATAOPS:
         # for each key determine how many bytes are in the binary string I need to break it down 8 bits per byte
         self.dataframe['num_bytes'] = self.dataframe['binary'].apply(lambda x: len(x) // 8)
 
-        print(self.dataframe.head())
+        # print(self.dataframe.head())
         
         if not os.path.exists('../dataframe'):
             os.mkdir('../dataframe')
@@ -302,7 +336,8 @@ class JITC_DATAOPS:
         bits_DF = pd.DataFrame(bits, columns=['bits'])
 
         # Combine into a single DataFrame
-        self.dataframe = pd.concat([X_scaled_DF, bits_DF, labels_DF], axis=1)
+        self.dataframe = pd.concat([X_scaled_DF, bits_DF, labels_DF, df_anomaly_positions], axis=1)
+        print(self.dataframe.head())
 
         bitnum_DF = self.dataframe[['bit_number', 'labels']]
         bits_DF = self.dataframe[['bits', 'labels']]
@@ -314,7 +349,9 @@ class JITC_DATAOPS:
         df_number_normalized['labels'] = bitnum_DF['labels']
 
         # Save the dataframe
+        print(os.getcwd())
         os.chdir('../')
+        print(os.getcwd())
         if not os.path.exists('dataframe'):
             os.mkdir('dataframe')
         os.chdir('dataframe')
