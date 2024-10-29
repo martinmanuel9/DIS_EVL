@@ -227,7 +227,25 @@ class JITC_DATAOPS:
 
         # Proceed to visualize the clustered data
         self.visualize_clusters()
+        
+        updated_dataframe = self.aggregate_to_dataframe()
+        updated_dataframe.to_pickle(f'UA_JITC_{type}_Bits_Aggregated_Dataframe.pkl')
+        
+    def aggregate_to_dataframe(self):
+        aggregated_list = []
 
+        # Group by `file_name` and collect arrays into a new DataFrame
+        for filename, group in self.clustered_dataframe.groupby('filename'):
+            aggregated_list.append({
+                'file_name': filename,
+                'bit_number': group['bit_number'].values,
+                'bit_number_scaled': group['bit_number_scaled'].values,
+                'labels': group['labels'].values
+            })
+
+        # Convert to DataFrame
+        aggregated_df = pd.DataFrame(aggregated_list)
+        return aggregated_df
 
     def visualize_clusters(self):
         # Extract data for visualization

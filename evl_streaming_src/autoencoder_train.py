@@ -162,15 +162,18 @@ def autoencoder(X_train, X_val,
 def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activation_func: str,
                         hidden_neurons: list, num_sigma: float, change_detection_model: str, remove_cv_outlier):
     
-    # comment the next two lines to troubleshoot (debug)
+    ###--- comment the next two lines to troubleshoot (debug)-- ###
     # print(os.getcwd())
-    os.chdir('../')
+    # os.chdir('../')
     
-    file_path = os.getcwd() + '/evl_streaming_src/datasets/UA_JITC_Train_Number_Dataframe_Normalized.pkl'
+    file_path = os.getcwd() + '/evl_streaming_src/datasets/UA_JITC_train_Bits_Clustered_Dataframe.pkl'
     # Open the pickle file in read-binary mode
     with open(file_path, 'rb') as file:
         jitc_dataframe = pickle.load(file)
     normal_train_data_dir = file_path
+    
+    print(jitc_dataframe.head())
+    print(jitc_dataframe.shape)
     
     df_bit_number = jitc_dataframe['bit_number']
     df_bit_number = pd.DataFrame(list(df_bit_number))
