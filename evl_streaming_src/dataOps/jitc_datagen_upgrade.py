@@ -65,7 +65,7 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         print(f"Current working directory: {path}")
-        changed_path = os.path.join(path, 'data', 'synthetic_jitc', 'train_dataset')
+        changed_path = os.path.join(path, 'data', 'synthetic_jitc', 'test_dataset')
         os.chdir(changed_path)
         print(f"Changed working directory to: {os.getcwd()}")
 
@@ -138,7 +138,7 @@ class JITC_DATAOPS:
         """
         Extract 128-bit sequences from a given binary sequence.
         """
-        sequence_length = 128
+        sequence_length = 256
         sequences = [sequence[i:i+sequence_length] for i in range(0, len(sequence) - sequence_length + 1, sequence_length)]
         return sequences
 
@@ -186,7 +186,7 @@ class JITC_DATAOPS:
             filename = row['filename']
 
             # Filter valid sequences
-            valid_sequences = [seq for seq in sequences if isinstance(seq, str) and len(seq) == 128 and set(seq) <= {'0', '1'}]
+            valid_sequences = [seq for seq in sequences if isinstance(seq, str) and len(seq) == 256 and set(seq) <= {'0', '1'}]
 
             if not valid_sequences:
                 print(f"No valid sequences found in file {filename}. Skipping.")
@@ -233,7 +233,6 @@ class JITC_DATAOPS:
         
     def aggregate_to_dataframe(self):
         aggregated_list = []
-
         # Group by `file_name` and collect arrays into a new DataFrame
         for filename, group in self.clustered_dataframe.groupby('filename'):
             aggregated_list.append({
@@ -242,10 +241,24 @@ class JITC_DATAOPS:
                 'bit_number_scaled': group['bit_number_scaled'].values,
                 'labels': group['labels'].values
             })
-
         # Convert to DataFrame
         aggregated_df = pd.DataFrame(aggregated_list)
         return aggregated_df
+        
+        # Aggregate data by `file_name` with arrays for each column
+        # aggregated_list = []
+        # for filename, group in self.clustered_dataframe.groupby('filename'):
+        #     aggregated_list.append({
+        #         'file_name': filename,
+        #         'bit_number': group['bit_number'].values,
+        #         'bit_number_scaled': group['bit_number_scaled'].values,
+        #         'labels': group['labels'].values
+        #     })
+        # # Convert the aggregated list to a DataFrame
+        # aggregated_df = pd.DataFrame(aggregated_list)
+        # # Explode each array column to align bit_number with labels and bit_number_scaled
+        # exploded_df = aggregated_df.explode(['bit_number', 'bit_number_scaled', 'labels'], ignore_index=True)
+        # return exploded_df
 
     def visualize_clusters(self):
         # Extract data for visualization
@@ -293,4 +306,4 @@ if __name__ == "__main__":
     # dataOps.convert_json_bits_to_string(input_dir=input_dir, output_dir=output_dir)
     # Import data and develop dataset
     dataOps.import_data()
-    dataOps.develop_dataset(type='train')
+    dataOps.develop_dataset(type='test')

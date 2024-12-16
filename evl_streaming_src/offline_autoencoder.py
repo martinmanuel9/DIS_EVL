@@ -16,27 +16,30 @@ model = tf.keras.models.load_model(file_path, custom_objects={'mse': MeanSquared
 print(model.summary())
 
 # Path to the test data
-test_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/UA_JITC_Test_Bits_offline.pkl'
+test_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/UA_JITC_test_Bits_Aggregated_Dataframe.pkl'
 
 # Load test data from pickle file
 with open(test_path, 'rb') as file:
     test_data = pickle.load(file)
 
+print(test_data.head())
+print(test_data.shape)
+print(test_data.columns)
 # Convert test data into a dictionary with filenames as keys
-test_dict = {row['filename']: row['bit_number'] for _, row in pd.DataFrame(test_data).iterrows()}
+test_dict = {row['file_name']: row['bit_number_scaled'] for _, row in pd.DataFrame(test_data).iterrows()}  # bit_number_scaled 
 
 # Initialize dictionaries to store results
 reconstruction_errors = {}
 anomalies = {}
 anomalous_files = []
-lengths = {}
+# lengths = {}
 anomalous_elements_dict = {}
 runtimes = []  # To store runtimes for each sample
 
 # Process each file individually to calculate overall reconstruction errors
 for filename, bit_number in test_dict.items():
     # Store the length of the current array
-    lengths[filename] = len(bit_number)
+    # lengths[filename] = len(bit_number)
     
     # Reshape the input to match the model's expected input shape
     X_row = np.array(bit_number).reshape(-1, 1)
@@ -74,7 +77,7 @@ for filename, bit_number in test_dict.items():
         anomalies[filename] = False
         
     print(f"File {filename}:")
-    print(f" - Length of Array: {lengths[filename]}")
+    # print(f" - Length of Array: {lengths[filename]}")
     print(f" - Reconstruction Error: {reconstruction_errors[filename]}")
     print(f" - Anomaly Detected: {anomalies[filename]}")
     
@@ -113,14 +116,14 @@ print("Total Anomalies Detected:", len(anomalous_files))
 print("Anomalous Files and Their Anomalous Elements:")
 for filename, error in anomalous_files:
     print(f"File {filename}:")
-    print(f" - Length of Array: {lengths[filename]}")
+    # print(f" - Length of Array: {lengths[filename]}")
     print(f" - Reconstruction Error: {error}")
     print(f" - Anomalous Elements: {anomalous_elements_dict[filename]}")
 
 # Save the results to a file
 results_df = pd.DataFrame({
     'filename': list(anomalies.keys()),
-    'Num_of_8_Bytes_in_File': list(lengths.values()),
+    # 'Num_of_8_Bytes_in_File': list(lengths.values()),
     'reconstruction_error': list(reconstruction_errors.values()),
     'is_anomaly': list(anomalies.values()),
     'Anomaly_Location': [anomalous_elements_dict.get(f, []) for f in anomalies.keys()],

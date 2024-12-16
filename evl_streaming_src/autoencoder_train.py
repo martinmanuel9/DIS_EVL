@@ -163,8 +163,8 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
                         hidden_neurons: list, num_sigma: float, change_detection_model: str, remove_cv_outlier):
     
     ###--- comment the next two lines to troubleshoot (debug)-- ###
-    # print(os.getcwd())
-    # os.chdir('../')
+    print(os.getcwd())
+    os.chdir('../')
     
     file_path = os.getcwd() + '/evl_streaming_src/datasets/UA_JITC_train_Bits_Clustered_Dataframe.pkl'
     # Open the pickle file in read-binary mode
@@ -173,17 +173,18 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
     normal_train_data_dir = file_path
     
     print(jitc_dataframe.head())
+    print(jitc_dataframe.columns)
     print(jitc_dataframe.shape)
     
-    df_bit_number = jitc_dataframe['bit_number']
-    df_bit_number = pd.DataFrame(list(df_bit_number))
+    df_bit_number = jitc_dataframe['bit_number'] # bit_number
+    df_bit_number = pd.DataFrame(list(df_bit_number)) 
     df_labels = jitc_dataframe['labels']
     df_labels = pd.DataFrame(list(df_labels))
     
     # concat ngrams_freq and labels and keep column names and order of columns
     normal_dataset = pd.concat([df_bit_number, df_labels], axis=1)
     # last column is label
-    normal_dataset.columns = list(df_bit_number.columns) + ['label']
+    normal_dataset.columns = list(df_bit_number.columns) + ['labels'] 
     # reset index for dataframe normal dataset
     normal_dataset.reset_index(drop=True, inplace=True)
     
@@ -195,9 +196,9 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
     print('\nStart training ' + 'JITC' + ' model...\n')
     # model_training(df_train, layer, hidden_neurons, num_sigma, use_cv_threshold=use_cv_threshold)
     
-    # train_data['label'] = 0  # assign label for cross validation function
-    X = train_data.drop(labels=['label'], axis=1).values
-    y = train_data['label']
+    # train_data['labels'] = 0  # assign label for cross validation function
+    X = train_data.drop(labels=['labels'], axis=1).values
+    y = train_data['labels']
 
     skf = KFold(n_splits=n_folds, shuffle=True, random_state=rs)
     skf.get_n_splits(X, y)
