@@ -114,8 +114,8 @@ if __name__ == "__main__":
     train_dataset_dir = path + '/data/synthetic_jitc/train_dataset'  # Directory with original JSON files (normal data)
     test_dataset_dir = path + '/data/synthetic_jitc/test_dataset'    # Directory to save JSON files with anomalies
     num_files = 5000                     # Number of files to process
-    min_anomalies = 1                    # Minimum anomalies per file
-    max_anomalies = 5                    # Maximum anomalies per file
+    min_anomalies = 10                    # Minimum anomalies per file
+    max_anomalies = 30                    # Maximum anomalies per file
     output_pkl_file = "UA_JITC_anomalies.pkl"
 
     inject_anomalies_to_test_dataset(

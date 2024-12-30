@@ -69,7 +69,7 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         print(path)
-        changed_path = path + '/data/synthetic_jitc/train_dataset'
+        changed_path = path + '/data/synthetic_jitc/test_dataset'
         os.chdir(changed_path)
         print(os.getcwd())
         
@@ -132,7 +132,7 @@ class JITC_DATAOPS:
                 # print(sequences)
 
                 # Identify repeating N-bit sequences
-                # sequences = self.get_repeating_sequences(sequences)
+                sequences = self.get_repeating_sequences(sequences)
                 # print(sequences)
                 
                 # determine if there is an anomaly
@@ -220,7 +220,7 @@ class JITC_DATAOPS:
                     bits.append(sequence)
 
             records.append({
-                'filename': filename,
+                'file_name': filename,
                 'binary': binary,
                 'bit_numbers': np.array(bit_numbers),
                 'bits': np.array(bits),
@@ -429,4 +429,4 @@ if __name__ == "__main__":
     # dataOps.convert_json_bits_to_string(input_dir=input_dir, output_dir=output_dir)
     #### --------------------------------------------------------- ####
     dataOps.import_data()
-    dataOps.develop_dataset(type= 'train')
+    dataOps.develop_dataset(type= 'test')

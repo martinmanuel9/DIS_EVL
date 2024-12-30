@@ -2,7 +2,7 @@
 
 """
 Application:        JITC processing
-File name:          jitc_datagen_bits.py
+File name:          jitc_datagen_upgrade.py
 Author:             Martin Manuel Lopez
 Creation:           09/09/2024
 
@@ -46,8 +46,9 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 class JITC_DATAOPS:
-    def __init__(self, dataset):
+    def __init__(self, dataset, type):
         self.dataset = dataset
+        self.type = type
         self.data = {}  # dict to store processed data
         self.dataframe = pd.DataFrame()
         self.clustered_dataframe = pd.DataFrame()
@@ -65,7 +66,7 @@ class JITC_DATAOPS:
     def change_directory(self):
         path = os.getcwd()
         print(f"Current working directory: {path}")
-        changed_path = os.path.join(path, 'data', 'synthetic_jitc', 'test_dataset')
+        changed_path = os.path.join(path, 'data', 'synthetic_jitc', f'{self.type}_dataset')
         os.chdir(changed_path)
         print(f"Changed working directory to: {os.getcwd()}")
 
@@ -175,10 +176,12 @@ class JITC_DATAOPS:
         dbscan = DBSCAN(eps=eps, min_samples=min_samples)
         return dbscan.fit_predict(X_scaled_chunk)
 
-    def develop_dataset(self, type=''):
+    def develop_dataset(self):
         # Prepare lists to collect data from all files
         all_bit_numbers = []
         all_filenames = []
+        all_sequences = []
+        type = self.type
 
         # Iterate over each row (file) in the DataFrame
         for index, row in self.dataframe.iterrows():
@@ -196,6 +199,8 @@ class JITC_DATAOPS:
             bit_numbers = [int(seq, 2) for seq in valid_sequences]
             all_bit_numbers.extend(bit_numbers)
             all_filenames.extend([filename] * len(bit_numbers))
+            all_sequences.extend(sequences)
+            
 
         if not all_bit_numbers:
             print("No valid sequences found in any file. Cannot perform clustering.")
@@ -204,7 +209,8 @@ class JITC_DATAOPS:
         # Create a single DataFrame with all bit numbers
         combined_df = pd.DataFrame({
             'filename': all_filenames,
-            'bit_number': all_bit_numbers
+            'bit_number': all_bit_numbers,
+            'sequences': all_sequences
         })
 
         # Scale bit numbers
@@ -232,33 +238,35 @@ class JITC_DATAOPS:
         updated_dataframe.to_pickle(f'UA_JITC_{type}_Bits_Aggregated_Dataframe.pkl')
         
     def aggregate_to_dataframe(self):
-        aggregated_list = []
-        # Group by `file_name` and collect arrays into a new DataFrame
-        for filename, group in self.clustered_dataframe.groupby('filename'):
-            aggregated_list.append({
-                'file_name': filename,
-                'bit_number': group['bit_number'].values,
-                'bit_number_scaled': group['bit_number_scaled'].values,
-                'labels': group['labels'].values
-            })
-        # Convert to DataFrame
-        aggregated_df = pd.DataFrame(aggregated_list)
-        return aggregated_df
-        
-        # Aggregate data by `file_name` with arrays for each column
         # aggregated_list = []
+        # # Group by `filename` and collect arrays into a new DataFrame
         # for filename, group in self.clustered_dataframe.groupby('filename'):
         #     aggregated_list.append({
-        #         'file_name': filename,
+        #         'filename': filename,
         #         'bit_number': group['bit_number'].values,
         #         'bit_number_scaled': group['bit_number_scaled'].values,
         #         'labels': group['labels'].values
         #     })
-        # # Convert the aggregated list to a DataFrame
+        # # Convert to DataFrame
         # aggregated_df = pd.DataFrame(aggregated_list)
-        # # Explode each array column to align bit_number with labels and bit_number_scaled
-        # exploded_df = aggregated_df.explode(['bit_number', 'bit_number_scaled', 'labels'], ignore_index=True)
-        # return exploded_df
+        # return aggregated_df
+        
+        # Aggregate data by `file_name` with arrays for each column
+        aggregated_list = []
+        for filename, group in self.clustered_dataframe.groupby('filename'):
+            aggregated_list.append({
+            'filename': filename,
+            'bit_number': group['bit_number'].values,
+            'bit_number_scaled': group['bit_number_scaled'].values,
+            'labels': group['labels'].values,
+            'sequences': group['sequences'].values
+            })
+        # Convert the aggregated list to a DataFrame
+        aggregated_df = pd.DataFrame(aggregated_list)
+        print(aggregated_df)
+        # Explode each array column to align bit_number with labels and bit_number_scaled
+        exploded_df = aggregated_df.explode(['bit_number', 'bit_number_scaled', 'sequences','labels'], ignore_index=True)
+        return exploded_df
 
     def visualize_clusters(self):
         # Extract data for visualization
@@ -294,16 +302,16 @@ class JITC_DATAOPS:
 
 
 if __name__ == "__main__":
-    dataOps = JITC_DATAOPS(dataset='UA_JITC')
-    # Run this function only once if needed
+    dataOps = JITC_DATAOPS(dataset='UA_JITC', type='test')
+    ## Run this function only once if needed
     # update_json_path = os.getcwd()
     # update_json_path = os.path.join(update_json_path, 'data', 'synthetic_jitc', 'train_dataset')
     # dataOps.update_jsons(update_json_path)
-    # Convert JSON bits to strings (run only if needed)
+    ## Convert JSON bits to strings (run only if needed)
     # path = os.getcwd()
     # input_dir = os.path.join(path, 'data', 'synthetic_jitc', 'train_dataset')
     # output_dir = os.path.join(path, 'data', 'synthetic_jitc', 'train_dataset')
     # dataOps.convert_json_bits_to_string(input_dir=input_dir, output_dir=output_dir)
-    # Import data and develop dataset
+    ## Import data and develop dataset
     dataOps.import_data()
-    dataOps.develop_dataset(type='test')
+    dataOps.develop_dataset()

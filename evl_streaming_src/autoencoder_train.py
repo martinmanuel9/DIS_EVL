@@ -177,14 +177,18 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
     print(jitc_dataframe.shape)
     
     df_bit_number = jitc_dataframe['bit_number'] # bit_number
+    df_sequences = jitc_dataframe['sequences'] # sequences
+    df_bit_number_scaled = jitc_dataframe['bit_number_scaled'] # bit_number_scaled
     df_bit_number = pd.DataFrame(list(df_bit_number)) 
+    df_sequences = pd.DataFrame(list(df_sequences))
+    df_bit_number_scaled = pd.DataFrame(list(df_bit_number_scaled))
     df_labels = jitc_dataframe['labels']
     df_labels = pd.DataFrame(list(df_labels))
     
-    # concat ngrams_freq and labels and keep column names and order of columns
-    normal_dataset = pd.concat([df_bit_number, df_labels], axis=1)
+    # concat ngrams_freq, sequences, and labels and keep column names and order of columns
+    normal_dataset = pd.concat([df_bit_number, df_sequences, df_bit_number_scaled, df_labels], axis=1)
     # last column is label
-    normal_dataset.columns = list(df_bit_number.columns) + ['labels'] 
+    normal_dataset.columns = list(df_bit_number.columns) + ['sequences'] + ['bit_number_scaled'] + ['labels'] # df_bit_number.columns is a list of column names 
     # reset index for dataframe normal dataset
     normal_dataset.reset_index(drop=True, inplace=True)
     
@@ -198,6 +202,7 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
     
     # train_data['labels'] = 0  # assign label for cross validation function
     X = train_data.drop(labels=['labels'], axis=1).values
+    
     y = train_data['labels']
 
     skf = KFold(n_splits=n_folds, shuffle=True, random_state=rs)

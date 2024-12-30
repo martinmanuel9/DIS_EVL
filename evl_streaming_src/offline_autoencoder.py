@@ -16,33 +16,45 @@ model = tf.keras.models.load_model(file_path, custom_objects={'mse': MeanSquared
 print(model.summary())
 
 # Path to the test data
-test_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/UA_JITC_test_Bits_Aggregated_Dataframe.pkl'
+test_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/UA_JITC_test_Bits_Clustered_Dataframe.pkl'
 
 # Load test data from pickle file
 with open(test_path, 'rb') as file:
     test_data = pickle.load(file)
 
-print(test_data.head())
+print(test_data)
 print(test_data.shape)
 print(test_data.columns)
 # Convert test data into a dictionary with filenames as keys
-test_dict = {row['file_name']: row['bit_number_scaled'] for _, row in pd.DataFrame(test_data).iterrows()}  # bit_number_scaled 
+# test_dict = {row['filename']: row['bit_number'] for _, row in pd.DataFrame(test_data).iterrows()} 
+
+# Convert test data into a dictionary with filenames as keys and the rest of the columns as values
+test_dict = {}
+for _, row in pd.DataFrame(test_data).iterrows():
+    test_dict[row['filename']] = row.drop('filename').values
 
 # Initialize dictionaries to store results
 reconstruction_errors = {}
 anomalies = {}
 anomalous_files = []
+predictions = {}
 # lengths = {}
 anomalous_elements_dict = {}
 runtimes = []  # To store runtimes for each sample
 
 # Process each file individually to calculate overall reconstruction errors
-for filename, bit_number in test_dict.items():
+# for filename, sequences in test_dict.items():
+for row in test_dict.items():
     # Store the length of the current array
     # lengths[filename] = len(bit_number)
-    
     # Reshape the input to match the model's expected input shape
-    X_row = np.array(bit_number).reshape(-1, 1)
+    X_row = np.array(row[1])
+    X_row = X_row.reshape(1, -1)
+    X_row = X_row.astype(np.float32)
+    X_row = X_row[:,:-1]
+    X_row = X_row.squeeze()
+    X_row = X_row.reshape(-1, 3)
+    print(np.shape(X_row))
     
     # Measure start time
     start_time = time.time()
@@ -57,15 +69,15 @@ for filename, bit_number in test_dict.items():
     
     # Calculate the reconstruction error (MSE for this sample)
     error = np.mean(np.square(X_row - prediction))
-    reconstruction_errors[filename] = error
+    reconstruction_errors[X_row] = error
 
 # Define the threshold based on the 95th percentile of overall reconstruction errors
 threshold = np.percentile(list(reconstruction_errors.values()), 95)
 
 # Now process each file again to determine which elements are anomalous
-for filename, bit_number in test_dict.items():
-    X_row = np.array(bit_number).reshape(-1, 1)
-    prediction = model.predict(X_row)
+for filename in test_dict.items():
+    X_row = np.array(filename).reshape(-1, 1)
+    X_row = np.array(test_dict[filename]).reshape(-1, 1).astype(np.float32)
     errors = np.square(X_row - prediction).flatten()
     anomalous_elements = np.where(errors > threshold)[0]
 
