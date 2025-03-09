@@ -94,7 +94,7 @@ def extract_anomalies(anomalies_dir, output_pkl_file, num_files):
 
             # Add a record per file, with anomaly_positions as an array
             anomalies_data.append({
-                'file': filename,
+                'filename': filename,
                 'anomaly_positions': anomaly_positions
             })
 

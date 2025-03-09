@@ -186,9 +186,9 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
     df_labels = pd.DataFrame(list(df_labels))
     
     # concat ngrams_freq, sequences, and labels and keep column names and order of columns
-    normal_dataset = pd.concat([df_bit_number, df_sequences, df_bit_number_scaled, df_labels], axis=1)
+    normal_dataset = pd.concat([df_bit_number, df_bit_number_scaled, df_labels], axis=1)
     # last column is label
-    normal_dataset.columns = list(df_bit_number.columns) + ['sequences'] + ['bit_number_scaled'] + ['labels'] # df_bit_number.columns is a list of column names 
+    normal_dataset.columns = list(df_bit_number.columns) + ['bit_number_scaled'] + ['labels'] # df_bit_number.columns is a list of column names 
     # reset index for dataframe normal dataset
     normal_dataset.reset_index(drop=True, inplace=True)
     

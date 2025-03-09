@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import os
 import time  # To measure runtime
 from keras.losses import MeanSquaredError
+from sklearn.metrics import precision_score, recall_score, f1_score
 
 # Path to the autoencoder model
 file_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/models/ae_offline_model_JITC.h5'
@@ -17,48 +18,54 @@ print(model.summary())
 
 # Path to the test data
 test_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/UA_JITC_test_Bits_Clustered_Dataframe.pkl'
+anomalies_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/UA_JITC_anomalies.pkl'
 
 # Load test data from pickle file
 with open(test_path, 'rb') as file:
     test_data = pickle.load(file)
 
+
+
+print('************ Test Data ************')
 print(test_data)
 print(test_data.shape)
 print(test_data.columns)
-# Convert test data into a dictionary with filenames as keys
-# test_dict = {row['filename']: row['bit_number'] for _, row in pd.DataFrame(test_data).iterrows()} 
 
-# Convert test data into a dictionary with filenames as keys and the rest of the columns as values
-test_dict = {}
-for _, row in pd.DataFrame(test_data).iterrows():
-    test_dict[row['filename']] = row.drop('filename').values
+# Load anomalies data from pickle file
+with open(anomalies_path, 'rb') as file:
+    ground_truth_anomalies = pickle.load(file)
+
+print('************ Anomalies Data ************')
+print(ground_truth_anomalies)
+print(ground_truth_anomalies.shape)
+print(ground_truth_anomalies.columns)
 
 # Initialize dictionaries to store results
 reconstruction_errors = {}
 anomalies = {}
 anomalous_files = []
 predictions = {}
-# lengths = {}
 anomalous_elements_dict = {}
 runtimes = []  # To store runtimes for each sample
 
-# Process each file individually to calculate overall reconstruction errors
-# for filename, sequences in test_dict.items():
-for row in test_dict.items():
-    # Store the length of the current array
-    # lengths[filename] = len(bit_number)
-    # Reshape the input to match the model's expected input shape
-    X_row = np.array(row[1])
-    X_row = X_row.reshape(1, -1)
-    X_row = X_row.astype(np.float32)
-    X_row = X_row[:,:-1]
-    X_row = X_row.squeeze()
-    X_row = X_row.reshape(-1, 3)
-    print(np.shape(X_row))
+## Temp to test
+## Select 100 items from test_dict
+selected_test_data = test_data[:100]
+
+# Define a scaling factor for normalization if needed
+max_bit_number = test_data['bit_number'].max()
+for _, row in test_data.iterrows():
+    # Preprocess bit_number and bit_number_scaled
+    bit_number = float(row['bit_number']) / max_bit_number
+    bit_number_scaled = float(row['bit_number_scaled'])
+    
+    # Combine into an array
+    X_row = np.array([bit_number, bit_number_scaled], dtype=np.float32)
+    X_row = np.expand_dims(X_row, axis=0)  # Add batch dimension
     
     # Measure start time
     start_time = time.time()
-    
+
     # Predict using the autoencoder model
     prediction = model.predict(X_row)
     
@@ -69,32 +76,59 @@ for row in test_dict.items():
     
     # Calculate the reconstruction error (MSE for this sample)
     error = np.mean(np.square(X_row - prediction))
-    reconstruction_errors[X_row] = error
 
-# Define the threshold based on the 95th percentile of overall reconstruction errors
-threshold = np.percentile(list(reconstruction_errors.values()), 95)
+    # Append results for this row's filename
+    filename = row['filename']
+    if filename not in reconstruction_errors:
+        reconstruction_errors[filename] = []
+        predictions[filename] = []
+    reconstruction_errors[filename].append(error)
+    predictions[filename].append(prediction.flatten())
 
-# Now process each file again to determine which elements are anomalous
-for filename in test_dict.items():
-    X_row = np.array(filename).reshape(-1, 1)
-    X_row = np.array(test_dict[filename]).reshape(-1, 1).astype(np.float32)
-    errors = np.square(X_row - prediction).flatten()
-    anomalous_elements = np.where(errors > threshold)[0]
+# Define the threshold based on the 95th percentile of all reconstruction errors
+threshold = np.percentile([error for errors in reconstruction_errors.values() for error in errors], 95)
+print("Threshold:", threshold)
 
-    if len(anomalous_elements) > 0:
-        anomalies[filename] = True
-        anomalous_files.append((filename, reconstruction_errors[filename]))
-        anomalous_elements_dict[filename] = anomalous_elements.tolist()
-    else:
-        anomalies[filename] = False
-        
-    print(f"File {filename}:")
-    # print(f" - Length of Array: {lengths[filename]}")
-    print(f" - Reconstruction Error: {reconstruction_errors[filename]}")
-    print(f" - Anomaly Detected: {anomalies[filename]}")
-    
-    if anomalies[filename]:
-        print(f" - Anomalous Elements: {anomalous_elements.tolist()}")
+# Second pass: Identify anomalies and group by filename
+for filename, errors in reconstruction_errors.items():
+    predictions_per_file = predictions[filename]
+    anomalies = []
+    for i, error in enumerate(errors):
+        if error > threshold:
+            anomalies.append(i)  # Index of the 128-bit sequence marked as anomalous
+
+    anomalous_elements_dict[filename] = anomalies
+
+# Compare identified anomalies with ground truth
+y_true = []
+y_pred = []
+
+for filename, ground_truth_positions in ground_truth_anomalies.items():
+    # Get the identified anomalies for this file
+    identified_positions = anomalous_elements_dict.get(filename, [])
+
+    # Create binary arrays for comparison
+    max_index = max(max(ground_truth_positions, default=0), max(identified_positions, default=0)) + 1
+    true_binary = [1 if i in ground_truth_positions else 0 for i in range(max_index)]
+    pred_binary = [1 if i in identified_positions else 0 for i in range(max_index)]
+
+    # Append to overall lists
+    y_true.extend(true_binary)
+    y_pred.extend(pred_binary)
+
+    print(f"Filename: {filename}")
+    print(f"  Ground Truth Anomalies: {ground_truth_positions}")
+    print(f"  Identified Anomalies: {identified_positions}")
+
+# Calculate performance metrics
+precision = precision_score(y_true, y_pred)
+recall = recall_score(y_true, y_pred)
+f1 = f1_score(y_true, y_pred)
+
+print(f"\nPerformance Metrics:")
+print(f"  Precision: {precision:.2f}")
+print(f"  Recall: {recall:.2f}")
+print(f"  F1 Score: {f1:.2f}")
 
 # Generate runtime statistics
 runtime_summary = {
