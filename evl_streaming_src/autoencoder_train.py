@@ -166,44 +166,17 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
     print(os.getcwd())
     os.chdir('../')
     
-    file_path = os.getcwd() + '/evl_streaming_src/datasets/UA_JITC_train_Bits_Clustered_Dataframe.pkl'
-    # Open the pickle file in read-binary mode
+    file_path = os.path.join(os.getcwd(), 'evl_streaming_src', 'datasets', 'UA_JITC_train_Bits_Clustered_Dataframe.pkl')
     with open(file_path, 'rb') as file:
         jitc_dataframe = pickle.load(file)
-    normal_train_data_dir = file_path
-    
-    print(jitc_dataframe.head())
-    print(jitc_dataframe.columns)
-    print(jitc_dataframe.shape)
-    
-    df_bit_number = jitc_dataframe['bit_number'] # bit_number
-    df_sequences = jitc_dataframe['sequences'] # sequences
-    df_bit_number_scaled = jitc_dataframe['bit_number_scaled'] # bit_number_scaled
-    df_bit_number = pd.DataFrame(list(df_bit_number)) 
-    df_sequences = pd.DataFrame(list(df_sequences))
-    df_bit_number_scaled = pd.DataFrame(list(df_bit_number_scaled))
-    df_labels = jitc_dataframe['labels']
-    df_labels = pd.DataFrame(list(df_labels))
-    
-    # concat ngrams_freq, sequences, and labels and keep column names and order of columns
-    normal_dataset = pd.concat([df_bit_number, df_bit_number_scaled, df_labels], axis=1)
-    # last column is label
-    normal_dataset.columns = list(df_bit_number.columns) + ['bit_number_scaled'] + ['labels'] # df_bit_number.columns is a list of column names 
-    # reset index for dataframe normal dataset
-    normal_dataset.reset_index(drop=True, inplace=True)
-    
-    train_data = normal_dataset
-    
-    os.chdir(os.getcwd() + "/evl_streaming_src/models")
-    # train_data = train_data[:]
-    normal_dataset.to_csv('df_train_sel_feat_' + 'JITC' + '.csv', index=False)
-    print('\nStart training ' + 'JITC' + ' model...\n')
-    # model_training(df_train, layer, hidden_neurons, num_sigma, use_cv_threshold=use_cv_threshold)
-    
-    # train_data['labels'] = 0  # assign label for cross validation function
-    X = train_data.drop(labels=['labels'], axis=1).values
-    
-    y = train_data['labels']
+
+    print("Columns in the dataset:", jitc_dataframe.columns)
+
+    df_normal = jitc_dataframe[jitc_dataframe['chunk_label'] == 0].copy()
+    print(f"All chunks: {len(jitc_dataframe)}; Normal chunks: {len(df_normal)}")
+
+    X = df_normal[['bit_number_scaled']].values 
+    y = np.zeros(len(X))  # all normal
 
     skf = KFold(n_splits=n_folds, shuffle=True, random_state=rs)
     skf.get_n_splits(X, y)

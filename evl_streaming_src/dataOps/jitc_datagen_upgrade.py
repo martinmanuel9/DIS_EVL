@@ -124,13 +124,25 @@ class JITC_DATAOPS:
                 sequences = self.get_bit_sequences(binary_sequence)
 
                 # Determine if there is an anomaly
-                anomaly_positions = json_data.get('anomaly_positions', '')
+                anomaly_positions = json_data.get('anomaly_positions', [])
+                
+                # build chunk labels 
+                chunk_labels = []
+                chunk_size = 256
+                for i, seq in enumerate(sequences):
+                    chunk_start = i * chunk_size
+                    chunk_end   = chunk_start + chunk_size
+                    # Check if ANY flipped bit is within [chunk_start, chunk_end)
+                    has_anomaly = any(pos >= chunk_start and pos < chunk_end
+                                    for pos in anomaly_positions)
+                    chunk_labels.append(1 if has_anomaly else 0)
 
-                # Store the binary data and sequences
+                # 4) Save to self.data
                 self.data[os.path.basename(json_file)] = {
                     'binary': binary_sequence,
                     'sequences': sequences,
-                    'anomaly_positions': anomaly_positions
+                    'anomaly_positions': anomaly_positions,
+                    'chunk_labels': chunk_labels
                 }
         except (json.JSONDecodeError, KeyError) as e:
             print(f"Error processing {json_file}: {e}")
@@ -152,12 +164,14 @@ class JITC_DATAOPS:
             sequences = data['sequences']
             anomaly_positions = data['anomaly_positions']
             binary = data['binary']
+            chunk_labels = data.get('chunk_labels', [])
 
             records.append({
                 'filename': filename,
                 'binary': binary,
                 'sequences': sequences,
-                'anomaly_positions': anomaly_positions
+                'anomaly_positions': anomaly_positions,
+                'chunk_labels': chunk_labels
             })
 
         # Create the DataFrame from the records
@@ -181,38 +195,40 @@ class JITC_DATAOPS:
         all_bit_numbers = []
         all_filenames = []
         all_sequences = []
+        all_labels = [] # chunk labels
         type = self.type
 
         # Iterate over each row (file) in the DataFrame
         for index, row in self.dataframe.iterrows():
             sequences = row['sequences']
             filename = row['filename']
+            chunk_lbl = row['chunk_labels']  # list of 0/1 for each chunk
 
             # Filter valid sequences
             valid_sequences = [seq for seq in sequences if isinstance(seq, str) and len(seq) == 256 and set(seq) <= {'0', '1'}]
-
-            if not valid_sequences:
-                print(f"No valid sequences found in file {filename}. Skipping.")
-                continue
-
-            # Convert sequences to numbers
             bit_numbers = [int(seq, 2) for seq in valid_sequences]
-            all_bit_numbers.extend(bit_numbers)
-            all_filenames.extend([filename] * len(bit_numbers))
-            all_sequences.extend(sequences)
             
+            # Make sure chunk_lbl has same length as valid_sequences
+            # (skip any mismatch if needed)
+            if len(chunk_lbl) != len(valid_sequences):
+                print(f"Warning: mismatch in chunk count for {filename}")
+                # handle mismatch as you see fit
+                # e.g. chunk_lbl = chunk_lbl[:len(valid_sequences)]
 
-        if not all_bit_numbers:
-            print("No valid sequences found in any file. Cannot perform clustering.")
-            return
+            # 3) Append to “master” lists
+            all_bit_numbers.extend(bit_numbers)
+            all_filenames.extend([filename]*len(bit_numbers))
+            all_sequences.extend(valid_sequences)
+            all_labels.extend(chunk_lbl)  # push 0/1 labels
 
         # Create a single DataFrame with all bit numbers
         combined_df = pd.DataFrame({
             'filename': all_filenames,
             'bit_number': all_bit_numbers,
-            'sequences': all_sequences
+            'sequences': all_sequences,
+            'chunk_label': all_labels
         })
-
+        
         # Scale bit numbers
         scaler = MinMaxScaler()
         combined_df['bit_number_scaled'] = scaler.fit_transform(combined_df['bit_number'].values.reshape(-1, 1))
@@ -302,7 +318,7 @@ class JITC_DATAOPS:
 
 
 if __name__ == "__main__":
-    dataOps = JITC_DATAOPS(dataset='UA_JITC', type='test')
+    dataOps = JITC_DATAOPS(dataset='UA_JITC', type='train')
     ## Run this function only once if needed
     # update_json_path = os.getcwd()
     # update_json_path = os.path.join(update_json_path, 'data', 'synthetic_jitc', 'train_dataset')
