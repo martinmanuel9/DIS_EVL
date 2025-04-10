@@ -1,3 +1,16 @@
+#!/usr/bin/env python
+
+"""
+Application:        Offline Autoencoder Unit Test
+File name:          offline_autoencoder_unit_test.py
+Author:             Martin Manuel Lopez
+Creation:           April 10, 2025
+
+The University of Arizona
+Department of Electrical and Computer Engineering
+College of Engineering
+"""
+
 import pickle
 import numpy as np
 import tensorflow as tf
@@ -67,12 +80,16 @@ def compare_anomalies(filename, ground_truth_positions, detected_chunks, chunk_s
     
     return list(true_chunks), detected_chunks, true_binary, pred_binary
 
-def calculate_additional_metrics(true_binary, pred_binary, dataset_name="JITC", method_name="Autoencoder"):
+def calculate_metrics(true_binary, pred_binary, dataset_name="JITC", method_name="Autoencoder"):
+    """
+    Calculate performance metrics using the PerformanceMetrics class
+    """
     true_binary = np.array(true_binary)
     pred_binary = np.array(pred_binary)
     
-    start_time = 0
-    end_time = 0
+    start_time = time.time()
+    # Perform your model evaluation here
+    end_time = time.time()
     
     perf = PerformanceMetrics(
         tstart=start_time,
@@ -82,7 +99,7 @@ def calculate_additional_metrics(true_binary, pred_binary, dataset_name="JITC", 
         test=true_binary,
         dataset=dataset_name,
         method=method_name,
-        classifier="Anomaly Detection"
+        classifier="tcis_autoencoder"
     )
     
     metrics = perf.findClassifierMetrics(pred_binary, true_binary)
@@ -139,17 +156,17 @@ def visualize_errors(reconstruction_errors, thresholds, output_dir='plots'):
         f"Std: {np.std(all_errors):.6f}\n"
     )
     plt.annotate(stats_text, xy=(0.75, 0.9), xycoords='axes fraction', 
-                    bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8))
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.8))
     
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'error_distribution_all_thresholds.png'))
-    plt.show()
+    plt.close()
     
     for name, threshold in thresholds.items():
         plt.figure(figsize=(10, 6))
         plt.hist(all_errors, bins=50, alpha=0.75, color='skyblue')
         plt.axvline(threshold, color='r', linestyle='--', 
-                        label=f'Threshold: {threshold:.6f}')
+                    label=f'Threshold: {threshold:.6f}')
         
         anomalies_detected = sum(1 for e in all_errors if e > threshold)
         plt.title(f'Threshold: {name} ({anomalies_detected} anomalies detected)')
@@ -220,7 +237,8 @@ def evaluate_with_threshold(threshold, reconstruction_errors, ground_truth_anoma
         metrics['recall'] = recall_score(all_true_binary, all_pred_binary, zero_division=0)
         metrics['f1_score'] = f1_score(all_true_binary, all_pred_binary, zero_division=0)
         
-        additional_metrics = calculate_additional_metrics(
+        # Using PerformanceMetrics class to calculate additional metrics
+        additional_metrics = calculate_metrics(
             all_true_binary, 
             all_pred_binary,
             dataset_name="JITC",
@@ -317,7 +335,7 @@ def plot_metrics_comparison(metrics_list, output_dir='plots'):
     plt.legend()
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'threshold_comparison_metrics.png'))
-    plt.show()
+    plt.close()
     
     plt.figure(figsize=(12, 8))
     plt.plot(metrics_df['threshold_name'], metrics_df['classifier_accuracy'], 'o-', label='Accuracy')
@@ -334,7 +352,7 @@ def plot_metrics_comparison(metrics_list, output_dir='plots'):
     plt.legend()
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'threshold_comparison_additional_metrics.png'))
-    plt.show()
+    plt.close()
     
     plt.figure(figsize=(12, 8))
     plt.bar(metrics_df['threshold_name'], metrics_df['total_true_chunks'], alpha=0.5, label='True Chunks')
@@ -348,7 +366,7 @@ def plot_metrics_comparison(metrics_list, output_dir='plots'):
     plt.legend()
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'threshold_comparison_counts.png'))
-    plt.show()
+    plt.close()
     
     plt.figure(figsize=(12, 8))
     plt.bar(metrics_df['threshold_name'], metrics_df['total_true_positives'], alpha=0.5, label='True Positives')
@@ -363,10 +381,16 @@ def plot_metrics_comparison(metrics_list, output_dir='plots'):
     plt.legend()
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'threshold_comparison_tp_fp_fn.png'))
-    plt.show()
+    plt.close()
 
-if __name__ == "__main__":
-    file_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/models/ae_offline_model_JITC.h5'
+def run_unit_test():
+    """
+    Main function to run the offline autoencoder unit test
+    """
+    print("Starting offline autoencoder unit test...")
+    
+    # Path to model
+    file_path = 'evl_streaming_src/models/ae_offline_model_JITC.h5'
 
     try:
         model = tf.keras.models.load_model(file_path, custom_objects={'mse': MeanSquaredError()})
@@ -376,8 +400,9 @@ if __name__ == "__main__":
         print(f"Error loading model: {e}")
         raise
 
-    test_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/UA_JITC_test_Bits_Clustered_Dataframe.pkl'
-    anomalies_path = '/srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/datasets/UA_JITC_anomalies.pkl'
+    # Path to test data and anomalies
+    test_path = 'evl_streaming_src/datasets/UA_JITC_test_Bits_Clustered_Dataframe.pkl'
+    anomalies_path = 'evl_streaming_src/datasets/UA_JITC_anomalies.pkl'
 
     try:
         with open(test_path, 'rb') as file:
@@ -419,13 +444,6 @@ if __name__ == "__main__":
     predictions = {}
     runtimes = []
 
-    # cd to demo directory
-    try:
-        os.chdir(os.getcwd() + '/evl_streaming_src/demo')
-        print(f"Changed directory to: {os.getcwd()}")
-    except Exception as e:
-        print(f"Error changing directory: {e}")
-
     print("************ Enter Mode ************")
     # Select mode: 'unit_test' (100 items) or 'none' (full dataset)
     mode = input("Enter mode ('unit_test' or nothing to run full test): ").strip().lower()
@@ -435,7 +453,7 @@ if __name__ == "__main__":
         
         # Check if the unit test sample contains files with anomalies
         test_files = set(test_data['filename'].unique())
-        anomaly_files = set(ground_truth_anomalies['filename'].unique())
+        anomaly_files = set(ground_truth_anomalies.index)
         common_files = test_files.intersection(anomaly_files)
         
         print(f"Files in test set: {len(test_files)}")
@@ -456,7 +474,7 @@ if __name__ == "__main__":
             test_data = test_data[test_data['filename'].isin(selected_files)]
             print(f"Using {len(test_data)} selected files for testing")
         else:
-            test_data = test_data[:100]
+            test_data = test_data[:100]  # Use only 100 rows for unit testing
     else:
         print("Running full simulation...")
 
@@ -500,9 +518,11 @@ if __name__ == "__main__":
     print(f"  Mean: {np.mean(all_errors):.6f}")
     print(f"  Std: {np.std(all_errors):.6f}")
 
+    # Run evaluation with multiple thresholds
     output_dir = f"UA_JITC_results_{'unit_test' if mode == 'unit_test' else 'full'}"
     metrics = run_batch_evaluation(reconstruction_errors, ground_truth_anomalies, output_dir)
 
+    # Runtime analysis
     runtime_summary = {
         'min': np.min(runtimes),
         'max': np.max(runtimes),
@@ -522,7 +542,10 @@ if __name__ == "__main__":
     plt.title('Boxplot of Runtimes')
     plt.xlabel('Runtime (seconds)')
     plt.savefig(os.path.join(output_dir, 'plots', 'UA_JITC_runtime_boxplot.png'))
-    plt.show()
+    plt.close()
 
     print(f"\nAll results saved to {output_dir} directory.")
-    print("Batch threshold testing complete!")
+    print("Offline autoencoder unit test complete!")
+
+if __name__ == "__main__":
+    run_unit_test()
