@@ -33,3 +33,4 @@ data/synthetic_jitc/original_json_files/**
 data/synthetic_jitc/train_dataset/**
 data/synthetic_jitc/test_dataset/**
 data/synthetic_jitc/dataframe/**
+mlruns/**

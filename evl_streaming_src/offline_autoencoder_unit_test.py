@@ -192,9 +192,7 @@ def evaluate_with_threshold(threshold, reconstruction_errors, ground_truth_anoma
         try:
             # Parse anomaly positions
             anomaly_positions = parse_anomaly_positions(row['anomaly_positions'])
-            
             file_errors = reconstruction_errors.get(filename, [])
-            
             detected_chunks = [i for i, error in enumerate(file_errors) if error > threshold]
             
             true_chunks, detected_chunks, true_binary, pred_binary = compare_anomalies(
@@ -237,7 +235,6 @@ def evaluate_with_threshold(threshold, reconstruction_errors, ground_truth_anoma
         metrics['recall'] = recall_score(all_true_binary, all_pred_binary, zero_division=0)
         metrics['f1_score'] = f1_score(all_true_binary, all_pred_binary, zero_division=0)
         
-        # Using PerformanceMetrics class to calculate additional metrics
         additional_metrics = calculate_metrics(
             all_true_binary, 
             all_pred_binary,
@@ -383,14 +380,15 @@ def plot_metrics_comparison(metrics_list, output_dir='plots'):
     plt.savefig(os.path.join(output_dir, 'threshold_comparison_tp_fp_fn.png'))
     plt.close()
 
-def run_unit_test():
+def run_test():
     """
-    Main function to run the offline autoencoder unit test
+    Main function to run the offline autoencoder test
     """
-    print("Starting offline autoencoder unit test...")
+    print("Starting offline autoencoder test...")
+    print(os.getcwd())
     
     # Path to model
-    file_path = 'evl_streaming_src/models/ae_offline_model_JITC.h5'
+    file_path = 'models/ae_offline_model_JITC.h5'
 
     try:
         model = tf.keras.models.load_model(file_path, custom_objects={'mse': MeanSquaredError()})
@@ -401,8 +399,8 @@ def run_unit_test():
         raise
 
     # Path to test data and anomalies
-    test_path = 'evl_streaming_src/datasets/UA_JITC_test_Bits_Clustered_Dataframe.pkl'
-    anomalies_path = 'evl_streaming_src/datasets/UA_JITC_anomalies.pkl'
+    test_path = 'datasets/UA_JITC_test_Bits_Clustered_Dataframe.pkl'
+    anomalies_path = 'datasets/UA_JITC_anomalies.pkl'
 
     try:
         with open(test_path, 'rb') as file:
@@ -548,4 +546,4 @@ def run_unit_test():
     print("Offline autoencoder unit test complete!")
 
 if __name__ == "__main__":
-    run_unit_test()
+    run_test()
