@@ -230,9 +230,7 @@ def evaluate_with_threshold(threshold, reconstruction_errors, ground_truth_anoma
         try:
             # Parse anomaly positions
             anomaly_positions = parse_anomaly_positions(row['anomaly_positions'])
-            
             file_errors = reconstruction_errors.get(filename, [])
-            
             detected_chunks = [i for i, error in enumerate(file_errors) if error > threshold]
             
             true_chunks, detected_chunks, true_binary, pred_binary = compare_anomalies(

@@ -34,3 +34,5 @@ data/synthetic_jitc/train_dataset/**
 data/synthetic_jitc/test_dataset/**
 data/synthetic_jitc/dataframe/**
 mlruns/**
+UA_JITC_results_unit_test/** 
+UA_JITC_results_full/**
