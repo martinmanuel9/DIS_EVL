@@ -774,54 +774,55 @@ def run_test():
         mlflow.log_artifact(error_data_path)
         
         # Create a model inference function with the best threshold
-        model_inference_script = f"""
-                import pickle
-                import numpy as np
-                import tensorflow as tf
-                from tensorflow.keras.losses import MeanSquaredError
+#         model_inference_script = f"""
+# import pickle
+# import numpy as np
+# import tensorflow as tf
+# from tensorflow.keras.losses import MeanSquaredError
 
-                def load_model(model_path):
-                    return tf.keras.models.load_model(model_path, custom_objects={{'mse': MeanSquaredError()}})
+# def load_model(model_path):
+#     return tf.keras.models.load_model(model_path, custom_objects={{'mse': MeanSquaredError()}})
 
-                def predict_anomalies(model, data, threshold={best_threshold['threshold_value']}):
-                    \"\"\"
-                    Predict anomalies in the input data using the autoencoder model
-                    
-                    Args:
-                        model: Trained autoencoder model
-                        data: Input data with 'bit_number_scaled' column
-                        threshold: Threshold for anomaly detection ({best_threshold['threshold_name']})
-                        
-                    Returns:
-                        Data with predictions and anomaly flags
-                    \"\"\"
-                    predictions = []
-                    errors = []
-                    anomalies = []
-                    
-                    for _, row in data.iterrows():
-                        bit_number_scaled = float(row['bit_number_scaled'])
-                        X_row = np.array([bit_number_scaled], dtype=np.float32)
-                        X_row = np.expand_dims(X_row, axis=0)
-                        
-                        prediction = model.predict(X_row, verbose=0)
-                        error = np.mean(np.square(X_row - prediction))
-                        
-                        predictions.append(prediction.flatten()[0])
-                        errors.append(error)
-                        anomalies.append(error > threshold)
-                    
-                    # Add predictions to data
-                    data['prediction'] = predictions
-                    data['error'] = errors
-                    data['is_anomaly'] = anomalies
-                    
-                    return data
+# def predict_anomalies(model, data, threshold={best_threshold['threshold_value']}):
+#     \"\"\"
+#     Predict anomalies in the input data using the autoencoder model
+    
+#     Args:
+#         model: Trained autoencoder model
+#         data: Input data with 'bit_number_scaled' column
+#         threshold: Threshold for anomaly detection ({best_threshold['threshold_name']})
+        
+#     Returns:
+#         Data with predictions and anomaly flags
+#     \"\"\"
+#     predictions = []
+#     errors = []
+#     anomalies = []
+    
+#     for _, row in data.iterrows():
+#         bit_number_scaled = float(row['bit_number_scaled'])
+#         X_row = np.array([bit_number_scaled], dtype=np.float32)
+#         X_row = np.expand_dims(X_row, axis=0)
+        
+#         prediction = model.predict(X_row, verbose=0)
+#         error = np.mean(np.square(X_row - prediction))
+        
+#         predictions.append(prediction.flatten()[0])
+#         errors.append(error)
+#         anomalies.append(error > threshold)
+    
+#     # Add predictions to data
+#     data['prediction'] = predictions
+#     data['error'] = errors
+#     data['is_anomaly'] = anomalies
+    
+#     return data
 
-                # Example usage:
-                # model = load_model('path/to/model.h5')
-                # result = predict_anomalies(model, input_data)
-                """
+# # Example usage:
+# model = load_model('evl_streaming_src/models/ae_offline_model_JITC.h5')
+# input_data = 'evl_streaming_src/datasets/UA_JITC_test_Bits_Clustered_Dataframe.pkl'
+# result = predict_anomalies(model, input_data)
+# """
         
         # Save inference script
         inference_script_path = os.path.join(output_dir, 'model_inference.py')
@@ -836,40 +837,40 @@ def run_test():
         
         # Create a markdown report with results summary
         report = f"""# Autoencoder Anomaly Detection Results
-                    ## Test Configuration
-                    - Test Mode: {'Unit Test' if mode == 'unit_test' else 'Full Test'}
-                    - Files Analyzed: {len(reconstruction_errors)}
-                    - Data Points: {sum(len(errors) for errors in reconstruction_errors.values())}
+## Test Configuration
+- Test Mode: {'Unit Test' if mode == 'unit_test' else 'Full Test'}
+- Files Analyzed: {len(reconstruction_errors)}
+- Data Points: {sum(len(errors) for errors in reconstruction_errors.values())}
 
-                    ## Performance Metrics
-                    - Best Threshold: {best_threshold['threshold_name']} ({best_threshold['threshold_value']:.6f})
-                    - F1 Score: {best_threshold['f1_score']:.4f}
-                    - Precision: {best_threshold['precision']:.4f}
-                    - Recall: {best_threshold['recall']:.4f}
-                    - Matthews Correlation: {best_threshold['matthews_corrcoef']:.4f}
+## Performance Metrics
+- Best Threshold: {best_threshold['threshold_name']} ({best_threshold['threshold_value']:.6f})
+- F1 Score: {best_threshold['f1_score']:.4f}
+- Precision: {best_threshold['precision']:.4f}
+- Recall: {best_threshold['recall']:.4f}
+- Matthews Correlation: {best_threshold['matthews_corrcoef']:.4f}
 
-                    ## Error Statistics
-                    - Min Error: {min(all_errors):.6f}
-                    - Max Error: {max(all_errors):.6f}
-                    - Mean Error: {np.mean(all_errors):.6f}
-                    - Std Error: {np.std(all_errors):.6f}
+## Error Statistics
+- Min Error: {min(all_errors):.6f}
+- Max Error: {max(all_errors):.6f}
+- Mean Error: {np.mean(all_errors):.6f}
+- Std Error: {np.std(all_errors):.6f}
 
-                    ## Runtime Performance
-                    - Mean Runtime: {runtime_summary['mean']:.6f} seconds
-                    - Median Runtime: {runtime_summary['median']:.6f} seconds
-                    - Std Runtime: {runtime_summary['standard_deviation']:.6f} seconds
+## Runtime Performance
+- Mean Runtime: {runtime_summary['mean']:.6f} seconds
+- Median Runtime: {runtime_summary['median']:.6f} seconds
+- Std Runtime: {runtime_summary['standard_deviation']:.6f} seconds
 
-                    ## Files
-                    - Model: {file_path}
-                    - Test Data: {test_path}
-                    - Ground Truth: {anomalies_path}
-                    - Results: {output_dir}
+## Files
+- Model: {file_path}
+- Test Data: {test_path}
+- Ground Truth: {anomalies_path}
+- Results: {output_dir}
 
-                    ## Next Steps
-                    1. Use the generated 'model_inference.py' script for real-time anomaly detection
-                    2. Deploy the model with the optimal threshold ({best_threshold['threshold_value']:.6f})
-                    3. Monitor performance on new data
-                    """
+## Next Steps
+1. Use the generated 'model_inference.py' script for real-time anomaly detection
+2. Deploy the model with the optimal threshold ({best_threshold['threshold_value']:.6f})
+3. Monitor performance on new data
+"""
         
         # Save report
         report_path = os.path.join(output_dir, 'results_summary.md')
