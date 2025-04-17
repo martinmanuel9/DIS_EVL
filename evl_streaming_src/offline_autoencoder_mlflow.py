@@ -605,7 +605,7 @@ def run_test():
             print(f"Error loading ground truth anomalies: {e}")
             raise
 
-        print("\n************ Debug Ground Truth Anomalies ************")
+        print("\n************ Getting Ground Truth Anomalies ************")
         for i, (filename, row) in enumerate(ground_truth_anomalies.iterrows()):
             if i >= 5:  # Only show first 5
                 break
@@ -637,9 +637,18 @@ def run_test():
             # TODO the real test and performance is found in ground_truth but right now
             # we are just getting the file names
             # what we need to do is correct file names accross the test set and put together and understand if 
-            # there is an anomaly. 
+            # need to get the chunks since that is what the labels are attributed to 
             test_files = set(test_data['filename'].unique())
+            parsed_anomalies = []
+            chunked_anomalies = []
+            test_files = {}
+            for i, (filename, row) in enumerate(ground_truth_anomalies.iterrows()):
+                parsed.append(parse_anomaly_positions(row['anomaly_positions']))
+                chunked_anomalies.append(map_bit_positions_to_chunks(parsed))
+                
+            test_files_anomalies_chunks = test_data
             anomaly_files = set(ground_truth_anomalies.values[:, 0])
+            anomalies = ground_truth_anomalies['anomaly_positions'].values
             common_files = test_files.intersection(anomaly_files)
             
             print(f"Files in test set: {len(test_files)}")
