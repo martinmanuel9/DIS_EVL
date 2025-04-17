@@ -27,7 +27,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from keras.losses import MeanSquaredError
 from sklearn.metrics import precision_score, recall_score, f1_score
 from sklearn.exceptions import UndefinedMetricWarning
-from classifier_performance import PerformanceMetrics
+from performance_result_no_ts import PerformanceMetrics as pm
 
 # MLflow setup
 MLFLOW_TRACKING_URI = "mlruns"  # Local directory for MLflow tracking
@@ -634,6 +634,10 @@ def run_test():
             print("Running in unit test mode with 100 items...")
             
             # Check if the unit test sample contains files with anomalies
+            # TODO the real test and performance is found in ground_truth but right now
+            # we are just getting the file names
+            # what we need to do is correct file names accross the test set and put together and understand if 
+            # there is an anomaly. 
             test_files = set(test_data['filename'].unique())
             anomaly_files = set(ground_truth_anomalies.values[:, 0])
             common_files = test_files.intersection(anomaly_files)
@@ -698,6 +702,11 @@ def run_test():
                 except Exception as e:
                     print(f"Error processing row: {e}")
         
+        print(test_data.head())
+        perf_metric = pm.PerformanceMetrics(preds= predictions, test= test_data, \
+                                        dataset= 'JITC_AE', method= 'Autoencoder' , \
+                                        classifier= 'TCIS_Autoencoder')
+        performance_metric = perf_metric.findClassifierMetrics(preds= self.preds[ts], test= self.X[ts+1][:,-1])
         # Log processing end time
         processing_end_time = time.time()
         total_processing_time = processing_end_time - processing_start_time
@@ -825,12 +834,12 @@ def run_test():
 # """
         
         # Save inference script
-        inference_script_path = os.path.join(output_dir, 'model_inference.py')
-        with open(inference_script_path, 'w') as f:
-            f.write(model_inference_script)
+        # inference_script_path = os.path.join(output_dir, 'model_inference.py')
+        # with open(inference_script_path, 'w') as f:
+        #     f.write(model_inference_script)
         
-        # Log inference script to MLflow
-        mlflow.log_artifact(inference_script_path)
+        # # Log inference script to MLflow
+        # mlflow.log_artifact(inference_script_path)
 
         print(f"\nAll results saved to {output_dir} directory.")
         print("Offline autoencoder test complete!")
