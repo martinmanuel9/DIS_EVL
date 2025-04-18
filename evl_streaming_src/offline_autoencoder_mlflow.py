@@ -643,9 +643,10 @@ def run_test():
             chunked_anomalies = []
             test_files = {}
             for i, (filename, row) in enumerate(ground_truth_anomalies.iterrows()):
-                parsed.append(parse_anomaly_positions(row['anomaly_positions']))
+                parsed_anomalies.append(parse_anomaly_positions(row['anomaly_positions']))
                 chunked_anomalies.append(map_bit_positions_to_chunks(parsed))
                 
+            print(chunked_anomalies)
             test_files_anomalies_chunks = test_data
             anomaly_files = set(ground_truth_anomalies.values[:, 0])
             anomalies = ground_truth_anomalies['anomaly_positions'].values

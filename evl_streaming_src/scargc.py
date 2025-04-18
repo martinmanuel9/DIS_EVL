@@ -43,7 +43,7 @@ import os
 import math
 import dataOps.benchmark_datagen_old as bdg
 import dataOps.ton_iot_datagen as ton_iot
-import dataOps.bot_iot_datagen as bot_iot
+import evl_streaming_src.dataOps.iot_experiments.bot_iot_datagen as bot_iot
 # import unsw_nb15_datagen as unsw
 import classifier_performance as cp
 from sklearn.cluster import KMeans
