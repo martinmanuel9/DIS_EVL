@@ -122,7 +122,7 @@ def calculate_metrics(true_binary, pred_binary, dataset_name="JITC", method_name
     # Perform your model evaluation here
     end_time = time.time()
     
-    perf = PerformanceMetrics(
+    perf = pm(
         tstart=start_time,
         tend=end_time,
         timestep=0, 
@@ -639,17 +639,8 @@ def run_test():
             # what we need to do is correct file names accross the test set and put together and understand if 
             # need to get the chunks since that is what the labels are attributed to 
             test_files = set(test_data['filename'].unique())
-            parsed_anomalies = []
-            chunked_anomalies = []
-            test_files = {}
-            for i, (filename, row) in enumerate(ground_truth_anomalies.iterrows()):
-                parsed_anomalies.append(parse_anomaly_positions(row['anomaly_positions']))
-                chunked_anomalies.append(map_bit_positions_to_chunks(parsed))
-                
-            print(chunked_anomalies)
-            test_files_anomalies_chunks = test_data
             anomaly_files = set(ground_truth_anomalies.values[:, 0])
-            anomalies = ground_truth_anomalies['anomaly_positions'].values
+            
             common_files = test_files.intersection(anomaly_files)
             
             print(f"Files in test set: {len(test_files)}")
@@ -689,13 +680,15 @@ def run_test():
             mlflow.log_param("full_test_rows_count", len(test_data))
 
         max_bit_number = test_data['bit_number'].max()
+        max_bit_scaled_number = test_data['bit_number_scaled'].max()
         
         # Log max bit number
         mlflow.log_param("max_bit_number", max_bit_number)
+        mlflow.log_param("max_bit_scaled_number", max_bit_scaled_number)
 
         # Log start time
         processing_start_time = time.time()
-        
+        print(test_data.head())
         print("Processing test data...")
         with ThreadPoolExecutor() as executor:
             futures = {executor.submit(process_row, row, model, max_bit_number): row for _, row in test_data.iterrows()}
