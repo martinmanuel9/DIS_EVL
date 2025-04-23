@@ -690,20 +690,38 @@ def run_test():
         processing_start_time = time.time()
         print(test_data.head())
         print("Processing test data...")
-        with ThreadPoolExecutor() as executor:
-            futures = {executor.submit(process_row, row, model, max_bit_number): row for _, row in test_data.iterrows()}
-            for future in as_completed(futures):
-                try:
-                    filename, prediction, error, runtime = future.result()
-                    runtimes.append(runtime)
+        # Comment out parallel processing
+        # with ThreadPoolExecutor() as executor:
+        #     futures = {executor.submit(process_row, row, model, max_bit_number): row for _, row in test_data.iterrows()}
+        #     for future in as_completed(futures):
+        #         try:
+        #             filename, prediction, error, runtime = future.result()
+        #             runtimes.append(runtime)
+        #             if filename not in reconstruction_errors:
+        #                 reconstruction_errors[filename] = []
+        #                 predictions[filename] = []
+        #             reconstruction_errors[filename].append(error)
+        #             predictions[filename].append(prediction)
+        #         except Exception as e:
+        #             print(f"Error processing row: {e}")
 
-                    if filename not in reconstruction_errors:
-                        reconstruction_errors[filename] = []
-                        predictions[filename] = []
-                    reconstruction_errors[filename].append(error)
-                    predictions[filename].append(prediction)
-                except Exception as e:
-                    print(f"Error processing row: {e}")
+        model_file_path = 'evl_streaming_src/models/ae_offline_model_JITC.h5'
+        model = tf.keras.models.load_model(model_file_path, custom_objects={'mse': MeanSquaredError()})
+        print(test_data['sequences'].head())
+        # Iteratively predict and update reconstruction_errors / predictions
+        for _, row in test_data.iterrows():
+            bit_number_scaled = row['bit_number_scaled']
+            sequence = row['sequences'] 
+            X_row = np.array([bit_number_scaled, sequence])
+            pred = model.predict(X_row)
+            err = np.mean(np.square(X_row - pred))
+
+            fname = row['filename']
+            if fname not in reconstruction_errors:
+                reconstruction_errors[fname] = []
+                predictions[fname] = []
+            reconstruction_errors[fname].append(err)
+            predictions[fname].append(pred.flatten())
         
         print(test_data.head())
         perf_metric = pm.PerformanceMetrics(preds= predictions, test= test_data, \
