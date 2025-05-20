@@ -1,0 +1,6 @@
+artifact_location: /srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/mlruns/267083541010354557
+creation_time: 1747619180405
+experiment_id: '267083541010354557'
+last_update_time: 1747619180405
+lifecycle_stage: active
+name: TCIS-Autoencoder-Anomaly-Detection

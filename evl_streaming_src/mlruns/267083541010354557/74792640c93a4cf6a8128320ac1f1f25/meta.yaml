@@ -1,0 +1,15 @@
+artifact_uri: /srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/mlruns/267083541010354557/74792640c93a4cf6a8128320ac1f1f25/artifacts
+end_time: 1747638775069
+entry_point_name: ''
+experiment_id: '267083541010354557'
+lifecycle_stage: active
+run_id: 74792640c93a4cf6a8128320ac1f1f25
+run_name: autoencoder-20250518-184620
+run_uuid: 74792640c93a4cf6a8128320ac1f1f25
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747619182183
+status: 4
+tags: []
+user_id: martinmlopez

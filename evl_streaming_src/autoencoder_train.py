@@ -175,8 +175,8 @@ def train_multiple_layer(n_folds: int, noise_factor: float, epoch: int, activati
     df_normal = jitc_dataframe[jitc_dataframe['chunk_label'] == 0].copy()
     print(f"All chunks: {len(jitc_dataframe)}; Normal chunks: {len(df_normal)}")
 
-    X = df_normal[['bit_number_scaled','sequences']].values 
-    y = np.zeros(len(X))  # all normal
+    X = df_normal[['bit_number_scaled']].values 
+    y = df_normal[['labels']].values   # all normal
 
     skf = KFold(n_splits=n_folds, shuffle=True, random_state=rs)
     skf.get_n_splits(X, y)

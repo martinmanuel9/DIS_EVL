@@ -1,0 +1,15 @@
+artifact_uri: /srv/docker/users/martinmlopez/DIS_EVL/evl_streaming_src/mlruns/267083541010354557/7c1a6289b53545f8b4662838ea8cdd0e/artifacts
+end_time: 1747721794923
+entry_point_name: ''
+experiment_id: '267083541010354557'
+lifecycle_stage: active
+run_id: 7c1a6289b53545f8b4662838ea8cdd0e
+run_name: threshold-percentile_90
+run_uuid: 7c1a6289b53545f8b4662838ea8cdd0e
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1747721794610
+status: 3
+tags: []
+user_id: martinmlopez
